@@ -13,6 +13,8 @@
 
 Route::view('/layout', 'sample');
 
+Route::view('/judging', 'judging.index');
+
 Route::view('/', 'welcome');
 
 Auth::routes();
