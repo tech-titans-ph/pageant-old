@@ -12,7 +12,7 @@
                 <img src="https://source.unsplash.com/38GIMU7P5tE/500x500/"
                 class="w-full object-contain" alt="Contestant">
             </div>
-            <div class="md:w-auto flex md:static p-4 justify-between items-center">
+            <div class="w-auto md:w-1/2 flex md:static p-4 justify-between items-center">
                 <a href="#" class="border rounded-full flex justify-center items-center no-underline block h-12 w-12 hover:bg-gray-200">
                     <svg class="feather feather-chevron-left sc-dnqmqq jxshSx" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>
                 </a>
