@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container mx-auto">
+    <div class="container mx-auto mt-6">
         <div class="flex flex-wrap justify-center">
             <div class="w-full max-w-sm">
                 <div class="flex flex-col break-words bg-white border border-2 rounded shadow-md">
@@ -14,15 +14,15 @@
                         @csrf
 
                         <div class="flex flex-wrap mb-6">
-                            <label for="email" class="block text-gray-700 text-sm font-bold mb-2">
-                                {{ __('E-Mail Address') }}:
+                            <label for="username" class="block text-gray-700 text-sm font-bold mb-2">
+                                {{ __('User Name') }}:
                             </label>
 
-                            <input id="email" type="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline{{ $errors->has('email') ? ' border-red-500' : '' }}" name="email" value="{{ old('email') }}" required autofocus>
+                            <input id="username" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline{{ $errors->has('username') ? ' border-red-500' : '' }}" name="username" value="{{ old('username') }}" required autofocus>
 
-                            @if ($errors->has('email'))
+                            @if ($errors->has('username'))
                                 <p class="text-red-500 text-xs italic mt-4">
-                                    {{ $errors->first('email') }}
+                                    {{ $errors->first('username') }}
                                 </p>
                             @endif
                         </div>
@@ -58,15 +58,6 @@
                                 <a class="text-sm text-blue-500 hover:text-blue-700 whitespace-no-wrap no-underline ml-auto" href="{{ route('password.request') }}">
                                     {{ __('Forgot Your Password?') }}
                                 </a>
-                            @endif
-
-                            @if (Route::has('register'))
-                                <p class="w-full text-xs text-center text-gray-700 mt-8 -mb-4">
-                                    Don't have an account?
-                                    <a class="text-blue-500 hover:text-blue-700 no-underline" href="{{ route('register') }}">
-                                        Register
-                                    </a>
-                                </p>
                             @endif
                         </div>
                     </form>

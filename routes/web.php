@@ -19,5 +19,23 @@ Route::view('/', 'welcome');
 
 Auth::routes();
 
+Route::get('sample', function(){
+    return view('sample');
+});
+
 Route::get('/home', 'HomeController@index')->name('home');
 
+Route::resource('/users', 'UserController');
+
+Route::resource('/contests', 'ContestController');
+Route::post('/contests/{contest}/active', 'ContestController@active');
+
+Route::resource('/criterias', 'CriteriaController');
+
+Route::resource('/contestants', 'ContestantController');
+
+/* Samuel Magana Creatv Developer - begin - VALIDATIONS */
+Route::get('/no-active-contest', function(){
+    return view('/validations.no-active-contest');
+});
+/* Samuel Magana Creatv Developer - end - VALIDATIONS */

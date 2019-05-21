@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'username', 'password',
     ];
 
     /**
@@ -36,4 +36,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function pageant()
+    {
+        return $this->belongsTo(Pagent::class);
+    }
+
+    public function pageant_categories()
+    {
+        return $this->belongsToMany(PageantCategory::class, 'pageant_category_judges');
+    }
 }
