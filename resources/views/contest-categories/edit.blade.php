@@ -22,8 +22,8 @@
 				</div>
 				<div class="form-group {{ $errors->has('percentage') ? 'has-error' : '' }}">
 					<label class="label">Percentage:</label>
-					<input type="text" name="percentage" value="{{ old('percenrage') ? old('percenrage') : $contestCategory->percentage }}" class="input">
-					@error('percenrage')
+					<input type="text" name="percentage" value="{{ old('percentage') ? old('percentage') : $contestCategory->percentage }}" class="input">
+					@error('percentage')
 						<div class="error">{{ $message }}</div>
 					@enderror
 				</div>

@@ -48,22 +48,20 @@ class JudgeController extends Controller
      */
     public function store(Request $request)
     {
-        $validationRule = [
+        $data = request()->validate([
             'name' => ['required', 'min:3', 'max:255'],
             'description' => ['required', 'min:3', 'max:255'],
             'picture' => ['required', 'file', 'image'],
             'username' => ['required', 'min:3', 'max:255', 'unique:users', 'nospace'],
             'password' => ['required', 'min:3', 'max:255', 'nospace', 'confirmed'],
-        ];
+        ]);
 
-        $judge = request()->validate($validationRule);
-
-        $judge['picture'] = request()->picture->store('profile_pictures', 'public');
-        $judge['role'] = 'judge';
-        $judge['contest_id'] = session('activeContest')['id'];
-        $judge['password'] = Hash::make($judge['password']);
+        $data['picture'] = request()->picture->store('profile_pictures', 'public');
+        $data['role'] = 'judge';
+        $data['contest_id'] = session('activeContest')['id'];
+        $data['password'] = Hash::make($data['password']);
         
-        User::create($judge);
+        User::create($data);
 
         return redirect('/judges')->with('success', 'Judge has been Created.');
     }
@@ -103,17 +101,12 @@ class JudgeController extends Controller
     {
         $judge = User::findOrFail($id);
 
-        $validationRule = [
+        $data = request()->validate([
             'name' => ['required', 'min:3', 'max:255'],
             'description' => ['required', 'min:3', 'max:255'],
             'username' => ['required', 'min:3', 'max:255', 'nospace', Rule::unique('users')->ignore($judge)],
-        ];
-
-        if (request()->hasFile('picture')) {
-            $validationRule['picture'] = ['file', 'image'];
-        }
-
-        $data = request()->validate($validationRule);
+            'picture' => ['nullable', 'file', 'image'],
+        ]);
 
         if (isset($data['picture'])) {
             Storage::disk('public')->delete($judge->picture);

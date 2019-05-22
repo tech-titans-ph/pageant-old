@@ -43,15 +43,15 @@ class ContestController extends Controller
      */
     public function store(Request $request)
     {
-        $contest = request()->validate([
+        $data = request()->validate([
             'name' => ['required', 'unique:contests'],
             'description' => ['required'],
             'logo' => ['required', 'file', 'image'],
         ]);
 
-        $contest['logo'] = request()->logo->store('logos', 'public');
+        $data['logo'] = request()->logo->store('logos', 'public');
 
-        Contest::create($contest);
+        Contest::create($data);
 
         return redirect('/contests')->with('success', 'Contest has been Created.');
     }
@@ -87,16 +87,11 @@ class ContestController extends Controller
      */
     public function update(Request $request, Contest $contest)
     {
-        $validationRule = [
+        $data = request()->validate([
             'name' => ['required', 'min:3', 'max:255', Rule::unique('contests')->ignore($contest)],
             'description' => ['required', 'min:3', 'max:255'],
-        ];
-
-        if (request()->hasFile('logo')) {
-            $validationRule['logo'] = ['file', 'image'];
-        }
-
-        $data = request()->validate($validationRule);
+            'logo' => ['nullable', 'file', 'image'],
+        ]);
 
         if (isset($data['logo'])) {
             Storage::disk('public')->delete($contest->logo);

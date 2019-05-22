@@ -43,16 +43,16 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $user = request()->validate([
+        $data = request()->validate([
             'name' => ['required', 'max:25'],
             'username' => ['required', 'max:255', 'unique:users', 'nospace'],
             'password' => ['required', 'max:255', 'nospace', 'confirmed'],
         ]);
 
-        $user['role'] = 'admin';
-        $user['password'] = Hash::make($user['password']);
+        $data['role'] = 'admin';
+        $data['password'] = Hash::make($data['password']);
         
-        User::create($user);
+        User::create($data);
 
         return redirect('/users')->with('success', 'User has been Created.');
     }
@@ -89,12 +89,10 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $validationRule = [
-            'name' => ['required', 'max:255'],
-            'username' => ['required', 'max:255', 'nospace', Rule::unique('users')->ignore($user)],
-        ];
-
-        $data = request()->validate($validationRule);
+        $data = request()->validate([
+            'name' => ['required', 'min:3', 'max:255'],
+            'username' => ['required', 'min:3', 'max:255', 'nospace', Rule::unique('users')->ignore($user)],
+        ]);
         
         $user->update($data);
 

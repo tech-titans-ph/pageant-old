@@ -83,12 +83,12 @@ class CriteriaController extends Controller
      */
     public function update(Request $request, Criteria $criteria)
     {
-        $data = [
+        $data = request()->validate([
             'name' => ['required', 'min:3', 'max:255', Rule::unique('criterias')->ignore($criteria)],
             'description' => ['required', 'min:3', 'max:255'],
-        ];
+        ]);
 
-        $criteria->update(request()->validate($data));
+        $criteria->update($data);
 
         return redirect('/criterias')->with('success', 'Criteria has been Edited.');
     }

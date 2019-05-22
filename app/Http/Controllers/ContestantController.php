@@ -46,7 +46,7 @@ class ContestantController extends Controller
      */
     public function store(Request $request)
     {
-        $contestant = request()->validate([
+        $data = request()->validate([
             'first_name' => ['required', 'min:3', 'max:255'],
             'middle_name' => ['required', 'min:3', 'max:255'],
             'last_name' => ['required', 'min:3', 'max:255'],
@@ -55,10 +55,10 @@ class ContestantController extends Controller
             'number' => ['required', 'numeric', new UniqueContestant],
         ]);
 
-        $contestant['picture'] = request()->picture->store('profile_pictures', 'public');
-        $contestant['contest_id'] = session('activeContest')['id'];
+        $data['picture'] = request()->picture->store('profile_pictures', 'public');
+        $data['contest_id'] = session('activeContest')['id'];
 
-        Contestant::create($contestant);
+        Contestant::create($data);
         
         return redirect('/contestants')->with('success', 'Contestant has been Created.');
     }
@@ -94,11 +94,12 @@ class ContestantController extends Controller
      */
     public function update(Request $request, Contestant $contestant)
     {
-        $validationRule = [
+        $data = request()->validate([
             'first_name' => ['required', 'min:3', 'max:255'],
             'middle_name' => ['required', 'min:3', 'max:255'],
             'last_name' => ['required', 'min:3', 'max:255'],
             'address' => ['required', 'min:3'],
+            'picture' => ['nullable', 'file', 'image'],
             'number' => [
                 'required',
                 'numeric',
@@ -106,13 +107,7 @@ class ContestantController extends Controller
                     return $query->whereContestId(session('activeContest')->id);
                 }),
             ],
-        ];
-
-        if (request()->hasFile('picture')) {
-            $validationRule['picture'] = ['file', 'image'];
-        }
-
-        $data = request()->validate($validationRule);
+        ]);
 
         if (isset($data['picture'])) {
             Storage::disk('public')->delete($contestant->picture);

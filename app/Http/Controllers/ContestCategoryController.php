@@ -45,13 +45,11 @@ class ContestCategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $validationRule = [
+        $data = request()->validate([
             'name' => ['required', 'min:3', 'max:255', new UniqueContestCategory],
             'description' => ['required', 'min:3', 'max:255'],
             'percentage' => ['required', 'numeric', 'between:1,100']
-        ];
-
-        $data = request()->validate($validationRule);
+        ]);
 
         $data['contest_id'] = session('activeContest')->id;
 
@@ -91,7 +89,7 @@ class ContestCategoryController extends Controller
      */
     public function update(Request $request, ContestCategory $contestCategory)
     {
-        $validationRule = [
+        $data = request()->validate([
             'name' => [
                 'required',
                 'min:3',
@@ -102,9 +100,7 @@ class ContestCategoryController extends Controller
             ],
             'description' => ['required', 'min:3', 'max:255'],
             'percentage' => ['required', 'numeric', 'between:1,100'],
-        ];
-
-        $data = request()->validate($validationRule);
+        ]);
         
         $contestCategory->update($data);
 
