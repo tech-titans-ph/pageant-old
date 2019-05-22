@@ -15,10 +15,10 @@ class DatabaseSeeder extends Seeder
         DB::table('users')->insert([
             'name' => 'Administrator',
             'username' => 'admin',
-            'email' => 'admin',
             'password' => Hash::make('password'),
             'role' => 'admin',
         ]);
+
         DB::table('criterias')->insert([
             [
                 'name' => 'Mastery and Execution',

@@ -46,7 +46,6 @@ class UserController extends Controller
             'username' => ['required', 'max:255', 'unique:users', 'nospace'],
             'password' => ['required', 'max:255', 'nospace', 'confirmed'],
         ]);
-        $user['email'] = $user['username'];
         $user['role'] = 'admin';
         $user['password'] = Hash::make($user['password']);
         User::create($user);
