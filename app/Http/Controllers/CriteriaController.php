@@ -19,6 +19,7 @@ class CriteriaController extends Controller
     public function index()
     {
         $criterias = Criteria::all();
+
         return view('criterias.index', compact('criterias'));
     }
 
@@ -44,12 +45,14 @@ class CriteriaController extends Controller
             'name' => ['required', 'min:3', 'max:255', 'unique:criterias'],
             'description' => ['required', 'min:3', 'max:255'],
         ]);
+
         $ok = Criteria::create($data);
-        if($ok){
+        if ($ok) {
             session()->flash('ok', 'Criteria has been Created.');
-        }else{
+        } else {
             session()->flash('error', 'Criteria was not Created. Something went wrong. Please try again.');
         }
+
         return redirect('/criterias');
     }
 
@@ -88,16 +91,18 @@ class CriteriaController extends Controller
             'name' => ['required', 'min:3', 'max:255'],
             'description' => ['required', 'min:3', 'max:255'],
         ];
-        if(request()->name != $criteria->name){
+
+        if (request()->name != $criteria->name) {
             array_push($data['name'], 'unique:criterias');
         }
 
         $ok = $criteria->update(request()->validate($data));
-        if($ok){
+        if ($ok) {
             session()->flash('ok', 'Criteria has been Edited.');
-        }else{
+        } else {
             session()->flash('error', 'Criter was not Edited. Something went wrong. Please try again.');
         }
+
         return redirect('/criterias');
     }
 
@@ -110,11 +115,12 @@ class CriteriaController extends Controller
     public function destroy(Criteria $criteria)
     {
         $ok = $criteria->delete();
-        if($ok){
+        if ($ok) {
             session()->flash('ok', 'Criteria has been Deleted.');
-        }else{
+        } else {
             session()->flash('error', 'Criteria was not Deleted. Something went wrong. Please try again.');
         }
+        
         return redirect('/criterias');
     }
 }

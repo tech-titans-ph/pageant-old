@@ -7,12 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
-
 class JudgeController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
+
         $this->middleware('activeContest');
     }
     /**
@@ -25,6 +25,7 @@ class JudgeController extends Controller
         $judges = User::whereRole('judge')
             ->whereContestId(session('activeContest')->id)
             ->get();
+
         return view('judges.index', compact('judges'));
     }
 
@@ -53,17 +54,21 @@ class JudgeController extends Controller
             'username' => ['required', 'min:3', 'max:255', 'unique:users', 'nospace'],
             'password' => ['required', 'min:3', 'max:255', 'nospace', 'confirmed'],
         ];
+
         $judge = request()->validate($validationRule);
+
         $judge['picture'] = request()->picture->store('profile_pictures', 'public');
         $judge['role'] = 'judge';
         $judge['contest_id'] = session('activeContest')['id'];
         $judge['password'] = Hash::make($judge['password']);
+        
         $ok = User::create($judge);
-        if($ok){
+        if ($ok) {
             session()->flash('ok', 'Judge has been Created.');
-        }else{
+        } else {
             session()->flash('error', 'Judge was not Created. Something went wrong. Please try agian.');
         }
+
         return redirect('/judges');
     }
 
@@ -87,6 +92,7 @@ class JudgeController extends Controller
     public function edit(User $user, $id)
     {
         $judge = User::findOrFail($id);
+
         return view('judges.edit', compact('judge'));
     }
 
@@ -100,22 +106,27 @@ class JudgeController extends Controller
     public function update(Request $request, User $user, $id)
     {
         $judge = User::findOrFail($id);
+
         $validationRule = [
             'name' => ['required', 'min:3', 'max:255'],
             'description' => ['required', 'min:3', 'max:255'],
             'username' => ['required', 'min:3', 'max:255', 'nospace'],
         ];
-        if($judge->username != request()->username){
+
+        if ($judge->username != request()->username) {
             array_push($validationRule['username'], 'unique:users');
         }
-        if(request()->hasFile('picture')){
+        if (request()->hasFile('picture')) {
             $validationRule['picture'] = ['file', 'image'];
         }
+
         $data = request()->validate($validationRule);
-        if(isset($data['picture'])){
+
+        if (isset($data['picture'])) {
             Storage::disk('public')->delete($judge->picture);
             $data['picture'] = request()->picture->store('profile_pictures', 'public');
         }
+
         $ok = $judge->update($data);
         if ($ok) {
             session()->flash('ok', 'Judge has been Edited.');
@@ -135,9 +146,10 @@ class JudgeController extends Controller
     public function destroy(User $user, $id)
     {
         $judge = $user->findOrFail($id);
-        Storage::disk('public')->delete($judge->picture);
+        
         $ok = $judge->delete();
         if ($ok) {
+            Storage::disk('public')->delete($judge->picture);
             session()->flash('ok', 'Judge has been Deleted.');
         } else {
             session()->flash('error', 'Judge was not Deleted. Something went wrong. Please try agian.');

@@ -11,6 +11,7 @@ class ContestCategoryController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+
         $this->middleware('activeContest');
     }
     /**
@@ -21,6 +22,7 @@ class ContestCategoryController extends Controller
     public function index()
     {
         $contestCategories = ContestCategory::whereContestId(session('activeContest')->id)->get();
+
         return view('contest-categories.index', compact('contestCategories'));
     }
 
@@ -47,14 +49,18 @@ class ContestCategoryController extends Controller
             'description' => ['required', 'min:3', 'max:255'],
             'percentage' => ['required', 'numeric', 'between:1,100']
         ];
+
         $data = request()->validate($validationRule);
+
         $data['contest_id'] = session('activeContest')->id;
+
         $ok = ContestCategory::create($data);
         if ($ok) {
             session()->flash('ok', 'Contest Category has been Created.');
         } else {
             session()->flash('error', 'Contest Category was not Created. Something went wrong. Please try again.');
         }
+
         return redirect('/contest-categories');
     }
 
@@ -66,7 +72,7 @@ class ContestCategoryController extends Controller
      */
     public function show(ContestCategory $contestCategory)
     {
-        abor(404);
+        // TODO: show details
     }
 
     /**
@@ -98,7 +104,9 @@ class ContestCategoryController extends Controller
         if ($contestCategory->name != request()->name) {
             array_push($validationRule['name'], new uniqueContestCategory);
         }
+
         $data = request()->validate($validationRule);
+        
         $ok = $contestCategory->update($data);
         if ($ok) {
             session()->flash('ok', 'Contest Category has been Edited.');

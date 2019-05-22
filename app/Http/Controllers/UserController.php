@@ -20,6 +20,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::whereRole('admin')->get();
+        
         return view('users.index', compact('users'));
     }
 
@@ -46,14 +47,17 @@ class UserController extends Controller
             'username' => ['required', 'max:255', 'unique:users', 'nospace'],
             'password' => ['required', 'max:255', 'nospace', 'confirmed'],
         ]);
+
         $user['role'] = 'admin';
         $user['password'] = Hash::make($user['password']);
+        
         $ok = User::create($user);
-        if($ok){
+        if ($ok) {
             session()->flash('ok', 'User has been Created.');
-        }else{
+        } else {
             session()->flash('error', 'User was not Created. Something went wrong. Please try again.');
         }
+
         return redirect('/users');
     }
 
@@ -99,12 +103,14 @@ class UserController extends Controller
         }
 
         $data = request()->validate($validationRule);
+        
         $ok = $user->update($data);
-        if($ok){
+        if ($ok) {
             session()->flash('ok', 'User has been Edited.');
-        }else{
+        } else {
             session()->flash('error', 'User was not Edited. Something went wrong. Please try again.');
         }
+
         return redirect('/users');
     }
 
@@ -116,16 +122,17 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        if($user->id == auth()->id()){
+        if ($user->id == auth()->id()) {
             session()->flash('error', 'Could not Delete User. Please make sure that the User you are trying to Delete is not you.');
-        }else{
+        } else {
             $ok = $user->delete();
-            if($ok){
+            if ($ok) {
                 session()->flash('ok', 'User has been Deleted.');
-            }else{
+            } else {
                 session()->flash('error', 'User was not Deleted. Something went wrong. Pleasey try again.');
             }
         }
+        
         return redirect('/users');
     }
 }
