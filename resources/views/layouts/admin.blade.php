@@ -30,7 +30,7 @@
                         </div>
                     @endif
                     <div class="flex-1 text-right">
-                        @guestcls
+                        @guest
                             <a class="no-underline hover:underline text-gray-300 text-sm p-3" href="{{ route('login') }}">{{ __('Login') }}</a>
                             @if (Route::has('register'))
                                 <a class="no-underline hover:underline text-gray-300 text-sm p-3" href="{{ route('register') }}">{{ __('Register') }}</a>

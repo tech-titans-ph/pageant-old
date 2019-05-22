@@ -19,7 +19,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
+        $users = User::where('role', '=', 'admin')->get();
         return view('users.index', compact('users'));
     }
 
@@ -46,6 +46,7 @@ class UserController extends Controller
             'username' => ['required', 'max:255', 'unique:users', 'nospace'],
             'password' => ['required', 'max:255', 'nospace', 'confirmed'],
         ]);
+        $user['email'] = $user['username'];
         $user['role'] = 'admin';
         $user['password'] = Hash::make($user['password']);
         User::create($user);
@@ -94,6 +95,7 @@ class UserController extends Controller
         }
 
         $data = request()->validate($validationRule);
+        $data['email'] = $data['username'];
         $user->update($data);
         return redirect('/users');
     }

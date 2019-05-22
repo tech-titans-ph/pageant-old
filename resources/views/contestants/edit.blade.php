@@ -38,7 +38,7 @@
 					<img src="{{ asset('storage/' . $contestant->picture) }}" class="block rounded-full h-16 w-16 border">
 				</div>
 				<div class="form-group {{ $errors->has('picture') ? 'has-error' : '' }}">
-					<label class="label">Profile Picture:</label>
+					<label class="label">Change Profile Picture:</label>
 					<input type="file" name="picture" class="input">
 					@error('picture')
 						<div class="error">{{ $message }}</div>

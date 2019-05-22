@@ -13,10 +13,65 @@ class DatabaseSeeder extends Seeder
     {
         // $this->call(UsersTableSeeder::class);
         DB::table('users')->insert([
-            'name' => 'Samuel Magana',
-            'username' => 'maganasamuel001',
+            'name' => 'Administrator',
+            'username' => 'admin',
+            'email' => 'admin',
             'password' => Hash::make('password'),
             'role' => 'admin',
+        ]);
+        DB::table('criterias')->insert([
+            [
+                'name' => 'Mastery and Execution',
+                'description' => 'Mastery and Execution',
+            ],
+            [
+                'name' => 'Gracefulness and Certainly during Performance',
+                'description' => 'Gracefulness and Certainly during Performance',
+            ],
+            [
+                'name' => 'Poise and Bearing',
+                'description' => 'Poise and Bearing',
+            ],
+            [
+                'name' => 'Audience Impact',
+                'description' => 'Audience Impact',
+            ],
+            [
+                'name' => 'Carriage',
+                'description' => 'Carriage',
+            ],
+            [
+                'name' => 'Beauty',
+                'description' => 'Beauty',
+            ],
+            [
+                'name' => 'Elegance and Sophistication',
+                'description' => 'Elegance and Sophistication',
+            ],
+            [
+                'name' => 'Articulation, Diction, Grammar',
+                'description' => 'Articulation, Diction, Grammar',
+            ],
+            [
+                'name' => 'Delivery and Choice of words',
+                'description' => 'Delivery and Choice of words',
+            ],
+            [
+                'name' => 'Relevance, Content, Wit and Impact',
+                'description' => 'Relevance, Content, Wit and Impact',
+            ],
+            [
+                'name' => 'Physical Attributes',
+                'description' => 'Physical Attributes',
+            ],
+            [
+                'name' => 'Talent',
+                'description' => 'Talent',
+            ],
+            [
+                'name' => 'Wit and Intelligence',
+                'description' => 'Wit and Intelligence',
+            ],
         ]);
     }
 }

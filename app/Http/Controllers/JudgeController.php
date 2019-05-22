@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+
 
 class JudgeController extends Controller
 {
@@ -19,7 +22,10 @@ class JudgeController extends Controller
      */
     public function index()
     {
-        $judges = User::where('role', '=', 'judge')->get();
+        $judges = User::where([
+            ['role', '=', 'judge'],
+            ['contest_id', '=', session('activeContest')->id],
+        ])->get();
         return view('judges.index', compact('judges'));
     }
 
@@ -45,12 +51,15 @@ class JudgeController extends Controller
             'name' => ['required', 'min:3', 'max:255'],
             'description' => ['required', 'min:3', 'max:255'],
             'picture' => ['required', 'file', 'image'],
-            'username' => ['required', 'min:3', 'max:255', 'unique:users'],
+            'username' => ['required', 'min:3', 'max:255', 'unique:users', 'nospace'],
             'password' => ['required', 'min:3', 'max:255', 'nospace', 'confirmed'],
         ];
         $judge = request()->validate($validationRule);
         $judge['picture'] = request()->picture->store('profile_pictures', 'public');
         $judge['role'] = 'judge';
+        $judge['contest_id'] = session('activeContest')['id'];
+        $judge['email'] = $judge['username'];
+        $judge['password'] = Hash::make($judge['password']);
         User::create($judge);
         return redirect('/judges');
     }
@@ -72,9 +81,9 @@ class JudgeController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function edit(User $user)
+    public function edit(User $user, $id)
     {
-        $judge = $user;
+        $judge = User::findOrFail($id);
         return view('judges.edit', compact('judge'));
     }
 
@@ -85,14 +94,15 @@ class JudgeController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, User $user, $id)
     {
-         $validationRule = [
+        $judge = User::findOrFail($id);
+        $validationRule = [
             'name' => ['required', 'min:3', 'max:255'],
             'description' => ['required', 'min:3', 'max:255'],
-            'username' => ['required', 'min:3', 'max:255'],
+            'username' => ['required', 'min:3', 'max:255', 'nospace'],
         ];
-        if($user->username != request()->username){
+        if($judge->username != request()->username){
             array_push($validationRule['username'], 'unique:users');
         }
         if(request()->hasFile('picture')){
@@ -100,10 +110,11 @@ class JudgeController extends Controller
         }
         $data = request()->validate($validationRule);
         if(isset($data['picture'])){
-            Storage::disck('public')->delete($user->picture);
+            Storage::disk('public')->delete($judge->picture);
             $data['picture'] = request()->picture->store('profile_pictures', 'public');
         }
-        $user->update($data);
+        $data['email'] = $data['username'];
+        $judge->update($data);
         return redirect('/judges');
     }
 
