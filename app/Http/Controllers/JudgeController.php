@@ -39,7 +39,7 @@ class JudgeController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly Deleted resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -58,7 +58,12 @@ class JudgeController extends Controller
         $judge['role'] = 'judge';
         $judge['contest_id'] = session('activeContest')['id'];
         $judge['password'] = Hash::make($judge['password']);
-        User::create($judge);
+        $ok = User::create($judge);
+        if($ok){
+            session()->flash('ok', 'Judge has been Created.');
+        }else{
+            session()->flash('error', 'Judge was not Created. Something went wrong. Please try agian.');
+        }
         return redirect('/judges');
     }
 
@@ -111,7 +116,13 @@ class JudgeController extends Controller
             Storage::disk('public')->delete($judge->picture);
             $data['picture'] = request()->picture->store('profile_pictures', 'public');
         }
-        $judge->update($data);
+        $ok = $judge->update($data);
+        if ($ok) {
+            session()->flash('ok', 'Judge has been Edited.');
+        } else {
+            session()->flash('error', 'Judge was not Edited. Something went wrong. Please try agian.');
+        }
+
         return redirect('/judges');
     }
 
@@ -125,7 +136,13 @@ class JudgeController extends Controller
     {
         $judge = $user->findOrFail($id);
         Storage::disk('public')->delete($judge->picture);
-        $judge->delete();
+        $ok = $judge->delete();
+        if ($ok) {
+            session()->flash('ok', 'Judge has been Deleted.');
+        } else {
+            session()->flash('error', 'Judge was not Deleted. Something went wrong. Please try agian.');
+        }
+
         return redirect('/judges');
     }
 }

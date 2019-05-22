@@ -9,6 +9,9 @@
 			@if(session('error'))
 				<div class="alert error">{{ session('error') }}</div>
 			@endif
+			@if(session('ok'))
+				<div class="alert ok">{{ session('ok') }}</div>
+			@endif
 			<table class="table">
 				<thead>
 					<tr>

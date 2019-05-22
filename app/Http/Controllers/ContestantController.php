@@ -59,7 +59,12 @@ class ContestantController extends Controller
         ]);
         $contestant['picture'] = request()->picture->store('profile_pictures', 'public');
         $contestant['contest_id'] = session('activeContest')['id'];
-        Contestant::create($contestant);
+        $ok = Contestant::create($contestant);
+        if($ok){
+            session()->flash('ok', 'Contestant has been Created.');
+        }else{
+            session()->flash('error', 'Contestant was not Created. Something went wrong. Please try again.');
+        }
         return redirect('/contestants');
     }
 
@@ -119,7 +124,13 @@ class ContestantController extends Controller
             Storage::disk('public')->delete($contestant->picture);
             $data['picture'] = request()->picture->store('profile_pictures', 'public');
         }
-        $contestant->update($data);
+        $ok = $contestant->update($data);
+        if ($ok) {
+            session()->flash('ok', 'Contestant has been Edited.');
+        } else {
+            session()->flash('error', 'Contestant was not Edited. Something went wrong. Please try again.');
+        }
+
         return redirect('/contestants');
     }
 
@@ -132,7 +143,13 @@ class ContestantController extends Controller
     public function destroy(Contestant $contestant)
     {
         Storage::disk('public')->delete($contestant->picture);
-        $contestant->delete();
+        $ok = $contestant->delete();
+        if ($ok) {
+            session()->flash('ok', 'Contestant has been Deleted.');
+        } else {
+            session()->flash('error', 'Contestant was not Deleted. Something went wrong. Please try again.');
+        }
+
         return redirect('/contestants');
     }
 }

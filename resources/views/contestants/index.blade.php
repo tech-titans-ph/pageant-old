@@ -6,6 +6,12 @@
 			<div class="mb-5">
 				<a href="/contestants/create">Create a New Contestant</a>
 			</div>
+			@if(session('ok'))
+				<div class="alert ok">{{ session('ok') }}</div>
+			@endif
+			@if(session('error'))
+				<div class="alert error">{{ session('error') }}</div>
+			@endif
 			<table class="table">
 				<thead><tr>
 					<th></th>

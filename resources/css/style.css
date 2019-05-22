@@ -32,7 +32,7 @@ a:hover,
 	@apply bg-gray-100;
 }
 
-.table>tbody>tr:hover{
+.table>tbody>tr:hover {
 	@apply bg-gray-200;
 }
 
@@ -76,10 +76,14 @@ button:focus {
 	@apply text-red-500 text-xs italic mt-4;
 }
 
-button.link{
+button.link {
 	@apply border-none bg-transparent py-0 px-0 rounded-none;
 }
 
-.alert.error{
+.alert.ok {
+	@apply border rounded border-green-500 p-4 mb-4 bg-green-100 text-green-900;
+}
+
+.alert.error {
 	@apply border rounded border-red-500 p-4 mb-4 bg-red-100 text-red-900;
 }

@@ -47,7 +47,12 @@ class ContestController extends Controller
             'logo' => ['required', 'file', 'image'],
         ]);
         $contest['logo'] = request()->logo->store('logos', 'public');
-        Contest::create($contest);
+        $ok = Contest::create($contest);
+        if($ok){
+            session()->flash('ok', 'Contest has been Created.');
+        }else{
+            session()->flash('error', 'Contest was not Created. Something went wrong. Please try again.');
+        }
         return redirect('/contests');
     }
 
@@ -97,7 +102,13 @@ class ContestController extends Controller
             Storage::disk('public')->delete($contest->logo);
             $data['logo'] = request()->logo->store('logos', 'public');
         }
-        $contest->update($data);
+        $ok = $contest->update($data);
+        if ($ok) {
+            session()->flash('ok', 'Contest has been Edited.');
+        } else {
+            session()->flash('error', 'Contest was not Edited. Something went wrong. Please try again.');
+        }
+
         return redirect('/contests');
     }
 
@@ -109,15 +120,22 @@ class ContestController extends Controller
      */
     public function destroy(Contest $contest)
     {
-        // pending validation
+        // TODO: validations
         Storage::disk('public')->delete($contest->logo);
-        $contest->delete();
+        $ok = $contest->delete();
+        if ($ok) {
+            session()->flash('ok', 'Contest has been Deleted.');
+        } else {
+            session()->flash('error', 'Contest was not Deleted. Something went wrong. Please try again.');
+        }
+
         return redirect('/contests');
     }
 
     public function active(Contest $contest)
     {
         session(['activeContest' => $contest]);
+        session()->flash('ok', $contest->name . ' has been Activated.');
         return redirect('/contests');
     }
 }
