@@ -58,7 +58,6 @@ class JudgeController extends Controller
         $judge['picture'] = request()->picture->store('profile_pictures', 'public');
         $judge['role'] = 'judge';
         $judge['contest_id'] = session('activeContest')['id'];
-        $judge['email'] = $judge['username'];
         $judge['password'] = Hash::make($judge['password']);
         User::create($judge);
         return redirect('/judges');
@@ -113,7 +112,6 @@ class JudgeController extends Controller
             Storage::disk('public')->delete($judge->picture);
             $data['picture'] = request()->picture->store('profile_pictures', 'public');
         }
-        $data['email'] = $data['username'];
         $judge->update($data);
         return redirect('/judges');
     }
@@ -124,10 +122,11 @@ class JudgeController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy(User $user, $id)
     {
-        Storage::disk('public')->delete($user->picture);
-        $user->delete();
+        $judge = $user->findOrFail($id);
+        Storage::disk('public')->delete($judge->picture);
+        $judge->delete();
         return redirect('/judges');
     }
 }

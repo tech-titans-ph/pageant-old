@@ -94,7 +94,6 @@ class UserController extends Controller
         }
 
         $data = request()->validate($validationRule);
-        $data['email'] = $data['username'];
         $user->update($data);
         return redirect('/users');
     }
