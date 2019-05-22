@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Contest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class ContestController extends Controller
 {
@@ -87,13 +88,9 @@ class ContestController extends Controller
     public function update(Request $request, Contest $contest)
     {
         $validationRule = [
-            'name' => ['required'],
-            'description' => ['required'],
+            'name' => ['required', 'min:3', 'max:255', Rule::unique('contests')->ignore($contest)],
+            'description' => ['required', 'min:3', 'max:255'],
         ];
-
-        if ($contest->name != request()->name) {
-            array_push($validationRule['name'], 'unique:contests');
-        }
 
         if (request()->hasFile('logo')) {
             $validationRule['logo'] = ['file', 'image'];

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\ContestCategory;
 use Illuminate\Http\Request;
 use App\Rules\uniqueContestCategory;
+use Illuminate\Validation\Rule;
 
 class ContestCategoryController extends Controller
 {
@@ -91,14 +92,17 @@ class ContestCategoryController extends Controller
     public function update(Request $request, ContestCategory $contestCategory)
     {
         $validationRule = [
-            'name' => ['required', 'min:3', 'max:255'],
+            'name' => [
+                'required',
+                'min:3',
+                'max:255',
+                Rule::unique('contest_categories')->ignore($contestCategory)->where(function ($query) {
+                    return $query->whereContestId(session('activeContest')->id);
+                }),
+            ],
             'description' => ['required', 'min:3', 'max:255'],
             'percentage' => ['required', 'numeric', 'between:1,100'],
         ];
-
-        if ($contestCategory->name != request()->name) {
-            array_push($validationRule['name'], new uniqueContestCategory);
-        }
 
         $data = request()->validate($validationRule);
         

@@ -6,6 +6,7 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class JudgeController extends Controller
 {
@@ -105,12 +106,9 @@ class JudgeController extends Controller
         $validationRule = [
             'name' => ['required', 'min:3', 'max:255'],
             'description' => ['required', 'min:3', 'max:255'],
-            'username' => ['required', 'min:3', 'max:255', 'nospace'],
+            'username' => ['required', 'min:3', 'max:255', 'nospace', Rule::unique('users')->ignore($judge)],
         ];
 
-        if ($judge->username != request()->username) {
-            array_push($validationRule['username'], 'unique:users');
-        }
         if (request()->hasFile('picture')) {
             $validationRule['picture'] = ['file', 'image'];
         }

@@ -6,6 +6,7 @@ use App\Contestant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Rules\uniqueContestant;
+use Illuminate\Validation\Rule;
 
 class ContestantController extends Controller
 {
@@ -98,15 +99,17 @@ class ContestantController extends Controller
             'middle_name' => ['required', 'min:3', 'max:255'],
             'last_name' => ['required', 'min:3', 'max:255'],
             'address' => ['required', 'min:3'],
-            'number' => ['required', 'numeric'],
+            'number' => [
+                'required',
+                'numeric',
+                Rule::unique('contestants')->ignore($contestant)->where(function ($query) {
+                    return $query->whereContestId(session('activeContest')->id);
+                }),
+            ],
         ];
 
         if (request()->hasFile('picture')) {
             $validationRule['picture'] = ['file', 'image'];
-        }
-
-        if (request()->number != $contestant->number) {
-            array_push($validationRule['number'], new uniqueContestant);
         }
 
         $data = request()->validate($validationRule);

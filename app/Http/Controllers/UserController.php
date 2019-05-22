@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -90,12 +91,8 @@ class UserController extends Controller
     {
         $validationRule = [
             'name' => ['required', 'max:255'],
-            'username' => ['required', 'max:255', 'nospace'],
+            'username' => ['required', 'max:255', 'nospace', Rule::unique('users')->ignore($user)],
         ];
-
-        if ($user->username != request()->username) {
-            array_push($validationRule['username'], 'unique:users');
-        }
 
         $data = request()->validate($validationRule);
         

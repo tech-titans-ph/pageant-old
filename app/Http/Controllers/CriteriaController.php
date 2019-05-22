@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Criteria;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CriteriaController extends Controller
 {
@@ -83,13 +84,9 @@ class CriteriaController extends Controller
     public function update(Request $request, Criteria $criteria)
     {
         $data = [
-            'name' => ['required', 'min:3', 'max:255'],
+            'name' => ['required', 'min:3', 'max:255', Rule::unique('criterias')->ignore($criteria)],
             'description' => ['required', 'min:3', 'max:255'],
         ];
-
-        if (request()->name != $criteria->name) {
-            array_push($data['name'], 'unique:criterias');
-        }
 
         $criteria->update(request()->validate($data));
 
