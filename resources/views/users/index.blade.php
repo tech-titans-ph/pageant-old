@@ -9,8 +9,8 @@
 			@if(session('error'))
 				<div class="alert error">{{ session('error') }}</div>
 			@endif
-			@if(session('ok'))
-				<div class="alert ok">{{ session('ok') }}</div>
+			@if(session('success'))
+				<div class="alert success">{{ session('success') }}</div>
 			@endif
 			<table class="table">
 				<thead>

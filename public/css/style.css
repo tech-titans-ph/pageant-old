@@ -119,7 +119,7 @@ button.link {
   border-radius: 0;
 }
 
-.alert.ok {
+.alert.success {
   border-width: 1px;
   border-radius: 0.25rem;
   border-color: #48bb78;

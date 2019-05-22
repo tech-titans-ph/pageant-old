@@ -80,7 +80,7 @@ button.link {
 	@apply border-none bg-transparent py-0 px-0 rounded-none;
 }
 
-.alert.ok {
+.alert.success {
 	@apply border rounded border-green-500 p-4 mb-4 bg-green-100 text-green-900;
 }
 

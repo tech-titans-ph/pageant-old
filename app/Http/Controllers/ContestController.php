@@ -50,14 +50,9 @@ class ContestController extends Controller
 
         $contest['logo'] = request()->logo->store('logos', 'public');
 
-        $ok = Contest::create($contest);
-        if ($ok) {
-            session()->flash('ok', 'Contest has been Created.');
-        } else {
-            session()->flash('error', 'Contest was not Created. Something went wrong. Please try again.');
-        }
+        Contest::create($contest);
 
-        return redirect('/contests');
+        return redirect('/contests')->with('success', 'Contest has been Created.');
     }
 
     /**
@@ -111,14 +106,9 @@ class ContestController extends Controller
             $data['logo'] = request()->logo->store('logos', 'public');
         }
 
-        $ok = $contest->update($data);
-        if ($ok) {
-            session()->flash('ok', 'Contest has been Edited.');
-        } else {
-            session()->flash('error', 'Contest was not Edited. Something went wrong. Please try again.');
-        }
+        $contest->update($data);
 
-        return redirect('/contests');
+        return redirect('/contests')->with('success', 'Contest has been Edited.');
     }
 
     /**
@@ -130,22 +120,19 @@ class ContestController extends Controller
     public function destroy(Contest $contest)
     {
         // TODO: validations
-        $ok = $contest->delete();
-        if ($ok) {
-            Storage::disk('public')->delete($contest->logo);
-            session()->flash('ok', 'Contest has been Deleted.');
-        } else {
-            session()->flash('error', 'Contest was not Deleted. Something went wrong. Please try again.');
-        }
+        $contest->delete();
 
-        return redirect('/contests');
+        session()->forget('activeContest');
+
+        Storage::disk('public')->delete($contest->logo);
+
+        return redirect('/contests')->with('success', 'Contest has been Deleted.');
     }
 
     public function active(Contest $contest)
     {
         session(['activeContest' => $contest]);
-        session()->flash('ok', $contest->name . ' has been Activated.');
-        
-        return redirect('/contests');
+
+        return redirect('/contests')->with('success', $contest->name . ' has been Activated.');
     }
 }

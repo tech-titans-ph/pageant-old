@@ -51,14 +51,9 @@ class UserController extends Controller
         $user['role'] = 'admin';
         $user['password'] = Hash::make($user['password']);
         
-        $ok = User::create($user);
-        if ($ok) {
-            session()->flash('ok', 'User has been Created.');
-        } else {
-            session()->flash('error', 'User was not Created. Something went wrong. Please try again.');
-        }
+        User::create($user);
 
-        return redirect('/users');
+        return redirect('/users')->with('success', 'User has been Created.');
     }
 
     /**
@@ -104,14 +99,9 @@ class UserController extends Controller
 
         $data = request()->validate($validationRule);
         
-        $ok = $user->update($data);
-        if ($ok) {
-            session()->flash('ok', 'User has been Edited.');
-        } else {
-            session()->flash('error', 'User was not Edited. Something went wrong. Please try again.');
-        }
+        $user->update($data);
 
-        return redirect('/users');
+        return redirect('/users')->with('success', 'User has been Edited.');
     }
 
     /**
@@ -125,12 +115,8 @@ class UserController extends Controller
         if ($user->id == auth()->id()) {
             session()->flash('error', 'Could not Delete User. Please make sure that the User you are trying to Delete is not you.');
         } else {
-            $ok = $user->delete();
-            if ($ok) {
-                session()->flash('ok', 'User has been Deleted.');
-            } else {
-                session()->flash('error', 'User was not Deleted. Something went wrong. Pleasey try again.');
-            }
+            $user->delete();
+            session()->flash('success', 'User has been Deleted.');
         }
         
         return redirect('/users');

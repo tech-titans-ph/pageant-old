@@ -6,11 +6,8 @@
 			<div class="mb-5">
 				<a href="/contest-categories/create">Create a New Contest Category</a>
 			</div>
-			@if(session('ok'))
-				<div class="alert ok">{{ session('ok') }}</div>
-			@endif
-			@if(session('error'))
-				<div class="alert error">{{ session('error') }}</div>
+			@if(session('success'))
+				<div class="alert success">{{ session('success') }}</div>
 			@endif
 			<table class="table">
 				<thead><tr>

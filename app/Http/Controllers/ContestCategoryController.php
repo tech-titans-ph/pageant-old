@@ -54,14 +54,9 @@ class ContestCategoryController extends Controller
 
         $data['contest_id'] = session('activeContest')->id;
 
-        $ok = ContestCategory::create($data);
-        if ($ok) {
-            session()->flash('ok', 'Contest Category has been Created.');
-        } else {
-            session()->flash('error', 'Contest Category was not Created. Something went wrong. Please try again.');
-        }
+        ContestCategory::create($data);
 
-        return redirect('/contest-categories');
+        return redirect('/contest-categories')->with('success', 'Contest Category has been Created.');
     }
 
     /**
@@ -107,14 +102,9 @@ class ContestCategoryController extends Controller
 
         $data = request()->validate($validationRule);
         
-        $ok = $contestCategory->update($data);
-        if ($ok) {
-            session()->flash('ok', 'Contest Category has been Edited.');
-        } else {
-            session()->flash('error', 'Contest Category was not Edited. Something went wrong. Please try again.');
-        }
+        $contestCategory->update($data);
 
-        return redirect('/contest-categories');
+        return redirect('/contest-categories')->with('success', 'Contest Category has been Edited.');
     }
 
     /**
@@ -125,13 +115,8 @@ class ContestCategoryController extends Controller
      */
     public function destroy(ContestCategory $contestCategory)
     {
-        $ok = $contestCategory->delete();
-        if ($ok) {
-            session()->flash('ok', 'Contest Category has been Deleted.');
-        } else {
-            session()->flash('error', 'Contest Category was not Deleted. Something went wrong. Please try again.');
-        }
+        $contestCategory->delete();
 
-        return redirect('/contest-categories');
+        return redirect('/contest-categories')->with('success', 'Contest Category has been Deleted.');
     }
 }
