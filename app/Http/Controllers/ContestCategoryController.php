@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\ContestCategory;
 use Illuminate\Http\Request;
+use App\Rules\uniqueContestCategory;
 
 class ContestCategoryController extends Controller
 {
@@ -42,18 +43,18 @@ class ContestCategoryController extends Controller
     public function store(Request $request)
     {
         $validationRule = [
-            'name' => ['required', 'min:3', 'max:255', function($attribute, $value, $fail){
-                $found = ContestCategory::whereContestId(session('activeContest')->id)
-                    ->whereName(request()->name)
-                    ->first() ? true : false;
-                if($found){
-                    $fail('The Name is already taken.');
-                }
-            }],
+            'name' => ['required', 'min:3', 'max:255', new uniqueContestCategory],
             'description' => ['required', 'min:3', 'max:255'],
+            'percentage' => ['required', 'numeric', 'between:1,100']
         ];
         $data = request()->validate($validationRule);
-        ContestCategory::create($data);
+        $data['contest_id'] = session('activeContest')->id;
+        $ok = ContestCategory::create($data);
+        if ($ok) {
+            session()->flash('ok', 'Contest Category has been Created.');
+        } else {
+            session()->flash('error', 'Contest Category was not Created. Something went wrong. Please try again.');
+        }
         return redirect('/contest-categories');
     }
 
@@ -76,7 +77,7 @@ class ContestCategoryController extends Controller
      */
     public function edit(ContestCategory $contestCategory)
     {
-        return view('contest-categories.edit', compact($contestCategory));
+        return view('contest-categories.edit', compact('contestCategory'));
     }
 
     /**
@@ -91,19 +92,20 @@ class ContestCategoryController extends Controller
         $validationRule = [
             'name' => ['required', 'min:3', 'max:255'],
             'description' => ['required', 'min:3', 'max:255'],
+            'percentage' => ['required', 'numeric', 'between:1,100'],
         ];
-        if($contestCategory->name != request()->name){
-            array_push($validationRule['name'], function ($attribute, $value, $fail) {
-                $found = ContestCategory::whereContestId(session('activeContest')->id)
-                    ->whereName(request()->name)
-                    ->first() ? true : false;
-                if ($found) {
-                    $fail('The Name is already taken.');
-                }
-            });
+
+        if ($contestCategory->name != request()->name) {
+            array_push($validationRule['name'], new uniqueContestCategory);
         }
         $data = request()->validate($validationRule);
-        $contestCategory::update($data);
+        $ok = $contestCategory->update($data);
+        if ($ok) {
+            session()->flash('ok', 'Contest Category has been Edited.');
+        } else {
+            session()->flash('error', 'Contest Category was not Edited. Something went wrong. Please try again.');
+        }
+
         return redirect('/contest-categories');
     }
 
@@ -115,7 +117,13 @@ class ContestCategoryController extends Controller
      */
     public function destroy(ContestCategory $contestCategory)
     {
-        $contestCategory->delete();
+        $ok = $contestCategory->delete();
+        if ($ok) {
+            session()->flash('ok', 'Contest Category has been Deleted.');
+        } else {
+            session()->flash('error', 'Contest Category was not Deleted. Something went wrong. Please try again.');
+        }
+
         return redirect('/contest-categories');
     }
 }

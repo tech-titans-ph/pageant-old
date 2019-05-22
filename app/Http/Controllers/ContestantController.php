@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Contestant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Rules\uniqueContestant;
 
 class ContestantController extends Controller
 {
@@ -48,14 +49,7 @@ class ContestantController extends Controller
             'last_name' => ['required', 'min:3', 'max:255'],
             'address' => ['required', 'min:3'],
             'picture' => ['required', 'file', 'image'],
-            'number' => ['required', 'numeric', function($attribute, $value, $fail){
-                $found = Contestant::whereNumber($value)
-                    ->whereContestId(session('activeContest')->id)
-                    ->first();
-                if($found){
-                    $fail('The Number is already taken.');
-                }
-            }],
+            'number' => ['required', 'numeric', new uniqueContestant],
         ]);
         $contestant['picture'] = request()->picture->store('profile_pictures', 'public');
         $contestant['contest_id'] = session('activeContest')['id'];
@@ -110,14 +104,7 @@ class ContestantController extends Controller
             $validationRule['picture'] = ['file', 'image'];
         }
         if(request()->number != $contestant->number){
-            array_push($validationRule['number'], function($attribute, $value, $fail){
-                $found = Contestant::whereNumber($value)
-                    ->whereContestId(session('activeContest')->id)
-                    ->first();
-                if ($found) {
-                    $fail('The Number is already taken.');
-                }
-            });
+            array_push($validationRule['number'], new uniqueContestant);
         }
         $data = request()->validate($validationRule);
         if(isset($data['picture'])){

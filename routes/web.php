@@ -36,6 +36,8 @@ Route::resource('/contestants', 'ContestantController');
 
 Route::resource('/judges', 'JudgeController');
 
+Route::resource('/contest-categories', 'ContestCategoryController');
+
 Route::get('/no-active-contest', function(){
     return view('/validations.no-active-contest');
 });

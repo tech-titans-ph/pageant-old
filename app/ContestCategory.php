@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class ContestCategory extends Model
 {
+    protected $guarded = [];
+    
     public function contest()
     {
         return $this->belongsTo(Contest::class);
