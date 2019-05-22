@@ -5,7 +5,7 @@ namespace App\Rules;
 use Illuminate\Contracts\Validation\Rule;
 use App\Contestant;
 
-class uniqueContestant implements Rule
+class UniqueContestant implements Rule
 {
     /**
      * Create a new rule instance.

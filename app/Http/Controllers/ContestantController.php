@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Contestant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Rules\uniqueContestant;
+use App\Rules\UniqueContestant;
 use Illuminate\Validation\Rule;
 
 class ContestantController extends Controller
@@ -52,7 +52,7 @@ class ContestantController extends Controller
             'last_name' => ['required', 'min:3', 'max:255'],
             'address' => ['required', 'min:3'],
             'picture' => ['required', 'file', 'image'],
-            'number' => ['required', 'numeric', new uniqueContestant],
+            'number' => ['required', 'numeric', new UniqueContestant],
         ]);
 
         $contestant['picture'] = request()->picture->store('profile_pictures', 'public');

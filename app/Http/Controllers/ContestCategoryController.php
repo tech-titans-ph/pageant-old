@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\ContestCategory;
 use Illuminate\Http\Request;
-use App\Rules\uniqueContestCategory;
+use App\Rules\UniqueContestCategory;
 use Illuminate\Validation\Rule;
 
 class ContestCategoryController extends Controller
@@ -46,7 +46,7 @@ class ContestCategoryController extends Controller
     public function store(Request $request)
     {
         $validationRule = [
-            'name' => ['required', 'min:3', 'max:255', new uniqueContestCategory],
+            'name' => ['required', 'min:3', 'max:255', new UniqueContestCategory],
             'description' => ['required', 'min:3', 'max:255'],
             'percentage' => ['required', 'numeric', 'between:1,100']
         ];
