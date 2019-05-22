@@ -22,10 +22,9 @@ class JudgeController extends Controller
      */
     public function index()
     {
-        $judges = User::where([
-            ['role', '=', 'judge'],
-            ['contest_id', '=', session('activeContest')->id],
-        ])->get();
+        $judges = User::whereRole('judge')
+            ->whereContestId(session('activeContest')->id)
+            ->get();
         return view('judges.index', compact('judges'));
     }
 

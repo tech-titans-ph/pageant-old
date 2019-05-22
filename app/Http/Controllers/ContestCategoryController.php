@@ -19,7 +19,7 @@ class ContestCategoryController extends Controller
      */
     public function index()
     {
-        $contestCategories = ContestCategory::where(['contest_id', '=', session('activeContest')->id])->get();
+        $contestCategories = ContestCategory::whereContestId(session('activeContest')->id)->get();
         return view('contest-categories.index', compact('contestCategories'));
     }
 
@@ -43,10 +43,9 @@ class ContestCategoryController extends Controller
     {
         $validationRule = [
             'name' => ['required', 'min:3', 'max:255', function($attribute, $value, $fail){
-                $found = ContestCategory::where([
-                    ['contest_id', '=', session('activeContest')->id],
-                    ['name', '=', request()->name],
-                ])->first() ? true : false;
+                $found = ContestCategory::whereContestId(session('activeContest')->id)
+                    ->whereName(request()->name)
+                    ->first() ? true : false;
                 if($found){
                     $fail('The Name is already taken.');
                 }
@@ -95,10 +94,9 @@ class ContestCategoryController extends Controller
         ];
         if($contestCategory->name != request()->name){
             array_push($validationRule['name'], function ($attribute, $value, $fail) {
-                $found = ContestCategory::where([
-                    ['contest_id', '=', session('activeContest')->id],
-                    ['name', '=', request()->name],
-                ])->first() ? true : false;
+                $found = ContestCategory::whereContestId(session('activeContest')->id)
+                    ->whereName(request()->name)
+                    ->first() ? true : false;
                 if ($found) {
                     $fail('The Name is already taken.');
                 }

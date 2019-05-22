@@ -20,7 +20,7 @@ class ContestantController extends Controller
      */
     public function index()
     {
-        $contestants = Contestant::where('contest_id', '=', session('activeContest')['id'])->get();
+        $contestants = Contestant::whereContestId(session('activeContest')->id)->get();
         return view('contestants.index', compact('contestants'));
     }
 
@@ -49,10 +49,9 @@ class ContestantController extends Controller
             'address' => ['required', 'min:3'],
             'picture' => ['required', 'file', 'image'],
             'number' => ['required', 'numeric', function($attribute, $value, $fail){
-                $found = Contestant::where([
-                    ['number', '=', $value],
-                    ['contest_id', '=', session('activeContest')['id']],
-                ])->first();
+                $found = Contestant::whereNumber($value)
+                    ->whereContestId(session('activeContest')->id)
+                    ->first();
                 if($found){
                     $fail('The Number is already taken.');
                 }
@@ -107,10 +106,9 @@ class ContestantController extends Controller
         }
         if(request()->number != $contestant->number){
             array_push($validationRule['number'], function($attribute, $value, $fail){
-                $found = Contestant::where([
-                    ['number', '=', $value],
-                    ['contest_id', '=', session('activeContest')['id']],
-                ])->first();
+                $found = Contestant::whereNumber($value)
+                    ->whereContestId(session('activeContest')->id)
+                    ->first();
                 if ($found) {
                     $fail('The Number is already taken.');
                 }
