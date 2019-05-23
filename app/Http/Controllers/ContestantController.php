@@ -16,6 +16,7 @@ class ContestantController extends Controller
 
         $this->middleware('activeContest');
     }
+    
     /**
      * Display a listing of the resource.
      *
@@ -132,4 +133,5 @@ class ContestantController extends Controller
 
         return redirect('/contestants')->with('success', 'Contestant has been Deleted.');
     }
+    
 }

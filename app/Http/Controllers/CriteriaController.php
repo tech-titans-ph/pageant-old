@@ -12,6 +12,7 @@ class CriteriaController extends Controller
     {
         $this->middleware('auth');
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -105,4 +106,5 @@ class CriteriaController extends Controller
         
         return redirect('/criterias')->with('success', 'Criteria has been Deleted.');
     }
+    
 }

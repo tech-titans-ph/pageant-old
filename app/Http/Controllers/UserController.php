@@ -13,6 +13,7 @@ class UserController extends Controller
     {
         $this->middleware('auth');
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -116,4 +117,5 @@ class UserController extends Controller
         
         return redirect('/users');
     }
+    
 }

@@ -13,6 +13,7 @@ class ContestController extends Controller
     {
         $this->middleware('auth');
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -127,4 +128,5 @@ class ContestController extends Controller
 
         return redirect('/contests')->with('success', $contest->name . ' has been Activated.');
     }
+    
 }

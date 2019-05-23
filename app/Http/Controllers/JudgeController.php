@@ -16,6 +16,7 @@ class JudgeController extends Controller
 
         $this->middleware('activeContest');
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -134,4 +135,5 @@ class JudgeController extends Controller
 
         return redirect('/judges')->with('success', 'Judge has been Deleted.');
     }
+    
 }

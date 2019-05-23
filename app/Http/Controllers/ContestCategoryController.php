@@ -15,6 +15,7 @@ class ContestCategoryController extends Controller
 
         $this->middleware('activeContest');
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -119,4 +120,5 @@ class ContestCategoryController extends Controller
 
         return redirect('/contest-categories')->with('success', 'Contest Category has been Deleted.');
     }
+    
 }
