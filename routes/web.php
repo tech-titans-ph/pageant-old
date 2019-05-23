@@ -34,8 +34,10 @@ Route::resource('/criterias', 'CriteriaController');
 
 Route::resource('/contestants', 'ContestantController');
 
-/* Samuel Magana Creatv Developer - begin - VALIDATIONS */
+Route::resource('/judges', 'JudgeController');
+
+Route::resource('/contest-categories', 'ContestCategoryController');
+
 Route::get('/no-active-contest', function(){
     return view('/validations.no-active-contest');
 });
-/* Samuel Magana Creatv Developer - end - VALIDATIONS */

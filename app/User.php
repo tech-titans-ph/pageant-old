@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'username', 'password',
+        'name', 'password', 'username', 'description', 'picture', 'role', 'contest_id',
     ];
 
     /**
@@ -46,4 +46,5 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(PageantCategory::class, 'pageant_category_judges');
     }
+    
 }

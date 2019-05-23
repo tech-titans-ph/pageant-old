@@ -1,17 +1,16 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Validation\Rule;
 class UserController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -19,7 +18,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
+        $users = User::whereRole('admin')->get();
         return view('users.index', compact('users'));
     }
 
@@ -41,15 +40,15 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $user = request()->validate([
+        $data = request()->validate([
             'name' => ['required', 'max:25'],
             'username' => ['required', 'max:255', 'unique:users', 'nospace'],
             'password' => ['required', 'max:255', 'nospace', 'confirmed'],
         ]);
-        $user['role'] = 'admin';
-        $user['password'] = Hash::make($user['password']);
-        User::create($user);
-        return redirect('/users');
+        $data['role'] = 'admin';
+        $data['password'] = Hash::make($data['password']);
+        User::create($data);
+        return redirect('/users')->with('success', 'User has been Created.');
     }
 
     /**
@@ -84,18 +83,12 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $validationRule = [
-            'name' => ['required', 'max:255'],
-            'username' => ['required', 'max:255', 'nospace'],
-        ];
-
-        if ($user->username != request()->username) {
-            array_push($validationRule['username'], 'unique:users');
-        }
-
-        $data = request()->validate($validationRule);
+        $data = request()->validate([
+            'name' => ['required', 'min:3', 'max:255'],
+            'username' => ['required', 'min:3', 'max:255', 'nospace', Rule::unique('users')->ignore($user)],
+        ]);
         $user->update($data);
-        return redirect('/users');
+        return redirect('/users')->with('success', 'User has been Edited.');
     }
 
     /**
@@ -106,11 +99,13 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        if($user->id == auth()->id()){
+        if ($user->id == auth()->id()) {
             session()->flash('error', 'Could not Delete User. Please make sure that the User you are trying to Delete is not you.');
-        }else{
+        } else {
             $user->delete();
+            session()->flash('success', 'User has been Deleted.');
         }
         return redirect('/users');
     }
+    
 }

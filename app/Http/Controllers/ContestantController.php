@@ -5,14 +5,18 @@ namespace App\Http\Controllers;
 use App\Contestant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Rules\UniqueContestant;
+use Illuminate\Validation\Rule;
 
 class ContestantController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
+
         $this->middleware('activeContest');
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -20,7 +24,8 @@ class ContestantController extends Controller
      */
     public function index()
     {
-        $contestants = Contestant::where('contest_id', '=', session('activeContest')['id'])->get();
+        $contestants = Contestant::whereContestId(session('activeContest')->id)->get();
+
         return view('contestants.index', compact('contestants'));
     }
 
@@ -42,26 +47,21 @@ class ContestantController extends Controller
      */
     public function store(Request $request)
     {
-        $contestant = request()->validate([
+        $data = request()->validate([
             'first_name' => ['required', 'min:3', 'max:255'],
             'middle_name' => ['required', 'min:3', 'max:255'],
             'last_name' => ['required', 'min:3', 'max:255'],
             'address' => ['required', 'min:3'],
             'picture' => ['required', 'file', 'image'],
-            'number' => ['required', 'numeric', function($attribute, $value, $fail){
-                $found = Contestant::where([
-                    ['number', '=', $value],
-                    ['contest_id', '=', session('activeContest')['id']],
-                ])->first();
-                if($found){
-                    $fail('The Number is already taken.');
-                }
-            }],
+            'number' => ['required', 'numeric', new UniqueContestant],
         ]);
-        $contestant['picture'] = request()->picture->store('profile_pictures', 'public');
-        $contestant['contest_id'] = session('activeContest')['id'];
-        Contestant::create($contestant);
-        return redirect('/contestants');
+
+        $data['picture'] = request()->picture->store('profile_pictures', 'public');
+        $data['contest_id'] = session('activeContest')['id'];
+
+        Contestant::create($data);
+        
+        return redirect('/contestants')->with('success', 'Contestant has been Created.');
     }
 
     /**
@@ -95,34 +95,29 @@ class ContestantController extends Controller
      */
     public function update(Request $request, Contestant $contestant)
     {
-        $validationRule = [
+        $data = request()->validate([
             'first_name' => ['required', 'min:3', 'max:255'],
             'middle_name' => ['required', 'min:3', 'max:255'],
             'last_name' => ['required', 'min:3', 'max:255'],
             'address' => ['required', 'min:3'],
-            'number' => ['required', 'numeric'],
-        ];
-        if(request()->hasFile('picture')){
-            $validationRule['picture'] = ['file', 'image'];
-        }
-        if(request()->number != $contestant->number){
-            array_push($validationRule['number'], function($attribute, $value, $fail){
-                $found = Contestant::where([
-                    ['number', '=', $value],
-                    ['contest_id', '=', session('activeContest')['id']],
-                ])->first();
-                if ($found) {
-                    $fail('The Number is already taken.');
-                }
-            });
-        }
-        $data = request()->validate($validationRule);
-        if(isset($data['picture'])){
+            'picture' => ['nullable', 'file', 'image'],
+            'number' => [
+                'required',
+                'numeric',
+                Rule::unique('contestants')->ignore($contestant)->where(function ($query) {
+                    return $query->whereContestId(session('activeContest')->id);
+                }),
+            ],
+        ]);
+
+        if (isset($data['picture'])) {
             Storage::disk('public')->delete($contestant->picture);
             $data['picture'] = request()->picture->store('profile_pictures', 'public');
         }
+
         $contestant->update($data);
-        return redirect('/contestants');
+
+        return redirect('/contestants')->with('success', 'Contestant has been Edited.');
     }
 
     /**
@@ -133,8 +128,10 @@ class ContestantController extends Controller
      */
     public function destroy(Contestant $contestant)
     {
-        Storage::disk('public')->delete($contestant->picture);
         $contestant->delete();
-        return redirect('/contestants');
+        Storage::disk('public')->delete($contestant->picture);
+
+        return redirect('/contestants')->with('success', 'Contestant has been Deleted.');
     }
+    
 }

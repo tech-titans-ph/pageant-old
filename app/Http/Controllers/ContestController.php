@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Contest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class ContestController extends Controller
 {
@@ -12,6 +13,7 @@ class ContestController extends Controller
     {
         $this->middleware('auth');
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -20,6 +22,7 @@ class ContestController extends Controller
     public function index()
     {
         $contests = Contest::all();
+
         return view('contests.index', compact('contests'));
     }
 
@@ -41,14 +44,17 @@ class ContestController extends Controller
      */
     public function store(Request $request)
     {
-        $contest = request()->validate([
+        $data = request()->validate([
             'name' => ['required', 'unique:contests'],
             'description' => ['required'],
             'logo' => ['required', 'file', 'image'],
         ]);
-        $contest['logo'] = request()->logo->store('logos', 'public');
-        Contest::create($contest);
-        return redirect('/contests');
+
+        $data['logo'] = request()->logo->store('logos', 'public');
+
+        Contest::create($data);
+
+        return redirect('/contests')->with('success', 'Contest has been Created.');
     }
 
     /**
@@ -59,7 +65,7 @@ class ContestController extends Controller
      */
     public function show(Contest $contest)
     {
-        return 'Contest Details...';
+        // TODO: show details
     }
 
     /**
@@ -70,7 +76,7 @@ class ContestController extends Controller
      */
     public function edit(Contest $contest)
     {
-        return view('contests.edit', compact('contest'));        
+        return view('contests.edit', compact('contest'));
     }
 
     /**
@@ -82,23 +88,20 @@ class ContestController extends Controller
      */
     public function update(Request $request, Contest $contest)
     {
-        $validationRule = [
-            'name' => ['required'],
-            'description' => ['required'],
-        ];
-        if ($contest->name != request()->name) {
-            array_push($validationRule['name'], 'unique:contests');
-        }
-        if(request()->hasFile('logo')){
-            $validationRule['logo'] = ['file', 'image'];
-        }
-        $data = request()->validate($validationRule);
-        if(isset($data['logo'])){
+        $data = request()->validate([
+            'name' => ['required', 'min:3', 'max:255', Rule::unique('contests')->ignore($contest)],
+            'description' => ['required', 'min:3', 'max:255'],
+            'logo' => ['nullable', 'file', 'image'],
+        ]);
+
+        if (isset($data['logo'])) {
             Storage::disk('public')->delete($contest->logo);
             $data['logo'] = request()->logo->store('logos', 'public');
         }
+
         $contest->update($data);
-        return redirect('/contests');
+
+        return redirect('/contests')->with('success', 'Contest has been Edited.');
     }
 
     /**
@@ -109,15 +112,21 @@ class ContestController extends Controller
      */
     public function destroy(Contest $contest)
     {
-        // pending validation
-        Storage::disk('public')->delete($contest->logo);
+        // TODO: validations
         $contest->delete();
-        return redirect('/contests');
+
+        session()->forget('activeContest');
+
+        Storage::disk('public')->delete($contest->logo);
+
+        return redirect('/contests')->with('success', 'Contest has been Deleted.');
     }
 
     public function active(Contest $contest)
     {
         session(['activeContest' => $contest]);
-        return redirect('/contests');
+
+        return redirect('/contests')->with('success', $contest->name . ' has been Activated.');
     }
+    
 }

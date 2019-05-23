@@ -4,6 +4,9 @@
 		<h1 class="mb-4">Criterias</h1>
 		<div class="bg-white rounded border p-8">
 			<div class="mb-5"><a href="/criterias/create">Create a New Criteria</a></div>
+			@if(session('success'))
+				<div class="alert success">{{ session('success') }}</div>
+			@endif
 			<table class="table">
 				<thead><tr>
 					<th>Name</th>

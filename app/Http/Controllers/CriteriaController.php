@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Criteria;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CriteriaController extends Controller
 {
@@ -11,6 +12,7 @@ class CriteriaController extends Controller
     {
         $this->middleware('auth');
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -19,6 +21,7 @@ class CriteriaController extends Controller
     public function index()
     {
         $criterias = Criteria::all();
+
         return view('criterias.index', compact('criterias'));
     }
 
@@ -44,8 +47,10 @@ class CriteriaController extends Controller
             'name' => ['required', 'min:3', 'max:255', 'unique:criterias'],
             'description' => ['required', 'min:3', 'max:255'],
         ]);
+
         Criteria::create($data);
-        return redirect('/criterias');
+
+        return redirect('/criterias')->with('success', 'Criteria has been Created.');
     }
 
     /**
@@ -79,16 +84,14 @@ class CriteriaController extends Controller
      */
     public function update(Request $request, Criteria $criteria)
     {
-        $data = [
-            'name' => ['required', 'min:3', 'max:255'],
+        $data = request()->validate([
+            'name' => ['required', 'min:3', 'max:255', Rule::unique('criterias')->ignore($criteria)],
             'description' => ['required', 'min:3', 'max:255'],
-        ];
-        if(request()->name != $criteria->name){
-            array_push($data['name'], 'unique:criterias');
-        }
+        ]);
 
-        $criteria->update(request()->validate($data));
-        return redirect('/criterias');
+        $criteria->update($data);
+
+        return redirect('/criterias')->with('success', 'Criteria has been Edited.');
     }
 
     /**
@@ -100,6 +103,8 @@ class CriteriaController extends Controller
     public function destroy(Criteria $criteria)
     {
         $criteria->delete();
-        return redirect('/criterias');
+        
+        return redirect('/criterias')->with('success', 'Criteria has been Deleted.');
     }
+    
 }
