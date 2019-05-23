@@ -10,4 +10,5 @@ class ContestCategoryContestant extends Model
     {
         return $this->hasMany(Score::class);
     }
+    
 }

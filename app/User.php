@@ -46,4 +46,5 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(PageantCategory::class, 'pageant_category_judges');
     }
+    
 }

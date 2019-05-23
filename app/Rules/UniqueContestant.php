@@ -3,9 +3,9 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
-use App\ContestCategory;
+use App\Contestant;
 
-class UniqueContestCategory implements Rule
+class UniqueContestant implements Rule
 {
     /**
      * Create a new rule instance.
@@ -26,9 +26,9 @@ class UniqueContestCategory implements Rule
      */
     public function passes($attribute, $value)
     {
-        return ContestCategory::where($attribute, $value)
+        return Contestant::where($attribute, $value)
             ->whereContestId(session('activeContest')->id)
-            ->first() ? false : true;
+            ->first() ? false: true;
     }
 
     /**
@@ -40,4 +40,5 @@ class UniqueContestCategory implements Rule
     {
         return 'The :attribute is already taken.';
     }
+    
 }
