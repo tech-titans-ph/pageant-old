@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCriteriasTable extends Migration
+class CreateContestantsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,17 @@ class CreateCriteriasTable extends Migration
      */
     public function up()
     {
-        Schema::create('criterias', function (Blueprint $table) {
+        Schema::create('contestants', function (Blueprint $table) {
             $table->bigIncrements('id');
+            
             $table->string('name');
-            $table->string('description');
+            $table->string('address');
+            $table->unsignedSmallInteger('number');
+            $table->string('picture');
+
+            $table->unsignedBigInteger('contest_id');
+            $table->foreign('contest_id')->references('id')->on('contests');
+
             $table->timestamps();
         });
     }
@@ -28,6 +35,6 @@ class CreateCriteriasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('criterias');
+        Schema::dropIfExists('contestants');
     }
 }

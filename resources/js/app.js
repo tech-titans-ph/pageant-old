@@ -27,6 +27,16 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
+/* require('./contest-categories/show');
+require('./contests/show'); */
+
+import tabs from './components/Tabs';
+import tabItem from './components/TabItem';
+
 const app = new Vue({
-    el: '#app',
+		el: '#app',
+		components: {
+			'tabs': tabs,
+			'tab-item': tabItem, 
+		}
 });

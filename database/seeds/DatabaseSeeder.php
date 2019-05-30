@@ -12,11 +12,31 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // $this->call(UsersTableSeeder::class);
+        
         DB::table('users')->insert([
-            'name' => 'Administrator',
             'username' => 'admin',
             'password' => Hash::make('password'),
-            'role' => 'admin',
+            'name' => 'Administrator',
+			'role' => 'admin',
+        ]);
+
+        DB::table('categories')->insert([
+            [
+                'name' => 'Casual Attire',
+                'description' => 'Casual Attire',
+            ],
+            [
+                'name' => 'Play Suit',
+                'description' => 'Play Suit',
+            ],
+            [
+                'name' => 'Long Gown',
+                'description' => 'Long Gown',
+            ],
+            [
+                'name' => 'Interview',
+                'description' => 'Interview',
+            ],
         ]);
 
         DB::table('criterias')->insert([

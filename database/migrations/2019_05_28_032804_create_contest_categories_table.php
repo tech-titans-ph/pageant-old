@@ -15,13 +15,18 @@ class CreateContestCategoriesTable extends Migration
     {
         Schema::create('contest_categories', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name');
-            $table->string('description');
-            $table->unsignedTinyInteger('percentage');
-            $table->unsignedBigInteger('contest_id');
-            $table->timestamps();
+			
+			$table->unsignedTinyInteger('percentage');
 
+            $table->unsignedBigInteger('contest_id');
             $table->foreign('contest_id')->references('id')->on('contests');
+
+            $table->unsignedBigInteger('category_id');
+            $table->foreign('category_id')->references('id')->on('categories');
+
+            $table->enum('status', ['que', 'scoring', 'done'])->default('que');
+
+            $table->timestamps();
         });
     }
 

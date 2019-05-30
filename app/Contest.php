@@ -7,12 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Contest extends Model
 {
     protected $guarded = [];
-
-    public function contest_categories()
-    {
-        return $this->hasMany(ContestCategory::class);
-    }
-
+    
     public function contestants()
     {
         return $this->hasMany(Contestant::class);
@@ -22,5 +17,9 @@ class Contest extends Model
     {
         return $this->hasMany(User::class);
     }
-    
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'contest_categories')->withPivot('id', 'percentage', 'status');
+    }
 }

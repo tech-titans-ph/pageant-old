@@ -2,19 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
+use App\Judge;
+use App\Contest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class JudgeController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
-
-        $this->middleware('activeContest');
     }
 
     /**
@@ -24,11 +22,7 @@ class JudgeController extends Controller
      */
     public function index()
     {
-        $judges = User::whereRole('judge')
-            ->whereContestId(session('activeContest')->id)
-            ->get();
-
-        return view('judges.index', compact('judges'));
+        abort(404);
     }
 
     /**
@@ -36,9 +30,9 @@ class JudgeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Contest $contest)
     {
-        return view('judges.create');
+        return view('judges.create', compact('contest'));
     }
 
     /**
@@ -47,24 +41,28 @@ class JudgeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, Contest $contest)
     {
-        $data = request()->validate([
-            'name' => ['required', 'min:3', 'max:255'],
-            'description' => ['required', 'min:3', 'max:255'],
-            'picture' => ['required', 'file', 'image'],
-            'username' => ['required', 'min:3', 'max:255', 'unique:users', 'nospace'],
-            'password' => ['required', 'min:3', 'max:255', 'nospace', 'confirmed'],
-        ]);
+        $data = request()->validate(
+            [
+                'name' => ['required', 'min:3', 'max:255'],
+                'description' => ['required', 'min:3', 'max:255'],
+                'picture' => ['required', 'file', 'image'],
+            ],
+            [],
+            [
+                'name' => 'Full Name',
+                'description' => 'Description',
+                'picture' => 'Profile Picture',
+            ]
+        );
 
         $data['picture'] = request()->picture->store('profile_pictures', 'public');
-        $data['role'] = 'judge';
-        $data['contest_id'] = session('activeContest')['id'];
-        $data['password'] = Hash::make($data['password']);
+        $data['contest_id'] = $contest->id;
         
-        User::create($data);
+        Judge::create($data);
 
-        return redirect('/judges')->with('success', 'Judge has been Created.');
+        return redirect('/contests/' . $contest->id . '?activeTab=Judges')->with('success', 'Judge has been Created.');
     }
 
     /**
@@ -73,7 +71,7 @@ class JudgeController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+    public function show(Contest $contest, Judge $judge)
     {
         abort(404);
     }
@@ -84,11 +82,9 @@ class JudgeController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function edit(User $user, $id)
+    public function edit(Contest $contest, Judge $judge)
     {
-        $judge = User::findOrFail($id);
-
-        return view('judges.edit', compact('judge'));
+        return view('judges.edit', compact('contest', 'judge'));
     }
 
     /**
@@ -98,16 +94,21 @@ class JudgeController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user, $id)
+    public function update(Request $request, Contest $contest, Judge $judge)
     {
-        $judge = User::findOrFail($id);
-
-        $data = request()->validate([
-            'name' => ['required', 'min:3', 'max:255'],
-            'description' => ['required', 'min:3', 'max:255'],
-            'username' => ['required', 'min:3', 'max:255', 'nospace', Rule::unique('users')->ignore($judge)],
-            'picture' => ['nullable', 'file', 'image'],
-        ]);
+        $data = request()->validate(
+            [
+                'name' => ['required', 'min:3', 'max:255'],
+                'description' => ['required', 'min:3', 'max:255'],
+                'picture' => ['nullable', 'file', 'image'],
+            ],
+            [],
+            [
+                'name' => 'Full Name',
+                'description' => 'Description',
+                'picture' => 'Profile Picture',
+            ]
+        );
 
         if (isset($data['picture'])) {
             Storage::disk('public')->delete($judge->picture);
@@ -116,7 +117,7 @@ class JudgeController extends Controller
 
         $judge->update($data);
 
-        return redirect('/judges')->with('success', 'Judge has been Edited.');
+        return redirect('/contests/' . $contest->id . '?activeTab=Judges')->with('success', 'Judge has been Edited.');
     }
 
     /**
@@ -125,15 +126,16 @@ class JudgeController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user, $id)
+    public function destroy(Contest $contest, Judge $judge)
     {
-        $judge = $user->findOrFail($id);
-        
+		if($judge->categories->count()){
+			return redirect('/contests/' . $contest->id . '?activeTab=Judges')->with('error', 'Could not Delete Judge. Please make sure that it is not yet added in any Category.');
+		}
+
         $judge->delete();
             
         Storage::disk('public')->delete($judge->picture);
 
-        return redirect('/judges')->with('success', 'Judge has been Deleted.');
+        return redirect('/contests/' . $contest->id . '?activeTab=Judges')->with('success', 'Judge has been Deleted.');
     }
-    
 }

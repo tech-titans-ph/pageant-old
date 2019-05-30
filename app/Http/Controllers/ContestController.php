@@ -44,11 +44,19 @@ class ContestController extends Controller
      */
     public function store(Request $request)
     {
-        $data = request()->validate([
+        $data = request()->validate(
+            [
             'name' => ['required', 'unique:contests'],
             'description' => ['required'],
             'logo' => ['required', 'file', 'image'],
-        ]);
+            ],
+            [],
+            [
+                'name' => 'Name',
+                'description' => 'Description',
+                'logo' => 'Logo',
+            ]
+        );
 
         $data['logo'] = request()->logo->store('logos', 'public');
 
@@ -65,7 +73,15 @@ class ContestController extends Controller
      */
     public function show(Contest $contest)
     {
-        // TODO: show details
+		$activeTab = request()->query('activeTab');
+
+		$status = [
+			'que' => 'Pending',
+			'scoring' => 'Scoring',
+			'done' => 'Completed',
+		];
+
+        return view('contests.show', compact('contest', 'activeTab', 'status'));
     }
 
     /**
@@ -88,11 +104,19 @@ class ContestController extends Controller
      */
     public function update(Request $request, Contest $contest)
     {
-        $data = request()->validate([
-            'name' => ['required', 'min:3', 'max:255', Rule::unique('contests')->ignore($contest)],
-            'description' => ['required', 'min:3', 'max:255'],
-            'logo' => ['nullable', 'file', 'image'],
-        ]);
+        $data = request()->validate(
+            [
+                'name' => ['required', 'min:3', 'max:255', Rule::unique('contests')->ignore($contest)],
+                'description' => ['required', 'min:3', 'max:255'],
+                'logo' => ['nullable', 'file', 'image'],
+            ],
+            [],
+            [
+                'name' => 'Name',
+                'description' => 'Description',
+                'logo' => 'Logo',
+            ]
+        );
 
         if (isset($data['logo'])) {
             Storage::disk('public')->delete($contest->logo);
@@ -112,10 +136,19 @@ class ContestController extends Controller
      */
     public function destroy(Contest $contest)
     {
-        // TODO: validations
-        $contest->delete();
+        if($contest->contestants->count()){
+			return redirect('/contests')->with('error', 'Could not Delete Contest. Please make sure that there is no Contestant in this Contest.');
+		}
 
-        session()->forget('activeContest');
+		if($contest->judges->count()){
+			return redirect('/contests')->with('error', 'Could not Delete Contest. Please make sure that there is no Judge in this Contest.');
+		}
+
+		if($contest->categories->count()){
+			return redirect('/contests')->with('error', 'Could not Delete Contest. Please make sure that there is no Category in this Contest.');
+		}
+
+        $contest->delete();
 
         Storage::disk('public')->delete($contest->logo);
 
@@ -128,5 +161,4 @@ class ContestController extends Controller
 
         return redirect('/contests')->with('success', $contest->name . ' has been Activated.');
     }
-    
 }
