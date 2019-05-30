@@ -87,7 +87,7 @@
                         @endfor
 										</div> -->
 									@elseif(auth()->user()->role == 'judge')
-										<div class="pt-8 px-6">
+										{{-- <div class="pt-8 px-6">
 											<h5 class="mb-3 lg:mb-2 text-gray-500 uppercase tracking-wide font-bold text-sm lg:text-xs">{{ auth()->user()->contest->name }}</h5>
 											<ul>
 												@foreach(auth()->user()->contest_categories as $contest_category)
@@ -101,7 +101,7 @@
 													</li>
 												@endforeach
 											</ul>
-										</div>
+										</div> --}}
 									@endif
                 </div>
             </div>

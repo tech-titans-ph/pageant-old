@@ -3,16 +3,19 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Judge;
+use App\User;
 use App\Contest;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 
 class JudgeController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
+        
+        $this->middleware('adminUser');
     }
 
     /**
@@ -55,13 +58,16 @@ class JudgeController extends Controller
                 'description' => 'Description',
                 'picture' => 'Profile Picture',
             ]
-        );
-
+		);
+		
+        $data['password'] = Hash::make('password');
         $data['picture'] = request()->picture->store('profile_pictures', 'public');
         $data['contest_id'] = $contest->id;
-        
-        Judge::create($data);
+		$data['username'] = $data['name'];
+		$data['role'] = 'judge';
 
+		User::create($data);
+		
         return redirect('/contests/' . $contest->id . '?activeTab=Judges')->with('success', 'Judge has been Created.');
     }
 
@@ -71,7 +77,7 @@ class JudgeController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show(Contest $contest, Judge $judge)
+    public function show(Contest $contest, User $judge)
     {
         abort(404);
     }
@@ -82,7 +88,7 @@ class JudgeController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function edit(Contest $contest, Judge $judge)
+    public function edit(Contest $contest, User $judge)
     {
         return view('judges.edit', compact('contest', 'judge'));
     }
@@ -94,7 +100,7 @@ class JudgeController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Contest $contest, Judge $judge)
+    public function update(Request $request, Contest $contest, User $judge)
     {
         $data = request()->validate(
             [
@@ -126,11 +132,11 @@ class JudgeController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Contest $contest, Judge $judge)
+    public function destroy(Contest $contest, User $judge)
     {
-		if($judge->categories->count()){
-			return redirect('/contests/' . $contest->id . '?activeTab=Judges')->with('error', 'Could not Delete Judge. Please make sure that it is not yet added in any Category.');
-		}
+        if ($judge->categories->count()) {
+            return redirect('/contests/' . $contest->id . '?activeTab=Judges')->with('error', 'Could not Delete Judge. Please make sure that it is not yet added in any Category.');
+        }
 
         $judge->delete();
             

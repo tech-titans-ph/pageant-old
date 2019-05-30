@@ -11,7 +11,7 @@
 				<?php
 				$title = 'Dashboard';
 				if(auth()->user()->role == 'judge'){
-					$openScore = App\ContestCategory::first()->load([
+					/* $openScore = App\ContestCategory::first()->load([
 							'contestants' => function ($query) {
 									$query->where('status', 'scoring');
 							},
@@ -21,7 +21,7 @@
 					]);
 					if($openScore->contestants->count() && $openScore->judges->count()){
 						$title = 'Open for Scoring';
-					}
+					} */
 				}
 				?>
 				<div class="flex flex-col break-words bg-white border border-2 rounded shadow-md">
