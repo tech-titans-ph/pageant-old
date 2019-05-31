@@ -17,4 +17,9 @@ class Contestant extends Model
 	{
 		return $this->belongsToMany(ContestCategory::class, 'category_contestants');
 	}
+
+	public function category_contestants()
+	{
+		return $this->hasMany(CategoryContestant::class);
+	}
 }

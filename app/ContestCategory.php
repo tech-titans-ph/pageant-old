@@ -8,6 +8,11 @@ class ContestCategory extends Model
 {
     protected $guarded = [];
 
+	public function contest()
+	{
+		return $this->belongsTo(Contest::class);
+	}
+
     public function contestants()
     {
         return $this->belongsToMany(Contestant::class, 'category_contestants')->withPivot('id');

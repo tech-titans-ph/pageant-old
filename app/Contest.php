@@ -22,4 +22,9 @@ class Contest extends Model
     {
         return $this->belongsToMany(Category::class, 'contest_categories')->withPivot('id', 'percentage', 'status');
     }
+    
+    public function contest_categories()
+    {
+        return $this->hasMany(ContestCategory::class);
+    }
 }
