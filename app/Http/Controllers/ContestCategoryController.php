@@ -84,7 +84,7 @@ class ContestCategoryController extends Controller
         foreach ($contest->judges as $judge) {
             CategoryJudge::create([
                 'contest_category_id' => $contestCategory->id,
-                'judge_id' => $judge->id,
+                'user_id' => $judge->id,
             ]);
         }
 
@@ -108,7 +108,7 @@ class ContestCategoryController extends Controller
             ->except($addedContestants->pluck('pivot.contestant_id')->toArray());
 
         $addedJudges = $contestCategory->judges;
-        $removedJudges = $contest->judges->except($addedJudges->pluck('pivot.judge_id')->toArray());
+        $removedJudges = $contest->judges->except($addedJudges->pluck('pivot.user_id')->toArray());
 
         $criterias = $contestCategory->criterias;
 

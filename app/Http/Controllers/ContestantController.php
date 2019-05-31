@@ -34,6 +34,10 @@ class ContestantController extends Controller
      */
     public function create(Contest $contest)
     {
+		if($contest->categories()->whereIn('status', ['scoring', 'done'])->count()){
+			return redirect('/contests/' . $contest->id . '?activeTab=Contestants')->with('error', 'Could not Create a New Contestant. Please make sure that there is no Category that is already Started Scoring or Finished Scoring.');
+		}
+
         return view('contestants.create', compact('contest'));
     }
 

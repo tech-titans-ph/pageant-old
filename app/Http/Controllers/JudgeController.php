@@ -35,6 +35,10 @@ class JudgeController extends Controller
      */
     public function create(Contest $contest)
     {
+        if ($contest->categories()->whereIn('status', ['scoring', 'done'])->count()) {
+            return redirect('/contests/' . $contest->id . '?activeTab=Judges')->with('error', 'Could not Create a New Judge. Please make sure that there is no Category that is already Started Scoring or Finished Scoring.');
+        }
+
         return view('judges.create', compact('contest'));
     }
 
@@ -58,16 +62,16 @@ class JudgeController extends Controller
                 'description' => 'Description',
                 'picture' => 'Profile Picture',
             ]
-		);
-		
+        );
+        
         $data['password'] = Hash::make('password');
         $data['picture'] = request()->picture->store('profile_pictures', 'public');
         $data['contest_id'] = $contest->id;
-		$data['username'] = $data['name'];
-		$data['role'] = 'judge';
+        $data['username'] = $data['name'];
+        $data['role'] = 'judge';
 
-		User::create($data);
-		
+        User::create($data);
+        
         return redirect('/contests/' . $contest->id . '?activeTab=Judges')->with('success', 'Judge has been Created.');
     }
 

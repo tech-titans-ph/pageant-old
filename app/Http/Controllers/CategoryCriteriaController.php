@@ -13,9 +13,9 @@ class CategoryCriteriaController extends Controller
 {
     public function __construct()
     {
-		$this->middleware('auth');
-		
-		$this->middleware('adminUser');
+        $this->middleware('auth');
+        
+        $this->middleware('adminUser');
     }
 
     /**
@@ -35,6 +35,10 @@ class CategoryCriteriaController extends Controller
      */
     public function create(Contest $contest, ContestCategory $contestCategory)
     {
+        if ($contestCategory->status != 'que') {
+            return redirect('/contests/' . $contest->id . '/categories/' . $contestCategory->id . '?activeTab=Criterias')->with('error', 'Could not Add Criteria. Please make sure that the Category has not Started Scoring or Finished Scoring.');
+        }
+        
         $criterias = Criteria::orderBy('name')->get();
         
         return view('category-criterias.create', compact('contest', 'contestCategory', 'criterias'));
@@ -91,6 +95,10 @@ class CategoryCriteriaController extends Controller
      */
     public function edit(Contest $contest, ContestCategory $contestCategory, CategoryCriteria $categoryCriteria)
     {
+        if ($contestCategory->status != 'que') {
+            return redirect('/contests/' . $contest->id . '/categories/' . $contestCategory->id . '?activeTab=Criterias')->with('error', 'Could not Edit Criteria. Please make sure that the Category has not Started Scoring or Finished Scoring.');
+        }
+
         $criterias = Criteria::orderBy('name')->get();
         
         return view('category-criterias.edit', compact('contest', 'contestCategory', 'categoryCriteria', 'criterias'));
@@ -135,6 +143,10 @@ class CategoryCriteriaController extends Controller
      */
     public function destroy(Contest $contest, ContestCategory $contestCategory, CategoryCriteria $categoryCriteria)
     {
+        if ($contestCategory->status != 'que') {
+            return redirect('/contests/' . $contest->id . '/categories/' . $contestCategory->id . '?activeTab=Criterias')->with('error', 'Could not Remove Criteria. Please make sure that the Category has not Started Scoring or Finished Scoring.');
+        }
+
         $categoryCriteria->delete();
         
         return redirect('/contests/' . $contest->id . '/categories/' . $contestCategory->id . '?activeTab=Criterias')->with('success', 'Criteria has been Removed.');

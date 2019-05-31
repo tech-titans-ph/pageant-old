@@ -75,7 +75,7 @@
 									<div class="w-1/6">
 										<img src="{{ asset('storage/' . $judge->picture) }}" class="bg-center h-32 w-32 rounded-full border mx-auto">
 									</div>
-									<div class="w-4/6 px-4 pt-4">
+									<div class="w-3/6 px-4 pt-4">
 										<div class="mb-4 font-bold">
 											{{ $judge->name }}
 											<div class="inline-block bg-blue-500 text-blue-100 py-1 px-2 ml-4 rounded font-normal">Added</div>
@@ -84,7 +84,8 @@
 											{{ $judge->description }}
 										</div>
 									</div>
-									<div class="w-1/6 text-right whitespace-no-wrap">
+									<div class="w-2/6 text-right whitespace-no-wrap">
+										<a href="/judge/{{ $judge->pivot->id }}/login" class="btn">Score</a>
 										<form method="post" action="/contests/{{ $contest->id }}/categories/{{ $contestCategory->id }}/judges/{{ $judge->pivot->id }}" class="btn inline-block">
 											@csrf
 											@method('DELETE')

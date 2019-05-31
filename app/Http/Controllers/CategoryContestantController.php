@@ -12,9 +12,9 @@ class CategoryContestantController extends Controller
 {
     public function __construct()
     {
-		$this->middleware('auth');
-		
-		$this->middleware('adminUser');
+        $this->middleware('auth');
+        
+        $this->middleware('adminUser');
     }
 
     /**
@@ -25,6 +25,10 @@ class CategoryContestantController extends Controller
      */
     public function store(Contest $contest, ContestCategory $contestCategory, Contestant $contestant)
     {
+        if ($contestCategory->status != 'que') {
+            return redirect('/contests/' . $contest->id . '/categories/' . $contestCategory->id . '?activeTab=Contestants')->with('error', 'Could not Add Contestant. Please make sure that the Category has not Started Scoring or Finished Scoring.');
+        }
+
         $data = [
             'contest_category_id' => $contestCategory->id,
             'contestant_id' => $contestant->id,
@@ -43,6 +47,10 @@ class CategoryContestantController extends Controller
      */
     public function destroy(Contest $contest, ContestCategory $contestCategory, CategoryContestant $categoryContestant)
     {
+        if ($contestCategory->status != 'que') {
+            return redirect('/contests/' . $contest->id . '/categories/' . $contestCategory->id . '?activeTab=Contestants')->with('error', 'Could not Remove Contestant. Please make sure that the Category has not Started Scoring or Finished Scoring.');
+        }
+
         $categoryContestant->delete();
         
         return redirect('/contests/' . $contest->id . '/categories/' . $contestCategory->id . '?activeTab=Contestants')->with('success', 'Contestant has been Removed.');

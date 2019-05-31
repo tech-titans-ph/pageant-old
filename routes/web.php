@@ -56,7 +56,12 @@ Route::resource('/contests/{contest}/categories/{contestCategory}/criterias', 'C
     ->parameters([
         'categories' => 'contestCategory',
         'criterias' => 'categoryCriteria',
-    ]);
+	]);
+	
+Route::get('/judge/{categoryJudge}/login', 'JudgeScoreController@login');
+Route::get('/judge-score/{categoryContestant}', 'JudgeScoreController@edit');
+Route::patch('/judge-score/{categoryContestant', 'JudgeScoreController@update');
+Route::get('/judge/{categoryJudge', 'JudgeScoreController@show');
 
 Route::get('/temp', function () {
     /* $data = App\ContestCategory::first()->load([
