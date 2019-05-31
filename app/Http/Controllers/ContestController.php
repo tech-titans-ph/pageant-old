@@ -163,4 +163,5 @@ class ContestController extends Controller
 
         return redirect('/contests')->with('success', $contest->name . ' has been Activated.');
     }
+    
 }

@@ -126,4 +126,5 @@ class CriteriaController extends Controller
         
         return redirect('/criterias')->with('success', 'Criteria has been Deleted.');
     }
+    
 }

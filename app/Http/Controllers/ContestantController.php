@@ -7,6 +7,8 @@ use App\Contestant;
 use App\Contest;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
+use App\Rules\UniqueContestant;
+use Illuminate\Validation\Rule;
 
 class ContestantController extends Controller
 {
@@ -148,4 +150,5 @@ class ContestantController extends Controller
 
         return redirect('/contests/' . $contest->id . '?activeTab=Contestants')->with('success', 'Contestant has been Deleted.');
     }
+    
 }

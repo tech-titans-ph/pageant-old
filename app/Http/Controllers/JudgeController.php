@@ -148,4 +148,5 @@ class JudgeController extends Controller
 
         return redirect('/contests/' . $contest->id . '?activeTab=Judges')->with('success', 'Judge has been Deleted.');
     }
+    
 }
