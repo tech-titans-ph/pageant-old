@@ -15,9 +15,9 @@ class ContestCategoryController extends Controller
 {
     public function __construct()
     {
-		$this->middleware('auth');
-		
-		$this->middleware('adminUser');
+        $this->middleware('auth');
+        
+        $this->middleware('adminUser');
     }
 
     /**
@@ -205,34 +205,34 @@ class ContestCategoryController extends Controller
 
         $data = ['status' => 'scoring'];
 
-		$contestCategory->update($data);
-		
-		foreach($contestCategory->contestants as $contestant){
-			foreach($contestCategory->judges as $judge){
-				foreach($contestCategory->criterias as $criteria){
-					Score::create([
-						'score' => 0,
-						'contest_category_id' => $contestCategory->id,
-						'category_contestant_id' => $contestant->pivot->id,
-						'category_judge_id' => $judge->pivot->id,
-						'category_criteria_id' => $criteria->pivot->id,
-					]);
-				}
-			}
-		}
+        $contestCategory->update($data);
+        
+        foreach ($contestCategory->contestants as $contestant) {
+            foreach ($contestCategory->judges as $judge) {
+                foreach ($contestCategory->criterias as $criteria) {
+                    Score::create([
+                        'score' => 0,
+                        'contest_category_id' => $contestCategory->id,
+                        'category_contestant_id' => $contestant->pivot->id,
+                        'category_judge_id' => $judge->pivot->id,
+                        'category_criteria_id' => $criteria->pivot->id,
+                    ]);
+                }
+            }
+        }
 
         return redirect('/contests/' . $contest->id . '?activeTab=Categories')->with('success', 'Category has Started Scoring.');
     }
 
     public function done(Contest $contest, ContestCategory $contestCategory)
     {
-		if($contestCategory->status != 'scoring'){
-			return redirect('/contests/' . $contest->id . '?activeTab=Categories')->with('error', 'Could not Finish Scoring. Please make sure that this Category has Started Scoring.');
-		}
+        if ($contestCategory->status != 'scoring') {
+            return redirect('/contests/' . $contest->id . '?activeTab=Categories')->with('error', 'Could not Finish Scoring. Please make sure that this Category has Started Scoring.');
+        }
 
-		if($contestCategory->scores()->where('score', '<=', 0)->count()){
-			return redirect('/contests/' . $contest->id . '?activeTab=Categories')->with('error', 'Could not Finish Scoring. Please make sure that all Judges has Scores.');
-		}
+        if ($contestCategory->scores()->where('score', '<=', 0)->count()) {
+            return redirect('/contests/' . $contest->id . '?activeTab=Categories')->with('error', 'Could not Finish Scoring. Please make sure that all Judges has Scores.');
+        }
 
         $data = ['status' => 'done'];
 

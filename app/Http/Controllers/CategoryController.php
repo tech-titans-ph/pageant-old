@@ -10,9 +10,9 @@ class CategoryController extends Controller
 {
     public function __construct()
     {
-		$this->middleware('auth');
-		
-		$this->middleware('adminUser');
+        $this->middleware('auth');
+        
+        $this->middleware('adminUser');
     }
 
     /**
@@ -118,9 +118,9 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-		if($category->contest_categories->count()){
-			return redirect('/categories')->with('error', 'Could not Delete Category. Please make sure that there is no Contest related with this Category.');
-		}
+        if ($category->contest_categories->count()) {
+            return redirect('/categories')->with('error', 'Could not Delete Category. Please make sure that there is no Contest related with this Category.');
+        }
 
         $category->delete();
         

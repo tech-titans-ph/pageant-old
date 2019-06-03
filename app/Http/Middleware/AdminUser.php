@@ -15,10 +15,10 @@ class AdminUser
      */
     public function handle($request, Closure $next)
     {
-        if(auth()->user()->role != 'admin'){
-			auth()->logout();
-			return redirect('/login');
-		}
+        if (auth()->user()->role != 'admin') {
+            auth()->logout();
+            return redirect('/login');
+        }
 
         return $next($request);
     }

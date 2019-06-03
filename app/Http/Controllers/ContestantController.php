@@ -7,16 +7,14 @@ use App\Contestant;
 use App\Contest;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
-use App\Rules\UniqueContestant;
-use Illuminate\Validation\Rule;
 
 class ContestantController extends Controller
 {
     public function __construct()
     {
-		$this->middleware('auth');
-		
-		$this->middleware('adminUser');
+        $this->middleware('auth');
+        
+        $this->middleware('adminUser');
     }
 
     /**
@@ -26,7 +24,7 @@ class ContestantController extends Controller
      */
     public function index()
     {
-		abort(404);
+        abort(404);
     }
 
     /**
@@ -36,9 +34,9 @@ class ContestantController extends Controller
      */
     public function create(Contest $contest)
     {
-		if($contest->categories()->whereIn('status', ['scoring', 'done'])->count()){
-			return redirect('/contests/' . $contest->id . '?activeTab=Contestants')->with('error', 'Could not Create a New Contestant. Please make sure that there is no Category that is already Started Scoring or Finished Scoring.');
-		}
+        if ($contest->categories()->whereIn('status', ['scoring', 'done'])->count()) {
+            return redirect('/contests/' . $contest->id . '?activeTab=Contestants')->with('error', 'Could not Create a New Contestant. Please make sure that there is no Category that is already Started Scoring or Finished Scoring.');
+        }
 
         return view('contestants.create', compact('contest'));
     }
@@ -140,15 +138,14 @@ class ContestantController extends Controller
      */
     public function destroy(Contest $contest, Contestant $contestant)
     {
-		if($contestant->categories->count()){
-			return redirect('/contests/' . $contest->id . '?activeTab=Contestants')->with('error', 'Could not Delete Contestant. Please make sure that it is not yet added in any Category.');
-		}
+        if ($contestant->categories->count()) {
+            return redirect('/contests/' . $contest->id . '?activeTab=Contestants')->with('error', 'Could not Delete Contestant. Please make sure that it is not yet added in any Category.');
+        }
 
-		$contestant->delete();
-		
+        $contestant->delete();
+        
         Storage::disk('public')->delete($contestant->picture);
 
         return redirect('/contests/' . $contest->id . '?activeTab=Contestants')->with('success', 'Contestant has been Deleted.');
     }
-    
 }

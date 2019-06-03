@@ -8,10 +8,10 @@ class ContestCategory extends Model
 {
     protected $guarded = [];
 
-	public function contest()
-	{
-		return $this->belongsTo(Contest::class);
-	}
+    public function contest()
+    {
+        return $this->belongsTo(Contest::class);
+    }
 
     public function contestants()
     {
@@ -31,10 +31,10 @@ class ContestCategory extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
-	}
-	
-	public function scores()
-	{
-		return $this->hasMany(Score::class);
-	}
+    }
+    
+    public function scores()
+    {
+        return $this->hasMany(Score::class);
+    }
 }

@@ -12,5 +12,4 @@ class Criteria extends Model
     {
         return $this->hasMany(CategoryCriteria::class);
     }
-    
 }

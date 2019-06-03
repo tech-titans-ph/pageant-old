@@ -46,4 +46,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(ContestCategory::class, 'category_judges');
     }
+    
+    public function category_judges()
+    {
+        return $this->hasMany(CategoryJudge::class);
+    }
 }

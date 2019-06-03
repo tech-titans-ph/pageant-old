@@ -60,51 +60,5 @@ Route::resource('/contests/{contest}/categories/{contestCategory}/criterias', 'C
 	
 Route::get('/judge/{categoryJudge}/login', 'JudgeScoreController@login');
 Route::get('/judge-score/{categoryContestant}', 'JudgeScoreController@edit');
-Route::patch('/judge-score/{categoryContestant', 'JudgeScoreController@update');
+Route::patch('/judge-score/{score}', 'JudgeScoreController@update');
 Route::get('/judge/{categoryJudge', 'JudgeScoreController@show');
-
-Route::get('/temp', function () {
-    /* $data = App\ContestCategory::first()->load([
-        'contestants' => function ($query) {
-            $query->where('status', 'scoring');
-        },
-        'judges' => function ($query) {
-            $query->where('user_id', App\User::find(9)->id);
-        }
-    ]);
-
-    $response['data'] = $data;
-
-    if ($data->judges->count() && $data->contestants->count()) {
-        $response['message'] = 'Judge has Contestant to Score.';
-    } else {
-        $response['message'] = 'Judge has no Contestant to Score.';
-    }
-
-    return $response; */
-    
-    $contestCategory = App\ContestCategory::find(2);
-
-    $contest = App\Contest::find($contestCategory->contest_id);
-
-    $contest->contestants;
-
-    $data['contest'] = $contest;
-
-    $data['addedContestant'] = [];
-    foreach ($contest->contestants as $contestant) {
-        $contestCategory->contestants()->create([
-            'contestant_id' => $contestant->id,
-        ]);
-    }
-
-    $data['contestCategory'] = $contestCategory;
-
-    return $data;
-});
-
-\Event::listen('Illuminate\Database\Events\QueryExecuted', function ($query) {
-    Log::info(json_encode($query->sql));
-    Log::info(json_encode($query->bindings));
-    Log::info(json_encode($query->time));
-});

@@ -11,9 +11,9 @@ class UserController extends Controller
 {
     public function __construct()
     {
-		$this->middleware('auth');
-		
-		$this->middleware('adminUser');
+        $this->middleware('auth');
+        
+        $this->middleware('adminUser');
     }
 
     /**
@@ -59,8 +59,8 @@ class UserController extends Controller
             ]
         );
         
-		$data['password'] = Hash::make($data['password']);
-		$data['role'] = 'admin';
+        $data['password'] = Hash::make($data['password']);
+        $data['role'] = 'admin';
         
         User::create($data);
 
@@ -133,5 +133,4 @@ class UserController extends Controller
         
         return redirect('/users');
     }
-    
 }

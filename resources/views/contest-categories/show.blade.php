@@ -76,9 +76,15 @@
 										<img src="{{ asset('storage/' . $judge->picture) }}" class="bg-center h-32 w-32 rounded-full border mx-auto">
 									</div>
 									<div class="w-3/6 px-4 pt-4">
-										<div class="mb-4 font-bold">
+										<div class="mb-4 font-bold whitespace-no-wrap">
 											{{ $judge->name }}
 											<div class="inline-block bg-blue-500 text-blue-100 py-1 px-2 ml-4 rounded font-normal">Added</div>
+											<?php
+											$incompleteScore = $judge->category_judges()->where('contest_category_id', $contestCategory->id)->first()->scores()->where('score', '<=', 0)->count();
+											?>
+											@if(!$incompleteScore)
+												<div class="inline-block bg-green-300 text-green-900 py-1 px-2 ml-4 rounded font-normal">Completed Scoring</div>
+											@endif
 										</div>
 										<div class="italic">
 											{{ $judge->description }}

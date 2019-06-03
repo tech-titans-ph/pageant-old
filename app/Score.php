@@ -12,4 +12,14 @@ class Score extends Model
     {
         return $this->belongsTo(ContestCategory::class);
     }
+    
+    public function category_criteria()
+    {
+        return $this->belongsTo(CategoryCriteria::class);
+    }
+    
+    public function category_judge()
+    {
+        return $this->belongsTo(CategoryJudge::class);
+    }
 }

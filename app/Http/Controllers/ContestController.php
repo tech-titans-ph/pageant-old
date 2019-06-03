@@ -11,9 +11,9 @@ class ContestController extends Controller
 {
     public function __construct()
     {
-		$this->middleware('auth');
-		
-		$this->middleware('adminUser');
+        $this->middleware('auth');
+        
+        $this->middleware('adminUser');
     }
 
     /**
@@ -75,13 +75,13 @@ class ContestController extends Controller
      */
     public function show(Contest $contest)
     {
-		$activeTab = request()->query('activeTab');
+        $activeTab = request()->query('activeTab');
 
-		$status = [
-			'que' => 'Pending',
-			'scoring' => 'Scoring',
-			'done' => 'Completed',
-		];
+        $status = [
+            'que' => 'Pending',
+            'scoring' => 'Scoring',
+            'done' => 'Completed',
+        ];
 
         return view('contests.show', compact('contest', 'activeTab', 'status'));
     }
@@ -138,17 +138,17 @@ class ContestController extends Controller
      */
     public function destroy(Contest $contest)
     {
-        if($contest->contestants->count()){
-			return redirect('/contests')->with('error', 'Could not Delete Contest. Please make sure that there is no Contestant in this Contest.');
-		}
+        if ($contest->contestants->count()) {
+            return redirect('/contests')->with('error', 'Could not Delete Contest. Please make sure that there is no Contestant in this Contest.');
+        }
 
-		if($contest->judges->count()){
-			return redirect('/contests')->with('error', 'Could not Delete Contest. Please make sure that there is no Judge in this Contest.');
-		}
+        if ($contest->judges->count()) {
+            return redirect('/contests')->with('error', 'Could not Delete Contest. Please make sure that there is no Judge in this Contest.');
+        }
 
-		if($contest->categories->count()){
-			return redirect('/contests')->with('error', 'Could not Delete Contest. Please make sure that there is no Category in this Contest.');
-		}
+        if ($contest->categories->count()) {
+            return redirect('/contests')->with('error', 'Could not Delete Contest. Please make sure that there is no Category in this Contest.');
+        }
 
         $contest->delete();
 
@@ -163,5 +163,4 @@ class ContestController extends Controller
 
         return redirect('/contests')->with('success', $contest->name . ' has been Activated.');
     }
-    
 }

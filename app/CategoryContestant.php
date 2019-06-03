@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class CategoryContestant extends Model
 {
-	protected $guarded = [];
-	
-	public function contestant()
-	{
-		return $this->belongsTo(Contestant::class);
-	}
+    protected $guarded = [];
+    
+    public function contestant()
+    {
+        return $this->belongsTo(Contestant::class);
+    }
 }
