@@ -1,14 +1,19 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+
 class UserController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
+        
+        $this->middleware('adminUser');
     }
 
     /**
@@ -40,14 +45,25 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $data = request()->validate([
+        $data = request()->validate(
+            [
             'name' => ['required', 'max:25'],
-            'username' => ['required', 'max:255', 'unique:users', 'nospace'],
-            'password' => ['required', 'max:255', 'nospace', 'confirmed'],
-        ]);
-        $data['role'] = 'admin';
+            'username' => ['required', 'alpha_dash', 'max:255', 'unique:users'],
+            'password' => ['required', 'max:255', 'confirmed'],
+            ],
+            [],
+            [
+                'name' => 'Full Name',
+                'username' => 'User Name',
+                'password' => 'Password',
+            ]
+        );
+        
         $data['password'] = Hash::make($data['password']);
+        $data['role'] = 'admin';
+        
         User::create($data);
+
         return redirect('/users')->with('success', 'User has been Created.');
     }
 
@@ -83,11 +99,20 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $data = request()->validate([
-            'name' => ['required', 'min:3', 'max:255'],
-            'username' => ['required', 'min:3', 'max:255', 'nospace', Rule::unique('users')->ignore($user)],
-        ]);
+        $data = request()->validate(
+            [
+                'name' => ['required', 'min:3', 'max:255'],
+                'username' => ['required', 'alpha_dash', 'min:3', 'max:255', Rule::unique('users')->ignore($user)],
+            ],
+            [],
+            [
+                'name' => 'Full Name',
+                'username' => 'User Name',
+            ]
+        );
+        
         $user->update($data);
+        
         return redirect('/users')->with('success', 'User has been Edited.');
     }
 
@@ -105,7 +130,7 @@ class UserController extends Controller
             $user->delete();
             session()->flash('success', 'User has been Deleted.');
         }
+        
         return redirect('/users');
     }
-    
 }

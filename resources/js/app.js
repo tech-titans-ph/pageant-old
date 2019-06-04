@@ -27,6 +27,17 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
+import Tabs from './components/Tabs';
+import TabItem from './components/TabItem';
+import JudgeScore from './components/JudgeScore';
+import CriteriaScore from './components/CriteriaScore';
+
 const app = new Vue({
-    el: '#app',
+	el: '#app',
+	components: {
+		'tabs': Tabs,
+		'tab-item': TabItem,
+		'judge-score': JudgeScore,
+		'criteria-score': CriteriaScore,
+	}
 });

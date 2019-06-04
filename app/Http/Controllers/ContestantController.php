@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Contestant;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use App\Rules\UniqueContestant;
+use App\Contestant;
+use App\Contest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class ContestantController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
-
-        $this->middleware('activeContest');
+        
+        $this->middleware('adminUser');
     }
 
     /**
@@ -24,9 +24,7 @@ class ContestantController extends Controller
      */
     public function index()
     {
-        $contestants = Contestant::whereContestId(session('activeContest')->id)->get();
-
-        return view('contestants.index', compact('contestants'));
+        abort(404);
     }
 
     /**
@@ -34,9 +32,13 @@ class ContestantController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Contest $contest)
     {
-        return view('contestants.create');
+        if ($contest->categories()->whereIn('status', ['scoring', 'done'])->count()) {
+            return redirect('/contests/' . $contest->id . '?activeTab=Contestants')->with('error', 'Could not Create a New Contestant. Please make sure that there is no Category that is already Started Scoring or Finished Scoring.');
+        }
+
+        return view('contestants.create', compact('contest'));
     }
 
     /**
@@ -45,23 +47,30 @@ class ContestantController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, Contest $contest)
     {
-        $data = request()->validate([
-            'first_name' => ['required', 'min:3', 'max:255'],
-            'middle_name' => ['required', 'min:3', 'max:255'],
-            'last_name' => ['required', 'min:3', 'max:255'],
-            'address' => ['required', 'min:3'],
-            'picture' => ['required', 'file', 'image'],
-            'number' => ['required', 'numeric', new UniqueContestant],
-        ]);
+        $data = request()->validate(
+            [
+                'name' => ['required', 'min:3', 'max:255'],
+                'address' => ['required', 'min:3'],
+                'number' => ['required', 'numeric', Rule::unique('contestants')->where('contest_id', $contest->id)],
+                'picture' => ['required', 'file', 'image'],
+            ],
+            [],
+            [
+                'name' => 'Full Name',
+                'address' => 'Address',
+                'number' => 'Number',
+                'picture' => 'Profile Picture',
+            ]
+        );
 
         $data['picture'] = request()->picture->store('profile_pictures', 'public');
-        $data['contest_id'] = session('activeContest')['id'];
+        $data['contest_id'] = $contest->id;
 
         Contestant::create($data);
         
-        return redirect('/contestants')->with('success', 'Contestant has been Created.');
+        return redirect('/contests/' . $contest->id . '?activeTab=Contestants')->with('success', 'Contestant has been Created.');
     }
 
     /**
@@ -70,7 +79,7 @@ class ContestantController extends Controller
      * @param  \App\Contestant  $contestant
      * @return \Illuminate\Http\Response
      */
-    public function show(Contestant $contestant)
+    public function show(Contest $contest, Contestant $contestant)
     {
         abort(404);
     }
@@ -81,9 +90,9 @@ class ContestantController extends Controller
      * @param  \App\Contestant  $contestant
      * @return \Illuminate\Http\Response
      */
-    public function edit(Contestant $contestant)
+    public function edit(Contest $contest, Contestant $contestant)
     {
-        return view('contestants.edit', compact('contestant'));
+        return view('contestants.edit', compact('contest', 'contestant'));
     }
 
     /**
@@ -93,22 +102,23 @@ class ContestantController extends Controller
      * @param  \App\Contestant  $contestant
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Contestant $contestant)
+    public function update(Request $request, Contest $contest, Contestant $contestant)
     {
-        $data = request()->validate([
-            'first_name' => ['required', 'min:3', 'max:255'],
-            'middle_name' => ['required', 'min:3', 'max:255'],
-            'last_name' => ['required', 'min:3', 'max:255'],
-            'address' => ['required', 'min:3'],
-            'picture' => ['nullable', 'file', 'image'],
-            'number' => [
-                'required',
-                'numeric',
-                Rule::unique('contestants')->ignore($contestant)->where(function ($query) {
-                    return $query->whereContestId(session('activeContest')->id);
-                }),
+        $data = request()->validate(
+            [
+                'name' => ['required', 'min:3', 'max:255'],
+                'address' => ['required', 'min:3'],
+                'number' =>  ['required', 'numeric', Rule::unique('contestants')->ignore($contestant)->where('contest_id', $contest->id)],
+                'picture' => ['nullable', 'file', 'image'],
             ],
-        ]);
+            [],
+            [
+                'name' => 'Full Name',
+                'address' => 'Address',
+                'number' => 'Number',
+                'picture' => 'Profile Picture',
+            ]
+        );
 
         if (isset($data['picture'])) {
             Storage::disk('public')->delete($contestant->picture);
@@ -117,7 +127,7 @@ class ContestantController extends Controller
 
         $contestant->update($data);
 
-        return redirect('/contestants')->with('success', 'Contestant has been Edited.');
+        return redirect('/contests/' . $contest->id . '?activeTab=Contestants')->with('success', 'Contestant has been Edited.');
     }
 
     /**
@@ -126,12 +136,16 @@ class ContestantController extends Controller
      * @param  \App\Contestant  $contestant
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Contestant $contestant)
+    public function destroy(Contest $contest, Contestant $contestant)
     {
+        if ($contestant->categories->count()) {
+            return redirect('/contests/' . $contest->id . '?activeTab=Contestants')->with('error', 'Could not Delete Contestant. Please make sure that it is not yet added in any Category.');
+        }
+
         $contestant->delete();
+        
         Storage::disk('public')->delete($contestant->picture);
 
-        return redirect('/contestants')->with('success', 'Contestant has been Deleted.');
+        return redirect('/contests/' . $contest->id . '?activeTab=Contestants')->with('success', 'Contestant has been Deleted.');
     }
-    
 }
