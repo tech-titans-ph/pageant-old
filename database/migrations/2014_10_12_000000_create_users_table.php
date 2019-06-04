@@ -15,18 +15,18 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name');
-            $table->string('username')->unique();
-            $table->enum('role', ['admin', 'judge']);
             $table->string('email')->nullable()->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
-            $table->unsignedBigInteger('contest_id')->nullable();
-            $table->string('description')->nullable();
-            $table->string('picture')->nullable();
+
+			$table->enum('role', ['admin', 'judge']);
+			$table->string('username')->unique();
+			$table->string('name');
+			$table->string('description')->nullable();
+			$table->string('picture')->nullable();
+
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

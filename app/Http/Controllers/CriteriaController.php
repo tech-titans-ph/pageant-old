@@ -10,7 +10,9 @@ class CriteriaController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+		$this->middleware('auth');
+		
+		$this->middleware('adminUser');
     }
 
     /**
@@ -43,10 +45,17 @@ class CriteriaController extends Controller
      */
     public function store(Request $request)
     {
-        $data = request()->validate([
-            'name' => ['required', 'min:3', 'max:255', 'unique:criterias'],
-            'description' => ['required', 'min:3', 'max:255'],
-        ]);
+        $data = request()->validate(
+            [
+                'name' => ['required', 'min:3', 'max:255', 'unique:criterias'],
+                'description' => ['required', 'min:3', 'max:255'],
+            ],
+            [],
+            [
+                'name' => 'Name',
+                'description' => 'Description',
+            ]
+        );
 
         Criteria::create($data);
 
@@ -84,10 +93,17 @@ class CriteriaController extends Controller
      */
     public function update(Request $request, Criteria $criteria)
     {
-        $data = request()->validate([
-            'name' => ['required', 'min:3', 'max:255', Rule::unique('criterias')->ignore($criteria)],
-            'description' => ['required', 'min:3', 'max:255'],
-        ]);
+        $data = request()->validate(
+            [
+                'name' => ['required', 'min:3', 'max:255', Rule::unique('criterias')->ignore($criteria)],
+                'description' => ['required', 'min:3', 'max:255'],
+            ],
+            [],
+            [
+                'name' => 'Name',
+                'description' => 'Description',
+            ]
+        );
 
         $criteria->update($data);
 
@@ -102,6 +118,10 @@ class CriteriaController extends Controller
      */
     public function destroy(Criteria $criteria)
     {
+		if($criteria->category_criterias->count()){
+			return redirect('criterias')->with('error', 'Could not Delete Criteria. Please make sure that there is no Contest Category related with this Criteria.');
+		}
+
         $criteria->delete();
         
         return redirect('/criterias')->with('success', 'Criteria has been Deleted.');
