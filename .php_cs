@@ -12,11 +12,14 @@ $rules = [
     'no_multiline_whitespace_before_semicolons' => true,
     'no_short_echo_tag' => true,
     'not_operator_with_successor_space' => true,
+    'class_attributes_separation' => true,
+    'single_blank_line_before_namespace' => true,
 ];
 
 $excludes = [
     // add exclude project directory
-
+    'bootstrap',
+    'storage',
     'vendor',
     'node_modules',
 ];
