@@ -6,24 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class Score extends Model
 {
-    public function contest_category()
+    protected $guarded = [];
+    
+    public function category()
     {
         return $this->belongsTo(ContestCategory::class);
     }
-
-    public function contest_category_contestant()
+    
+    public function category_criteria()
     {
-        return $this->belongsTo(ContestCategoryContestant::class);
-    }
-
-    public function contest_category_criteria()
-    {
-        return $this->belongsTo(ContestCategoryCriteria::class);
-    }
-
-    public function contest_category_judge()
-    {
-        return $this->belongsTo(ContestCategoryJudge::class);
+        return $this->belongsTo(CategoryCriteria::class);
     }
     
+    public function category_judge()
+    {
+        return $this->belongsTo(CategoryJudge::class);
+    }
 }

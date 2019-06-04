@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 
-class ActiveContest
+class AdminUser
 {
     /**
      * Handle an incoming request.
@@ -15,9 +15,11 @@ class ActiveContest
      */
     public function handle($request, Closure $next)
     {
-        if(!session('activeContest')){
-            return redirect('/no-active-contest');
+        if (auth()->user()->role != 'admin') {
+            auth()->logout();
+            return redirect('/login');
         }
+
         return $next($request);
     }
 }

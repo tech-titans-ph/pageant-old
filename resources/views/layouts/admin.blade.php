@@ -23,12 +23,7 @@
                         <a href="{{ url('/') }}" class="text-lg font-semibold text-gray-100 no-underline">
                             {{ config('app.name') }}
                         </a>
-                    </div>
-                    @if(session('activeContest'))
-                        <div class="flex-1 text-left text-white">
-                            Active Contest: {{ session('activeContest')['name'] }}
-                        </div>
-                    @endif
+										</div>
                     <div class="flex-1 text-right">
                         @guest
                             <a class="no-underline hover:underline text-gray-300 text-sm p-3" href="{{ route('login') }}">{{ __('Login') }}</a>
@@ -53,36 +48,24 @@
 
         <div class="flex">
             <div id="sidebar" class="hidden lg:block w-1/5 lg:w-1/4 h-screen">
-                <div class="fixed z-40 bg-white h-screen w-1/5 lg:w-1/4 overflow-y-scroll mt-16 border-r-2" style="height: calc(100% - 4rem);">
-                    @if(session('activeContest'))
-                        <div class="pt-8 px-6">
-                            <h5 class="mb-3 lg:mb-2 text-gray-500 uppercase tracking-wide font-bold text-sm lg:text-xs">Contest: {{ session('activeContest')['name'] }}</h5>
-                            <ul>
-                                <li class="mb-3 lg:mb-1">
-                                    <a class="px-2 -mx-2 py-1 relative block hover:text-gray-900 text-gray-600 font-medium" href="/contestants">
-                                        <span class="relative">Contestants</span>
-                                    </a>
-                                </li>
-                                <li class="mb-3 lg:mb-1">
-                                    <a class="px-2 -mx-2 py-1 relative block hover:text-gray-900 text-gray-600 font-medium" href="/judges">
-                                        <span class="relative">Judges</span>
-                                    </a>
-                                </li>                            
-                                <li class="mb-3 lg:mb-1">
-                                    <a class="px-2 -mx-2 py-1 relative block hover:text-gray-900 text-gray-600 font-medium" href="/contest-categories">
-                                        <span class="relative">Contest Categories</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    @endif
-
+								<div class="fixed z-40 bg-white h-screen w-1/5 lg:w-1/4 overflow-y-scroll mt-16 border-r-2" style="height: calc(100% - 4rem);">
+									@if(auth())
+										<div class="pt-8 px-6">
+												<h5 class="mb-3 lg:mb-2 text-gray-500 uppercase tracking-wide font-bold text-sm lg:text-xs">Data</h5>
+												<ul>
+														<li class="mb-3 lg:mb-1">
+																<a class="px-2 -mx-2 py-1 relative block hover:text-gray-900 text-gray-600 font-medium" href="/contests">
+																		<span class="relative">Contests</span>
+																</a>
+														</li>
+												</ul>
+										</div>
                     <div class="pt-8 px-6">
                         <h5 class="mb-3 lg:mb-2 text-gray-500 uppercase tracking-wide font-bold text-sm lg:text-xs">Settings</h5>
                         <ul>
                             <li class="mb-3 lg:mb-1">
-                                <a class="px-2 -mx-2 py-1 relative block hover:text-gray-900 text-gray-600 font-medium" href="/contests">
-                                    <span class="relative">Contests</span>
+                                <a class="px-2 -mx-2 py-1 relative block hover:text-gray-900 text-gray-600 font-medium" href="/categories">
+                                    <span class="relative">Categories</span>
                                 </a>
                             </li>
                             <li class="mb-3 lg:mb-1">
@@ -102,7 +85,24 @@
                         @for($i=0; $i < 100; $i++)
                             <div class="bg-red-200 h-8 mb-2"></div>
                         @endfor
-                    </div> -->
+										</div> -->
+									@elseif(auth()->user()->role == 'judge')
+										{{-- <div class="pt-8 px-6">
+											<h5 class="mb-3 lg:mb-2 text-gray-500 uppercase tracking-wide font-bold text-sm lg:text-xs">{{ auth()->user()->contest->name }}</h5>
+											<ul>
+												@foreach(auth()->user()->contest_categories as $contest_category)
+													<li class="mb-3 lg:mb-1">
+														<a
+															class="px-2 -mx-2 py-1 relative block hover:text-gray-900 text-gray-600 font-medium"
+															href="/scores/{{ $contest_category->id }}"
+														>
+														<span class="relative">{{ $contest_category->name }}</span>
+														</a>
+													</li>
+												@endforeach
+											</ul>
+										</div> --}}
+									@endif
                 </div>
             </div>
 
