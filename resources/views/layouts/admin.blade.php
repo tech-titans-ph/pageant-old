@@ -80,28 +80,6 @@
                             </li>
                         </ul>
                     </div>
-
-                    <!-- <div class="pt-8 px-6">
-                        @for($i=0; $i < 100; $i++)
-                            <div class="bg-red-200 h-8 mb-2"></div>
-                        @endfor
-										</div> -->
-									@elseif(auth()->user()->role == 'judge')
-										{{-- <div class="pt-8 px-6">
-											<h5 class="mb-3 lg:mb-2 text-gray-500 uppercase tracking-wide font-bold text-sm lg:text-xs">{{ auth()->user()->contest->name }}</h5>
-											<ul>
-												@foreach(auth()->user()->contest_categories as $contest_category)
-													<li class="mb-3 lg:mb-1">
-														<a
-															class="px-2 -mx-2 py-1 relative block hover:text-gray-900 text-gray-600 font-medium"
-															href="/scores/{{ $contest_category->id }}"
-														>
-														<span class="relative">{{ $contest_category->name }}</span>
-														</a>
-													</li>
-												@endforeach
-											</ul>
-										</div> --}}
 									@endif
                 </div>
             </div>

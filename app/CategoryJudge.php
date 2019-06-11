@@ -15,6 +15,6 @@ class CategoryJudge extends Model
 
     public function judge()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Judge::class);
     }
 }

@@ -7,13 +7,16 @@
 			<a href="/contests/{{ $contest->id }}/categories/{{ $contestCategory->id }}?activeTab=Criterias">{{ $contestCategory->category->name }}</a>&nbsp;/&nbsp;
 			Edit Criteria
 		</h1>
+		@if (session()->has('error'))
+			<div class="alert error">{{ session('error') }}</div>
+		@endif
 		<form class="form" method="post" action="/contests/{{ $contest->id }}/categories/{{ $contestCategory->id }}/criterias/{{ $categoryCriteria->id }}">
 			@csrf
 			@method('PATCH')
-			<div class="form-group {{ $errors->has('criteria_id') ? 'has-error' : '' }}">
-				<label class="label">Criteria:</label>
-				<select name="criteria_id" class="input">
-					<option value="">-</option>
+			<label class="block mb-4 {{ $errors->has('criteria_id') ? 'has-error' : '' }}">
+				<span class="text-gray-700">Criteria</span>
+				<select name="criteria_id" class="form-select mt-1 block w-full">
+					<option value="">Select Criteria</option>
 					@foreach ($criterias as $criteria)
 						<?php
 						if(old('criteria_id')){
@@ -28,17 +31,17 @@
 				@error('criteria_id')
 					<div class="error">{{ $message }}</div>
 				@enderror
-			</div>
-			<div class="form-group {{ $errors->has('percentage') ? 'has-error' : '' }}">
-				<label class="label">Percentage:</label>
-				<input type="text" name="percentage" value="{{ old('percentage') ? old('percentage') : $categoryCriteria->percentage }}" class="input">
+			</label>
+			<label class="block mb-4 {{ $errors->has('percentage') ? 'has-error' : '' }}">
+				<span class="text-gray-700">Percentage</span>
+				<input type="text" name="percentage" value="{{ old('percentage') ? old('percentage') : $categoryCriteria->percentage }}" class="form-input mt-1 block w-full" placeholder="Enter Percentage">
 				@error('percentage')
 					<div class="error">{{ $message }}</div>
 				@enderror
-			</div>
-			<div class="form-group">
+			</label>
+			<label class="block">
 				<button type="submit">Edit</button>
-			</div>
+			</label>
 		</form>
 	</div>
 @endsection

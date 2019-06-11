@@ -11,5 +11,16 @@ class CategoryContestant extends Model
     public function contestant()
     {
         return $this->belongsTo(Contestant::class);
-    }
+	}
+	
+	public function scores()
+	{
+		return $this->hasMany(Score::class);
+	}
+
+	public function contestCategory()
+	{
+		return $this->belongsTo(ContestCategory::class);
+	}
+
 }

@@ -118,7 +118,7 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        if ($category->contest_categories->count()) {
+        if ($category->contestCategories->count()) {
             return redirect('/categories')->with('error', 'Could not Delete Category. Please make sure that there is no Contest related with this Category.');
         }
 

@@ -6,6 +6,7 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -23,8 +24,11 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::whereRole('admin')->get();
-        return view('users.index', compact('users'));
+		$users = User::all();
+		
+		$roles = ['admin' => 'Administrator', 'judge' => 'Judge'];
+
+        return view('users.index', compact('users', 'roles'));
     }
 
     /**
@@ -47,20 +51,29 @@ class UserController extends Controller
     {
         $data = request()->validate(
             [
-            'name' => ['required', 'max:25'],
-            'username' => ['required', 'alpha_dash', 'max:255', 'unique:users'],
-            'password' => ['required', 'max:255', 'confirmed'],
+                'name' => ['required', 'min:3', 'max:255'],
+                'username' => ['required', 'alpha_dash', 'max:255', 'unique:users'],
+                'password' => ['required', 'max:255', 'confirmed'],
+                'role' => ['required'],
+                'description' => ['max:255'],
+                'picture' => ['nullable', 'file', 'image'],
             ],
             [],
             [
                 'name' => 'Full Name',
                 'username' => 'User Name',
                 'password' => 'Password',
+                'role' => 'Role',
+                'description' => 'Description',
+                'picture' => 'Profile Picture',
             ]
         );
         
         $data['password'] = Hash::make($data['password']);
-        $data['role'] = 'admin';
+        
+        if (isset($data['picture'])) {
+            $data['picture'] = request()->picture->store('profile_pictures', 'public');
+        }
         
         User::create($data);
 
@@ -76,7 +89,6 @@ class UserController extends Controller
     public function show(User $user)
     {
         abort(404);
-        // return view('users.show', compact($user));
     }
 
     /**
@@ -103,14 +115,25 @@ class UserController extends Controller
             [
                 'name' => ['required', 'min:3', 'max:255'],
                 'username' => ['required', 'alpha_dash', 'min:3', 'max:255', Rule::unique('users')->ignore($user)],
+                'role' => ['required'],
+                'description' => ['max:255'],
+                'picture' => ['nullable', 'file', 'image'],
             ],
             [],
             [
                 'name' => 'Full Name',
                 'username' => 'User Name',
+                'role' => 'Role',
+                'description' => 'Description',
+                'picture' => 'Profile Picture'
             ]
         );
         
+        if (isset($data['picture'])) {
+            Storage::disk('public')->delete($user->picture);
+            $data['picture'] = request()->picture->store('profile_pictures', 'public');
+        }
+
         $user->update($data);
         
         return redirect('/users')->with('success', 'User has been Edited.');
@@ -124,10 +147,21 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+		if($user->judges->count()){
+			session()->flash('error', 'Could not Delete Judge User. Please make sure that this Judge is not included in Contest.');
+			return redirect('/users/' . $user->id . '/edit');
+		}
+		
         if ($user->id == auth()->id()) {
-            session()->flash('error', 'Could not Delete User. Please make sure that the User you are trying to Delete is not you.');
-        } else {
-            $user->delete();
+            session()->flash('error', 'Could not Delete Administrator User. Please make sure that the User you are trying to Delete is not you.');
+            return redirect('/users/' . $user->id . '/edit');
+        } else {			
+			$user->delete();
+			
+			if($user->picture){
+				Storage::disk('public')->delete($user->picture);
+			}
+
             session()->flash('success', 'User has been Deleted.');
         }
         

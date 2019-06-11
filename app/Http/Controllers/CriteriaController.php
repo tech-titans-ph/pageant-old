@@ -118,7 +118,7 @@ class CriteriaController extends Controller
      */
     public function destroy(Criteria $criteria)
     {
-		if($criteria->category_criterias->count()){
+		if($criteria->categoryCriterias->count()){
 			return redirect('criterias')->with('error', 'Could not Delete Criteria. Please make sure that there is no Contest Category related with this Criteria.');
 		}
 

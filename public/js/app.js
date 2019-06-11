@@ -1802,11 +1802,10 @@ __webpack_require__.r(__webpack_exports__);
       axios.patch('/judge-score/' + this.score_id, {
         score: this.scoreValue
       }).then(function (response) {
-        console.log(response.data.totalScore);
         _this.$parent.totalScore = response.data.totalScore;
       })["catch"](function (error) {
         console.log(error);
-      }); // this.$emit('score', this.score_id);
+      });
     }
   }
 });
@@ -1836,13 +1835,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-/* harmony default export */ __webpack_exports__["default"] = ({
-  mounted: function mounted() {
-    console.log('Component mounted.');
-  }
-});
+/* harmony default export */ __webpack_exports__["default"] = ({});
 
 /***/ }),
 
@@ -1977,7 +1970,7 @@ __webpack_require__.r(__webpack_exports__);
     contestantName: {
       required: true
     },
-    contestantAddress: {
+    contestantDescription: {
       required: true
     },
     contestantPicture: {
@@ -2001,8 +1994,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       totalPercentage: 0,
-      totalScore: 0,
-      tempVar: 0
+      totalScore: 0
     };
   },
   methods: {
@@ -19793,9 +19785,7 @@ var staticRenderFns = [
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "card-body" }, [
-              _vm._v(
-                "\n                    I'm an example component.\n                "
-              )
+              _vm._v("I'm an example component.")
             ])
           ])
         ])
@@ -19918,7 +19908,7 @@ var render = function() {
                         ]),
                         _vm._v(" "),
                         _c("div", { staticClass: "font-thin" }, [
-                          _vm._v(_vm._s(_vm.contestantAddress))
+                          _vm._v(_vm._s(_vm.contestantDescription))
                         ])
                       ])
                     ]
@@ -19986,59 +19976,48 @@ var render = function() {
           ])
         ]),
         _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "px-2",
-            on: {
-              score: function($event) {
-                return _vm.setTotalScore(_vm.index)
-              }
-            }
-          },
-          [
-            _c(
-              "button",
-              {
-                staticClass:
-                  "flex items-center items-around shadow bg-green-600 rounded-full py-1 px-1 text-white",
-                attrs: { type: "button" },
-                on: { click: _vm.nextContestant }
-              },
-              [
-                _c("span", { staticClass: "pl-4" }, [_vm._v("Submit")]),
-                _vm._v(" "),
-                _c(
-                  "svg",
-                  {
-                    staticClass: "ml-2",
-                    attrs: {
-                      xmlns: "http://www.w3.org/2000/svg",
-                      width: "24",
-                      height: "24",
-                      viewBox: "0 0 24 24",
-                      fill: "none",
-                      stroke: "currentColor",
-                      "stroke-width": "2",
-                      "stroke-linecap": "round",
-                      "stroke-linejoin": "round",
-                      "aria-hidden": "true"
-                    }
-                  },
-                  [
-                    _c("circle", { attrs: { cx: "12", cy: "12", r: "10" } }),
-                    _vm._v(" "),
-                    _c("polyline", { attrs: { points: "12 16 16 12 12 8" } }),
-                    _vm._v(" "),
-                    _c("line", {
-                      attrs: { x1: "8", y1: "12", x2: "16", y2: "12" }
-                    })
-                  ]
-                )
-              ]
-            )
-          ]
-        )
+        _c("div", { staticClass: "px-2" }, [
+          _c(
+            "button",
+            {
+              staticClass:
+                "flex items-center items-around shadow bg-green-600 rounded-full py-1 px-1 text-white",
+              attrs: { type: "button" },
+              on: { click: _vm.nextContestant }
+            },
+            [
+              _c("span", { staticClass: "pl-4" }, [_vm._v("Submit")]),
+              _vm._v(" "),
+              _c(
+                "svg",
+                {
+                  staticClass: "ml-2",
+                  attrs: {
+                    xmlns: "http://www.w3.org/2000/svg",
+                    width: "24",
+                    height: "24",
+                    viewBox: "0 0 24 24",
+                    fill: "none",
+                    stroke: "currentColor",
+                    "stroke-width": "2",
+                    "stroke-linecap": "round",
+                    "stroke-linejoin": "round",
+                    "aria-hidden": "true"
+                  }
+                },
+                [
+                  _c("circle", { attrs: { cx: "12", cy: "12", r: "10" } }),
+                  _vm._v(" "),
+                  _c("polyline", { attrs: { points: "12 16 16 12 12 8" } }),
+                  _vm._v(" "),
+                  _c("line", {
+                    attrs: { x1: "8", y1: "12", x2: "16", y2: "12" }
+                  })
+                ]
+              )
+            ]
+          )
+        ])
       ]
     )
   ])

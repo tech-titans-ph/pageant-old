@@ -23,7 +23,7 @@ class ContestController extends Controller
      */
     public function index()
     {
-        $contests = Contest::all();
+        $contests = Contest::latest()->get();
 
         return view('contests.index', compact('contests'));
     }
@@ -49,7 +49,7 @@ class ContestController extends Controller
         $data = request()->validate(
             [
             'name' => ['required', 'unique:contests'],
-            'description' => ['required'],
+            'description' => ['max:255'],
             'logo' => ['required', 'file', 'image'],
             ],
             [],
@@ -82,8 +82,21 @@ class ContestController extends Controller
             'scoring' => 'Scoring',
             'done' => 'Completed',
         ];
-
-        return view('contests.show', compact('contest', 'activeTab', 'status'));
+        
+        $scores = $contest->contestants()->with([
+            'categoryContestants.scores',
+            'categoryContestants.contestCategory.category',
+            'categoryContestants.contestCategory.judges',
+        ])->get()->sortByDesc(function ($value, $key) {
+			$contestantScore = 0;
+			foreach($value->categoryContestants as $categoryContestant){
+				$categoryScore = $categoryContestant->scores->sum('score') / $categoryContestant->contestCategory->judges->count();
+				$contestantScore += $categoryScore * ($categoryContestant->contestCategory->percentage / 100);
+			}
+			return $contestantScore;
+		});
+		
+        return view('contests.show', compact('contest', 'activeTab', 'status', 'scores'));
     }
 
     /**
@@ -109,7 +122,7 @@ class ContestController extends Controller
         $data = request()->validate(
             [
                 'name' => ['required', 'min:3', 'max:255', Rule::unique('contests')->ignore($contest)],
-                'description' => ['required', 'min:3', 'max:255'],
+                'description' => ['max:255'],
                 'logo' => ['nullable', 'file', 'image'],
             ],
             [],
@@ -155,12 +168,5 @@ class ContestController extends Controller
         Storage::disk('public')->delete($contest->logo);
 
         return redirect('/contests')->with('success', 'Contest has been Deleted.');
-    }
-
-    public function active(Contest $contest)
-    {
-        session(['activeContest' => $contest]);
-
-        return redirect('/contests')->with('success', $contest->name . ' has been Activated.');
     }
 }

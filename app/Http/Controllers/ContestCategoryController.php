@@ -99,7 +99,7 @@ class ContestCategoryController extends Controller
      */
     public function show(Contest $contest, ContestCategory $contestCategory)
     {
-        $addedContestants = $contestCategory->contestants()
+		$addedContestants = $contestCategory->contestants()
             ->orderBy('number')
             ->get();
             
@@ -112,9 +112,13 @@ class ContestCategoryController extends Controller
 
         $criterias = $contestCategory->criterias;
 
-        $activeTab = request()->query('activeTab');
+		$activeTab = request()->query('activeTab');
 
-        return view('contest-categories.show', compact('contest', 'contestCategory', 'addedContestants', 'removedContestants', 'addedJudges', 'removedJudges', 'criterias', 'activeTab'));
+		$scores = $contestCategory->categoryContestants()->with('scores')->get()->sortByDesc(function ($value, $key) {
+		    return $value->scores->sum('score');
+		});
+
+        return view('contest-categories.show', compact('contest', 'contestCategory', 'addedContestants', 'removedContestants', 'addedJudges', 'removedJudges', 'criterias', 'activeTab', 'scores'));
     }
 
     /**

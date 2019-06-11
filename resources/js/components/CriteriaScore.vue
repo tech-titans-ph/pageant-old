@@ -36,12 +36,10 @@ export default {
 			axios.patch('/judge-score/' + this.score_id, {
 				score: this.scoreValue,
 			}).then((response) => {
-				console.log(response.data.totalScore);
 				this.$parent.totalScore = response.data.totalScore;
 			}).catch((error) => {
 				console.log(error);
 			});
-			// this.$emit('score', this.score_id);
 		}
 	}
 };

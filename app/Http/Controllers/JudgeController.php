@@ -3,11 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\User;
+use App\Judge;
 use App\Contest;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Hash;
 
 class JudgeController extends Controller
 {
@@ -52,9 +49,7 @@ class JudgeController extends Controller
     {
         $data = request()->validate(
             [
-                'name' => ['required', 'min:3', 'max:255'],
-                'description' => ['required', 'min:3', 'max:255'],
-                'picture' => ['required', 'file', 'image'],
+                'user_id' => ['required', 'min:3', 'max:255'],
             ],
             [],
             [
@@ -64,11 +59,8 @@ class JudgeController extends Controller
             ]
         );
         
-        $data['password'] = Hash::make('password');
         $data['picture'] = request()->picture->store('profile_pictures', 'public');
         $data['contest_id'] = $contest->id;
-        $data['username'] = $data['name'];
-        $data['role'] = 'judge';
 
         User::create($data);
         
@@ -109,8 +101,7 @@ class JudgeController extends Controller
         $data = request()->validate(
             [
                 'name' => ['required', 'min:3', 'max:255'],
-                'description' => ['required', 'min:3', 'max:255'],
-                'picture' => ['nullable', 'file', 'image'],
+                
             ],
             [],
             [
@@ -119,11 +110,6 @@ class JudgeController extends Controller
                 'picture' => 'Profile Picture',
             ]
         );
-
-        if (isset($data['picture'])) {
-            Storage::disk('public')->delete($judge->picture);
-            $data['picture'] = request()->picture->store('profile_pictures', 'public');
-        }
 
         $judge->update($data);
 

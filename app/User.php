@@ -38,18 +38,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
     
-    public function contest()
+    public function judges()
     {
-        return $this->belongsTo(Contest::class);
-    }
-
-    public function categories()
-    {
-        return $this->belongsToMany(ContestCategory::class, 'category_judges');
-    }
-    
-    public function category_judges()
-    {
-        return $this->hasMany(CategoryJudge::class);
+        return $this->hasMany(Judge::class);
     }
 }

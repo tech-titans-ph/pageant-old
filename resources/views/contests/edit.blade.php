@@ -5,34 +5,33 @@
 		<form method="post" action="/contests/{{ $contest->id }}" enctype="multipart/form-data" class="form">
 			@csrf
 			@method('PATCH')
-			<div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
-				<label class="label">Name:</label>
-				<input type="text" name="name" value="{{ old('name') ? old('name') : $contest->name }}" class="input">
+			<label class="block mb-4 {{ $errors->has('name') ? 'has-error' : '' }}">
+				<span class="text-gray-700">Name</span>
+				<input type="text" name="name" value="{{ old('name') ? old('name') : $contest->name }}" class="form-input mt-1 block w-full" placeholder="Enter Contest Name">
 				@error('name')
 					<div class="error">{{ $message }}</div>
 				@enderror
-			</div>
-			<div class="form-group {{ $errors->has('description') ? 'has-error' : '' }}">
-				<label class="label">Description:</label>
-				<input type="text" name="description" class="input" value="{{ old('description') ? old('description') : $contest->description }}">
+			</label>
+			<label class="block mb-4 {{ $errors->has('description') ? 'has-error' : '' }}">
+				<span class="text-gray-700">Description</span>
+				<textarea name="description" class="form-textarea mt-1 block w-full resize-none" rows="3" placeholder="Enter Contest Description">{{ old('description') ? old('description') : $contest->description }}</textarea>
 				@error('description')
 					<div class="error">{{ $message }}</div>
 				@enderror
-			</div>
-			<div class="form-group">
+			</label>
+			<label class="block mb-4">
 				<img src="{{ asset('storage/' . $contest->logo ) }}" class="bg-contain bg-center h-32 w-32 p-4 rounded border">
-			</div>
-			<div class="form-group {{ $errors->has('logo') ? 'has-error' : '' }}">
-				<label class="label">Change Logo:</label>
-				<input type="file" name="logo" class="input">
+			</label>
+			<label class="block mb-4 {{ $errors->has('logo') ? 'has-error' : '' }}">
+				<span class="text-gray-700">Change Logo</span>
+				<input type="file" name="logo" class="form-input mt-1 block w-full">
 				@error('logo')
 					<div class="error">{{ $message }}</div>
 				@enderror
-			</div>
-			<div class="form-group">
+			</label>
+			<label class="block">
 				<button type="submit">Edit</button>
-			</div>
+			</label>
 		</form>
 	</div>
-	
 @endsection

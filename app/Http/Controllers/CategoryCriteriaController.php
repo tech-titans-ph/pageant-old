@@ -95,10 +95,6 @@ class CategoryCriteriaController extends Controller
      */
     public function edit(Contest $contest, ContestCategory $contestCategory, CategoryCriteria $categoryCriteria)
     {
-        if ($contestCategory->status != 'que') {
-            return redirect('/contests/' . $contest->id . '/categories/' . $contestCategory->id . '?activeTab=Criterias')->with('error', 'Could not Edit Criteria. Please make sure that the Category has not Started Scoring or Finished Scoring.');
-        }
-
         $criterias = Criteria::orderBy('name')->get();
         
         return view('category-criterias.edit', compact('contest', 'contestCategory', 'categoryCriteria', 'criterias'));
@@ -113,6 +109,10 @@ class CategoryCriteriaController extends Controller
      */
     public function update(Request $request, Contest $contest, ContestCategory $contestCategory, CategoryCriteria $categoryCriteria)
     {
+		if ($contestCategory->status != 'que') {
+		    return redirect('/contests/' . $contest->id . '/categories/' . $contestCategory->id . '/criterias/' . $categoryCriteria->id . '/edit')->with('error', 'Could not Edit Criteria. Please make sure that the Category has not Started Scoring or Finished Scoring.');
+		}
+
         $data = request()->validate(
             [
                 'criteria_id' => [

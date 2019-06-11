@@ -17,7 +17,7 @@ class CreateContestantsTable extends Migration
             $table->bigIncrements('id');
             
             $table->string('name');
-            $table->string('address');
+            $table->string('description');
             $table->unsignedSmallInteger('number');
             $table->string('picture');
 

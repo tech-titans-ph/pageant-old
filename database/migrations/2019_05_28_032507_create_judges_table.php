@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCategoryJudgesTable extends Migration
+class CreateJudgesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,13 @@ class CreateCategoryJudgesTable extends Migration
      */
     public function up()
     {
-        Schema::create('category_judges', function (Blueprint $table) {
+        Schema::create('judges', function (Blueprint $table) {
 			$table->bigIncrements('id');
-			
-			$table->unsignedBigInteger('contest_category_id');
-			$table->foreign('contest_category_id')->references('id')->on('contest_categories');
 
-			$table->unsignedBigInteger('judge_id');
-			$table->foreign('judge_id')->references('id')->on('judges');
+			$table->unsignedBigInteger('user_id');
+			$table->foreign('user_id')->references('id')->on('users');
+			$table->unsignedBigInteger('contest_id');
+            $table->foreign('contest_id')->references('id')->on('contests');
 
             $table->timestamps();
         });
@@ -33,6 +32,6 @@ class CreateCategoryJudgesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('category_judges');
+        Schema::dropIfExists('judges');
     }
 }

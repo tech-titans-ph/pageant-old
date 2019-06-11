@@ -55,45 +55,16 @@ ul.list>li:not(:last-child) {
   margin-right: auto;
 }
 
-.form>.form-group:not(:last-child) {
-  margin-bottom: 1.5rem;
-}
-
-.label {
-  display: block;
-  font-size: 0.875rem;
-  margin-bottom: 0.5rem;
-}
-
-.input {
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
-  line-height: 1.25;
-  width: 16rem;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  padding-left: 0.75rem;
-  padding-right: 0.75rem;
-  border-radius: 0.25rem;
-  border-width: 1px;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-}
-
-.input:focus {
-  outline: 0;
-  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
-}
-
-.has-error .input {
-  border-color: #f56565;
+.has-error .form-input,
+.has-error .form-select {
+  border-color: #feb2b2;
 }
 
 .has-error .error {
   color: #f56565;
   font-size: 0.75rem;
   font-style: italic;
-  margin-top: 1rem;
+  margin-top: 0.25rem;
 }
 
 a.btn,
@@ -133,12 +104,14 @@ button.link {
 }
 
 .alert {
-  display: inline-block;
-  width: auto;
+  display: block;
+  width: 50%;
   padding: 1rem;
   border-left-width: 4px;
   border-radius: 0.25rem;
   margin-bottom: 1rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .alert.success {

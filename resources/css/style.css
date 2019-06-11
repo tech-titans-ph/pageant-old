@@ -36,28 +36,13 @@ ul.list>li:not(:last-child) {
   @apply block bg-white max-w-lg p-4 rounded border mx-auto;
 }
 
-.form>.form-group:not(:last-child) {
-  @apply mb-6;
-}
-
-.label {
-  @apply block text-sm mb-2;
-}
-
-.input {
-  @apply appearance-none leading-tight w-64 py-2 px-3 rounded border shadow;
-}
-
-.input:focus {
-  @apply outline-none shadow-outline;
-}
-
-.has-error .input {
-  @apply border-red-500;
+.has-error .form-input,
+.has-error .form-select {
+  @apply border-red-300;
 }
 
 .has-error .error {
-  @apply text-red-500 text-xs italic mt-4;
+  @apply text-red-500 text-xs italic mt-1;
 }
 
 a.btn,
@@ -80,7 +65,7 @@ button.link {
 }
 
 .alert {
-  @apply inline-block w-auto p-4 border-l-4 rounded mb-4;
+  @apply block w-1/2 p-4 border-l-4 rounded mb-4 mx-auto;
 }
 
 .alert.success {

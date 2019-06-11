@@ -14,15 +14,16 @@
 					<li>
 						<div class="flex">
 							<div class="flex-grow pr-4">
-								<div class="mb-4">{{ $criteria->name }}</div>
+								<div class="mb-4">
+									<a href="/criterias/{{ $criteria->id }}/edit">{{ $criteria->name }}</a>
+								</div>
 								<div class="italic">{{ $criteria->description }}</div>
 							</div>
 							<div class="flex-shrink whitespace-no-wrap">
-								<a href="/criterias/{{ $criteria->id }}/edit" class="btn">Edit</a>
 								<form class="inline-block" method="post" action="/criterias/{{ $criteria->id }}">
 									@csrf
 									@method('DELETE')
-									<button type="submit">Delete</button>
+									<button type="submit" class="bg-red-600 hover:bg-red-600">Delete</button>
 								</form>
 							</div>
 						</div>

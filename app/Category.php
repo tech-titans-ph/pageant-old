@@ -13,7 +13,7 @@ class Category extends Model
         return $this->belongsToMany(Contest::class, 'contest_categories');
     }
     
-    public function contest_categories()
+    public function contestCategories()
     {
         return $this->hasMany(ContestCategory::class);
     }

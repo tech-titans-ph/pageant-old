@@ -9,33 +9,33 @@
 		<form method="post" action="/contests/{{ $contest->id }}/judges/{{ $judge->id }}" class="form" enctype="multipart/form-data">
 			@csrf
 			@method('PATCH')
-			<div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
-				<label class="label">Full Name:</label>
-				<input type="text" name="name" class="input" value="{{ old('name') ? old('name') : $judge->name }}">
+			<label class="block mb-4 {{ $errors->has('name') ? 'has-error' : '' }}">
+				<span class="text-gray-700">Full Name</span>
+				<input type="text" name="name" class="form-input mt-1 block w-full" value="{{ old('name') ? old('name') : $judge->name }}" placeholder="Enter Judge Full Name">
 				@error('name')
 					<div class="error">{{ $message }}</div>
 				@enderror
-			</div>
-			<div class="form-group {{ $errors->has('description') ? 'has-error' : '' }}">
-				<label class="label">Description:</label>
-				<input type="text" name="description" class="input" value="{{ old('description') ? old('description') : $judge->description }}">
+			</label>
+			<label class="block mb-4 {{ $errors->has('description') ? 'has-error' : '' }}">
+				<span class="text-gray-700">Description</span>
+				<textarea name="description" class="form-textarea mt-1 block w-full resize-none" rows="3" placeholder="Enter Judge Description">{{ old('description') ? old('description') : $judge->description }}</textarea>
 				@error('description')
 					<div class="error">{{ $message }}</div>
 				@enderror
-			</div>
-			<div class="form-group">
+			</label>
+			<label class="block mb-4">
 				<img src="{{ asset('storage/' . $judge->picture) }}" class="block rounded-full h-16 w-16 border">
-			</div>
-			<div class="form-group {{ $errors->has('picture') ? 'has-error' : '' }}">
-				<label class="label">Change Profile Picture:</label>
-				<input type="file" name="picture" class="input">
+			</label>
+			<label class="block mb-4 {{ $errors->has('picture') ? 'has-error' : '' }}">
+				<span class="text-gray-700">Change Profile Picture</span>
+				<input type="file" name="picture" class="form-input mt-1 block w-full">
 				@error('picture')
 					<div class="error">{{ $message }}</div>
 				@enderror
-			</div>
-			<div class="form-group">
+			</label>
+			<label class="block mb-4">
 				<button type="submit">Edit</button>
-			</div>
+			</label>
 		</form>
 	</div>
 @endsection

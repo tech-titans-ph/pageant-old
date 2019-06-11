@@ -52,14 +52,14 @@ class ContestantController extends Controller
         $data = request()->validate(
             [
                 'name' => ['required', 'min:3', 'max:255'],
-                'address' => ['required', 'min:3'],
+                'description' => ['required', 'min:3'],
                 'number' => ['required', 'numeric', Rule::unique('contestants')->where('contest_id', $contest->id)],
                 'picture' => ['required', 'file', 'image'],
             ],
             [],
             [
                 'name' => 'Full Name',
-                'address' => 'Address',
+                'description' => 'Description',
                 'number' => 'Number',
                 'picture' => 'Profile Picture',
             ]
@@ -107,14 +107,14 @@ class ContestantController extends Controller
         $data = request()->validate(
             [
                 'name' => ['required', 'min:3', 'max:255'],
-                'address' => ['required', 'min:3'],
+                'description' => ['required', 'min:3'],
                 'number' =>  ['required', 'numeric', Rule::unique('contestants')->ignore($contestant)->where('contest_id', $contest->id)],
                 'picture' => ['nullable', 'file', 'image'],
             ],
             [],
             [
                 'name' => 'Full Name',
-                'address' => 'Address',
+                'description' => 'Description',
                 'number' => 'Number',
                 'picture' => 'Profile Picture',
             ]

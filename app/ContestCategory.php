@@ -36,5 +36,10 @@ class ContestCategory extends Model
     public function scores()
     {
         return $this->hasMany(Score::class);
-    }
+	}
+	
+	public function categoryContestants()
+	{
+		return $this->hasMany(CategoryContestant::class);
+	}
 }

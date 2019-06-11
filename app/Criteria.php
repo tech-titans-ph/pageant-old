@@ -8,7 +8,7 @@ class Criteria extends Model
 {
     protected $guarded = [];
     
-    public function category_criterias()
+    public function categoryCriterias()
     {
         return $this->hasMany(CategoryCriteria::class);
     }

@@ -38,7 +38,7 @@
               >#{{ contestantNumber }}</div>
               <div>
                 <div class="font-bold">{{ contestantName }}</div>
-                <div class="font-thin">{{ contestantAddress }}</div>
+                <div class="font-thin">{{ contestantDescription }}</div>
               </div>
             </div>
             <a
@@ -74,7 +74,7 @@
           <span class="font-semibold">{{ totalScore }}/{{ totalPercentage }}</span>
         </div>
       </div>
-      <div class="px-2" @score="setTotalScore(index)">
+      <div class="px-2">
         <button @click="nextContestant"
           type="button"
           class="flex items-center items-around shadow bg-green-600 rounded-full py-1 px-1 text-white"
@@ -121,7 +121,7 @@ export default {
     contestantName: {
       required: true
     },
-    contestantAddress: {
+    contestantDescription: {
       required: true
     },
     contestantPicture: {
@@ -144,7 +144,6 @@ export default {
 		return {
 			totalPercentage: 0,
 			totalScore: 0,
-			tempVar: 0,
 		}
 	},
   methods: {

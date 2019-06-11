@@ -15,18 +15,24 @@
 			@forelse ($users as $user)
 					<li>
 						<div class="flex">
-							<div class="flex-grow pr-4">
-								<div class="mb-2">{{ $user->username }}</div>
-								<div class="italic">{{ $user->name }}</div>
+							<div class="flex-shrink self-center whitespace-no-wrap pr-4 ">
+								<div class="mb-2">
+									<a href="/users/{{ $user->id }}/edit">{{ $user->username }}</a>
+								</div>
+								<div class="italic mb-2">{{ $roles[$user->role] }}</div>
+								<div>{{ $user->name }}</div>
 							</div>
-							<div class="flex-shrink whitespace-no-wrap">
-								<a href="/users/{{ $user->id }}/edit" class="btn">Edit</a>
-								<form method="post" action="/users/{{ $user->id }}" class="inline-block">
-									@csrf
-									@method('DELETE')
-									<button type="submit">Delete</a>
-								</form>
-							</div>
+							@if($user->picture)
+								<div class="flex-none pr-4">
+									<img src="{{ asset('storage/' . $user->picture) }}" class="block rounded-full h-32 w-32 border">
+								</div>
+							@endif
+							<div class="flex-grow self-center">{{ $user->description }}</div>
+							@if($user->role == 'judge')
+								<div class="flex-none pl-4">
+									<a href="/juge/login/{{ $user->id }}" class="btn">Login</a>
+								</div>
+							@endif
 						</div>
 					</li>
 			@empty

@@ -15,10 +15,10 @@ class JudgeScoreController extends Controller
     {
         $this->middleware('adminUser')->only(['login']);
 
-        $this->middleware('judgeUser')->only(['edit']);
+        $this->middleware('judgeUser')->only(['index', 'show', 'edit']);
     }
     
-    public function login(CategoryJudge $categoryJudge)
+    public function categoryJudgeLogin(CategoryJudge $categoryJudge)
     {
         $judge = User::find($categoryJudge->user_id);
 
@@ -27,12 +27,27 @@ class JudgeScoreController extends Controller
         auth()->login($judge);
         
         return redirect('/judge-score/' . $categoryContestant->pivot->id);
-    }
+	}
+
+	public function judgeLogin(User $user)
+	{
+		auth()->login($user);
+
+		return redirect('/judge');
+	}
+	
+	public function selectContest()
+	{
+		return 'judge will select contest';
+	}
+
+	public function show()
+	{
+		return 'judge will select category';
+	}
     
     public function edit(CategoryContestant $categoryContestant)
     {
-        // return $categoryContestant->contestant->number;
-
         $contestCategory = ContestCategory::find($categoryContestant->contest_category_id);
 
         $categoryJudge = $contestCategory->judges()->where('user_id', auth()->id())->firstOrFail();

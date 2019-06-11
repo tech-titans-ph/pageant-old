@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class AdminUser
 {
@@ -16,8 +17,7 @@ class AdminUser
     public function handle($request, Closure $next)
     {
         if (auth()->user()->role != 'admin') {
-            auth()->logout();
-            return redirect('/login');
+			throw new AuthorizationException('You are not allowed to access this page.');
         }
 
         return $next($request);

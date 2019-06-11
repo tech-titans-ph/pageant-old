@@ -9,10 +9,10 @@
 		<form class="form" method="post" action="/contests/{{ $contest->id }}/categories/{{ $contestCategory->id }}">
 			@csrf
 			@method('PATCH')
-			<div class="form-group {{ $errors->has('category_id') ? 'has-error' : '' }}">
-				<label class="label">Category:</label>
-				<select name="category_id" class="input">
-					<option value="">-</option>
+			<label class="block mb-4 {{ $errors->has('category_id') ? 'has-error' : '' }}">
+				<span class="text-gray-700">Category</span>
+				<select name="category_id" class="form-select mt-1 block w-full">
+					<option value="">Select Category</option>
 					<?php
 					$selected = old('category_id') ? old('category_id') : $contestCategory->category_id;
 					?>
@@ -23,17 +23,17 @@
 				@error('category_id')
 					<div class="error">{{ $message }}</div>
 				@enderror
-			</div>
-			<div class="form-group {{ $errors->has('percentage') ? 'has-error' : '' }}">
-				<label class="label">Percentage:</label>
-				<input type="text" name="percentage" value="{{ old('percentage') ? old('percentage') : $contestCategory->percentage }}" class="input">
+			</label>
+			<label class="block mb-4 {{ $errors->has('percentage') ? 'has-error' : '' }}">
+				<span class="text-gray-700">Percentage</span>
+				<input type="text" name="percentage" value="{{ old('percentage') ? old('percentage') : $contestCategory->percentage }}" class="form-input mt-1 block w-full" placeholder="Enter Percentage">
 				@error('percentage')
 					<div class="error">{{ $message }}</div>
 				@enderror
-			</div>
-			<div class="form-group">
+			</label>
+			<label class="block">
 				<button type="submit">Edit</button>
-			</div>
+			</label>
 		</form>
 	</div>
 @endsection

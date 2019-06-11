@@ -8,37 +8,37 @@
 		</h1>
 		<form method="post" action="/contests/{{ $contest->id }}/contestants" class="form" enctype="multipart/form-data">
 			@csrf
-			<div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
-				<label class="label">Full Name:</label>
-				<input type="text" name="name" value="{{ old('name') }}" class="input">
+			<label class="block mb-4 {{ $errors->has('name') ? 'has-error' : '' }}">
+				<span class="text-gray-700">Full Name</span>
+				<input type="text" name="name" value="{{ old('name') }}" class="form-input mt-1 block w-full" placeholder="Enter Contestant Full Name">
 				@error('name')
 					<div class="error">{{ $message }}</div>
 				@enderror
-			</div>
-			<div class="form-group {{ $errors->has('address') ? 'has-error' : '' }}">
-				<label class="label">Address:</label>
-				<input type="text" name="address" value="{{ old('address') }}" class="input">
-				@error('address')
+			</label>
+			<label class="block mb-4 {{ $errors->has('description') ? 'has-error' : '' }}">
+				<span class="text-gray-700">Description</span>
+				<textarea name="description" class="form-textarea mt-1 block w-full resize-none" rows="3" placeholder="Enter Contestant Description">{{ old('description') }}</textarea>
+				@error('description')
 					<div class="error">{{ $message }}</div>
 				@enderror
-			</div>
-			<div class="form-group {{ $errors->has('number') ? 'has-error' : '' }}">
-				<label class="label">Number:</label>
-				<input type="text" name="number" value="{{ old('number') }}" class="input">
+			</label>
+			<label class="block mb-4 {{ $errors->has('number') ? 'has-error' : '' }}">
+				<span class="text-gray-700">Number</span>
+				<input type="text" name="number" value="{{ old('number') }}" class="form-input mt-1 block w-full" placeholder="Enter Contestant Number">
 				@error('number')
 					<div class="error">{{ $message }}</div>
 				@enderror
-			</div>
-			<div class="form-group {{ $errors->has('picture') ? 'has-error' : '' }}">
-				<label class="label">Profile Picture:</label>
-				<input type="file" name="picture" class="input">
+			</label>
+			<label class="block mb-4 {{ $errors->has('picture') ? 'has-error' : '' }}">
+				<span class="text-gray-700">Profile Picture</span>
+				<input type="file" name="picture" class="form-input mt-1 block w-full">
 				@error('picture')
 					<div class="error">{{ $message }}</div>
 				@enderror
-			</div>
-			<div class="form-group">
+			</label>
+			<label class="block mb-4">
 				<button type="submit">Create</button>
-			</div>
+			</label>
 		</form>
 	</div>
 @endsection
