@@ -8,29 +8,13 @@
 						{{ session('status') }}
 					</div>
 				@endif
-				<?php
-				$title = 'Dashboard';
-				if(auth()->user()->role == 'judge'){
-					/* $openScore = App\ContestCategory::first()->load([
-							'contestants' => function ($query) {
-									$query->where('status', 'scoring');
-							},
-							'judges' => function ($query) {
-									$query->where('user_id', auth()->id());
-							}
-					]);
-					if($openScore->contestants->count() && $openScore->judges->count()){
-						$title = 'Open for Scoring';
-					} */
-				}
-				?>
 				<div class="flex flex-col break-words bg-white border border-2 rounded shadow-md">
 					<div class="font-semibold bg-gray-200 text-gray-700 py-3 px-6 mb-0">
-						{{ $title }}
+						Dashboard
 					</div>
 					<div class="w-full p-6">
 						<p class="text-gray-700">
-							@if($title == 'Open for Scoring')
+							@if(auth()->check() && auth()->user()->isA('judge'))
 								<div class="flex mb-4">
 									<div class="w-1/4 mr-4">
 										<img src="{{ asset('storage/' . $openScore->contestants[0]->picture ) }}" class="block rounded-full h-24 w-24 border mx-auto mb-3">

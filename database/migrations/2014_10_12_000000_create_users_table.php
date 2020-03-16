@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateUsersTable extends Migration
 {
@@ -20,14 +20,13 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->rememberToken();
 
-			$table->enum('role', ['admin', 'judge']);
-			$table->string('username')->unique();
-			$table->string('name');
-			$table->string('description')->nullable();
-			$table->string('picture')->nullable();
+            $table->string('username')->unique();
+            $table->string('name');
+            $table->string('description')->nullable();
+            $table->string('picture')->nullable();
 
-			$table->timestamps();
-			$table->SoftDeletes();
+            $table->timestamps();
+            $table->SoftDeletes();
         });
     }
 

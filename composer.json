@@ -13,7 +13,8 @@
         "laravel-frontend-presets/tailwindcss": "^1.0",
         "laravel/framework": "5.8.*",
         "laravel/tinker": "^1.0",
-        "nothingworks/blade-svg": "^0.3.1"
+        "nothingworks/blade-svg": "^0.3.3",
+        "silber/bouncer": "v1.0.0-rc.6"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",

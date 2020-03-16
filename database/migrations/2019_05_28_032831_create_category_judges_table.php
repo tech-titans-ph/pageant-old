@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateCategoryJudgesTable extends Migration
 {
@@ -14,13 +14,12 @@ class CreateCategoryJudgesTable extends Migration
     public function up()
     {
         Schema::create('category_judges', function (Blueprint $table) {
-			$table->bigIncrements('id');
-			
-			$table->unsignedBigInteger('contest_category_id');
-			$table->foreign('contest_category_id')->references('id')->on('contest_categories');
+            $table->bigIncrements('id');
 
-			$table->unsignedBigInteger('judge_id');
-			$table->foreign('judge_id')->references('id')->on('judges');
+            $table->unsignedBigInteger('category_id');
+            $table->unsignedBigInteger('judge_id');
+
+            $table->boolean('completed')->default(0);
 
             $table->timestamps();
         });

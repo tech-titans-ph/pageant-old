@@ -8,6 +8,8 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+		<meta name="mobile-web-app-capable" content="yes">
+
     <title>{{ config('app.name') }}</title>
 
     <!-- Styles -->
@@ -26,8 +28,8 @@
                     </div>
                     <div class="flex-1 text-right">
                         @guest
-                            <a class="no-underline hover:underline text-gray-300 text-sm p-3" href="{{ route('login') }}">{{ __('Login') }}</a>
-                            <a class="no-underline hover:underline text-gray-300 text-sm p-3" href="{{ route('register') }}">{{ __('Register') }}</a>
+                            {{-- <a class="no-underline hover:underline text-gray-300 text-sm p-3" href="{{ route('login') }}">{{ __('Login') }}</a> --}}
+                            {{-- <a class="no-underline hover:underline text-gray-300 text-sm p-3" href="{{ route('register') }}">{{ __('Register') }}</a> --}}
                         @else
                             <span class="text-gray-300 text-sm pr-4">{{ Auth::user()->name }}</span>
 
@@ -67,6 +69,9 @@
 
     <!-- Scripts -->
     <script src="{{ mix('js/app.js') }}"></script>
+		<script>
+			document.body.requestFullscreen();
+		</script>
 </body>
 
 </html>

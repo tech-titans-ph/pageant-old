@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateCriteriasTable extends Migration
 {
@@ -15,9 +15,11 @@ class CreateCriteriasTable extends Migration
     {
         Schema::create('criterias', function (Blueprint $table) {
             $table->bigIncrements('id');
-            
-            $table->string('name')->unique();
-            $table->string('description');
+
+            $table->unsignedBigInteger('category_id');
+
+            $table->string('name');
+            $table->unsignedTinyInteger('percentage');
 
             $table->timestamps();
         });

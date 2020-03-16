@@ -2,28 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        return view('home');
+        if (auth()->check()) {
+            if (auth()->user()->isAn('admin')) {
+                return redirect(route('admin.contests.index'));
+            }
+
+            if (auth()->user()->isA('judge')) {
+                return redirect(route('judge.categories.index'));
+            }
+        }
+
+        return redirect(route('login'));
     }
-    
 }

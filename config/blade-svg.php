@@ -11,7 +11,7 @@ return [
     | path is then resolved internally. Please ensure that this value is
     | set relative to the root directory and not the public directory.
     |
-    */
+     */
 
     'svg_path' => 'resources/svg',
 
@@ -24,7 +24,7 @@ return [
     | files, you may specify a path to a spritesheet. The SVG images are
     | extracted from this spritesheet to be rendered out individually.
     |
-    */
+     */
 
     'spritesheet_path' => 'resources/svg/spritesheet.svg',
 
@@ -37,7 +37,7 @@ return [
     | would rather reference an external URL, you can specify the path to
     | the external spritesheet to use with this configuration option.
     |
-    */
+     */
 
     'spritesheet_url' => '',
 
@@ -51,7 +51,7 @@ return [
     |
     | Default: true
     |
-    */
+     */
 
     'inline' => true,
 
@@ -66,7 +66,7 @@ return [
     |
     | Default: ''
     |
-    */
+     */
 
     'class' => '',
 ];

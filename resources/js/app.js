@@ -8,6 +8,8 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
+window.swal = require('sweetalert2');
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -27,17 +29,16 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-import Tabs from './components/Tabs';
-import TabItem from './components/TabItem';
-import JudgeScore from './components/JudgeScore';
-import CriteriaScore from './components/CriteriaScore';
+Vue.component('tabs', require('./components/Tabs.vue').default);
+Vue.component('tab-item', require('./components/TabItem.vue').default);
+Vue.component('input-picker', require('./components/InputPicker.vue').default);
+Vue.component('judge-score', require('./components/JudgeScore.vue').default);
+Vue.component('criteria-score', require('./components/CriteriaScore.vue').default);
+Vue.component('alert-judge', require('./components/AlertJudge.vue').default);
+Vue.component('alert-admin', require('./components/AlertAdmin.vue').default);
+Vue.component('live-score', require('./components/LiveScore.vue').default);
+Vue.component('judge-category', require('./components/JudgeCategory.vue').default);
 
 const app = new Vue({
 	el: '#app',
-	components: {
-		'tabs': Tabs,
-		'tab-item': TabItem,
-		'judge-score': JudgeScore,
-		'criteria-score': CriteriaScore,
-	}
 });

@@ -1,3 +1,37 @@
-# Pageant
-hello world
-the quick brown fox jumps over a lazy dog.
+# ContestHub
+## Installation
+
+1. Open terminal and execute the following commands
+
+   - `copy .env.example .env`
+   - `composer install`
+   - `npm install && npm run dev`
+
+2. Open `.env` file and set the following configurations
+
+   `APP_NAME="CreatvStudio - ContestHub"`
+   
+   `#put the ip address of your pc plus the port eg: 192.168.0.1:8000`
+   `APP_URL=`
+   
+   `DB_DATABASE=`
+   `DB_USERNAME=`
+   `DB_PASSWORD=`
+   
+   `FILESYSTEM_DRIVER=public`
+
+3. Restart your apache, php, and mysql server
+
+4. Go again to terminal and execute the following commands
+
+   * `php artisan key generate`
+   * `php artisan storage:link`
+   * `php artisan migrate:fresh --seed`
+
+## Operation
+
+1. Go to terminal and execute the following commands
+   * `php artisan serve --host [your pc's ip address] eg: 192.168.0.1`
+2. From your tablet, open google chrome browser and put the ip address that is being served with the given port eg: `192.168.0.1:8000`
+3. Tap the ellipsis icon and select Add to Home screen.
+4. Close google chrome browser and run the created web app icon from your tablet's home screen
