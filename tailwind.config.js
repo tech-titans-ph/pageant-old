@@ -1,9 +1,11 @@
 module.exports = {
-	theme: {
-		extend: {},
-	},
-	variants: {},
-	plugins: [
-		require('@tailwindcss/custom-forms'),
-	]
-}
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['Poppins', 'Times New Roman'],
+      },
+    },
+  },
+  variants: {},
+  plugins: [require('@tailwindcss/custom-forms')],
+};
