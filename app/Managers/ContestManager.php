@@ -2,18 +2,9 @@
 
 namespace App\Managers;
 
-use App\Category;
-use App\CategoryContestant;
-use App\CategoryJudge;
-use App\Contest;
-use App\Contestant;
-use App\Criteria;
-use App\CriteriaScore;
-use App\Judge;
-use App\User;
+use App\{Category, CategoryContestant, CategoryJudge, Contest, Contestant, Criteria, CriteriaScore, Judge, User};
 use Illuminate\Http\File;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\{Hash, Storage};
 use Illuminate\Support\Str;
 
 class ContestManager
@@ -184,9 +175,7 @@ class ContestManager
 
     public function addCriteria(Category $category, $data)
     {
-        $criteria = $category->criterias()->create($data);
-
-        return $criteria;
+        return $category->criterias()->create($data);
     }
 
     public function editCriteria(Criteria $criteria, $data)
@@ -260,12 +249,10 @@ class ContestManager
             'category_contestant_id' => $categoryContestant->id,
         ]);
 
-        $criteriaScore = $categoryScore->criteriaScores()->updateOrCreate(
+        return $categoryScore->criteriaScores()->updateOrCreate(
             ['criteria_id' => $criteria->id],
             ['score' => $score]
         );
-
-        return $criteriaScore;
     }
 
     public function completeScore(CategoryJudge $categoryJudge)
@@ -299,6 +286,7 @@ class ContestManager
     {
         return $contest->contestants()->get()->map(function ($contestant) {
             $totalPercentage = 0;
+            $contestant['categoryTotals'] = 0;
 
             foreach ($contestant->categoryContestants as $categoryContestant) {
                 $total = 0;
@@ -306,6 +294,8 @@ class ContestManager
                 foreach ($categoryContestant->categoryScores as $categoryScore) {
                     $total += $categoryScore->criteriaScores()->sum('score');
                 }
+
+                $contestant['categoryTotals'] += $total;
 
                 $averageTotal = $total / $categoryContestant->category->categoryJudges()->count();
                 $averagePercentage = ($averageTotal / $categoryContestant->category->criterias()->sum('percentage')) * $categoryContestant->category->percentage;
@@ -316,7 +306,8 @@ class ContestManager
             $contestant['totalPercentage'] = $totalPercentage;
 
             return $contestant;
-        })->sortByDesc('totalPercentage');
+        })/* ->sortByDesc('totalPercentage'); */
+            ->sortByDesc('categoryTotals');
     }
 
     public function createCategoryFromScore($category, $data)
