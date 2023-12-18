@@ -8,15 +8,15 @@
 				:class="[categoryJudge.class, 'block border-t p-6']"
 			>
 				<div class="flex">
-					<h1 class="text-lg font-bold flex-1 mb-4">{{ categoryJudge.category.name }}</h1>
+					<h1 class="flex-1 mb-4 text-lg font-bold">{{ categoryJudge.category.name }}</h1>
 					<div class="flex-1 text-right">
-						<span class="font-bold text-xl">{{ categoryJudge.category.percentage }}%</span>
+						<span class="text-xl font-bold">{{ categoryJudge.category.percentage }} points</span>
 					</div>
 				</div>
 				<div class="italic font-medium">{{ categoryJudge.title }}</div>
 			</a>
 		</template>
-		<div v-else class="border-t p-6">There are no available categories for you in this contest.</div>
+		<div v-else class="p-6 border-t">There are no available categories for you in this contest.</div>
 	</div>
 </template>
 <script>

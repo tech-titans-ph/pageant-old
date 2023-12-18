@@ -40,7 +40,7 @@ class CreateCategoryFromScoreRequest extends FormRequest
     {
         return [
             'name' => 'Name',
-            'percentage' => 'Percentage',
+            'percentage' => 'Points',
             'contestant_count' => 'Number of Contestants',
         ];
     }

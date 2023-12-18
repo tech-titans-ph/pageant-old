@@ -38,7 +38,7 @@ class UpdateCategoryRequest extends FormRequest
     {
         return [
             'name' => 'Name',
-            'percentage' => 'Percentage',
+            'percentage' => 'Points',
         ];
     }
 }

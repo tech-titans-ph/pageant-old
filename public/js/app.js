@@ -23679,14 +23679,15 @@ var render = function() {
                     _c("div", { staticClass: "flex" }, [
                       _c(
                         "h1",
-                        { staticClass: "text-lg font-bold flex-1 mb-4" },
+                        { staticClass: "flex-1 mb-4 text-lg font-bold" },
                         [_vm._v(_vm._s(categoryJudge.category.name))]
                       ),
                       _vm._v(" "),
                       _c("div", { staticClass: "flex-1 text-right" }, [
-                        _c("span", { staticClass: "font-bold text-xl" }, [
+                        _c("span", { staticClass: "text-xl font-bold" }, [
                           _vm._v(
-                            _vm._s(categoryJudge.category.percentage) + "%"
+                            _vm._s(categoryJudge.category.percentage) +
+                              " points"
                           )
                         ])
                       ])
@@ -23698,7 +23699,7 @@ var render = function() {
                   ]
                 )
               })
-            : _c("div", { staticClass: "border-t p-6" }, [
+            : _c("div", { staticClass: "p-6 border-t" }, [
                 _vm._v(
                   "There are no available categories for you in this contest."
                 )
@@ -23990,15 +23991,15 @@ var render = function() {
                   ),
                   _c("br"),
                   _vm._v(
-                    "\n\t\t\t\t\t" + _vm._s(criteria.percentage) + "%\n\t\t\t\t"
+                    "\n\t\t\t\t\t" +
+                      _vm._s(criteria.percentage) +
+                      " points\n\t\t\t\t"
                   )
                 ]
               )
             }),
             _vm._v(" "),
-            _c("th", { staticClass: "p-1 border-r" }, [_vm._v("Total")]),
-            _vm._v(" "),
-            _c("th", { staticClass: "p-1" }, [_vm._v("Percentage")])
+            _c("th", { staticClass: "p-1 border-r" }, [_vm._v("Total")])
           ],
           2
         )
@@ -24030,7 +24031,7 @@ var render = function() {
                             "td",
                             {
                               staticClass:
-                                "p-1 border-r align-top text-center w-40",
+                                "w-40 p-1 text-center align-top border-r",
                               staticStyle: { "min-width": "10rem" },
                               attrs: {
                                 rowspan:
@@ -24040,7 +24041,7 @@ var render = function() {
                             [
                               _c("img", {
                                 staticClass:
-                                  "object-cover object-center w-32 h-32 rounded-full border mx-auto",
+                                  "object-cover object-center w-32 h-32 mx-auto border rounded-full",
                                 attrs: {
                                   src: categoryContestant.contestant.picture_url
                                 }
@@ -24056,7 +24057,7 @@ var render = function() {
                           _c(
                             "td",
                             {
-                              staticClass: "p-1 border-r align-top w-auto",
+                              staticClass: "w-auto p-1 align-top border-r",
                               attrs: {
                                 rowspan:
                                   categoryContestant.categoryJudges.length
@@ -24099,7 +24100,7 @@ var render = function() {
                         "td",
                         {
                           key: criteriaScore.id + "-criteria-score",
-                          staticClass: "p-1 border-r text-center"
+                          staticClass: "p-1 text-center border-r"
                         },
                         [_vm._v(_vm._s(criteriaScore.score))]
                       )
@@ -24107,43 +24108,13 @@ var render = function() {
                     _vm._v(" "),
                     _c(
                       "td",
-                      { staticClass: "p-1 border-r text-center font-medium" },
+                      { staticClass: "p-1 font-medium text-center border-r" },
                       [_vm._v(_vm._s(categoryJudge.total))]
-                    ),
-                    _vm._v(" "),
-                    _c("td", { staticClass: "p-1 text-center font-medium" }, [
-                      _vm._v(_vm._s(_vm._f("round")(categoryJudge.percentage)))
-                    ])
+                    )
                   ],
                   2
                 )
               }),
-              _vm._v(" "),
-              _c(
-                "tr",
-                {
-                  key: categoryContestant.id + "-average",
-                  staticClass: "border-t"
-                },
-                [
-                  _c(
-                    "td",
-                    {
-                      staticClass: "p-1 border-r font-bold text-right",
-                      attrs: { colspan: _vm.criterias.length - 0 + 4 }
-                    },
-                    [_vm._v("Average:")]
-                  ),
-                  _vm._v(" "),
-                  _c("td", { staticClass: "p-1 font-bold text-center" }, [
-                    _vm._v(
-                      _vm._s(
-                        _vm._f("round")(categoryContestant.averagePercentage)
-                      )
-                    )
-                  ])
-                ]
-              ),
               _vm._v(" "),
               _c(
                 "tr",

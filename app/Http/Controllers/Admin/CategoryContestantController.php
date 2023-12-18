@@ -22,7 +22,7 @@ class CategoryContestantController extends Controller
 
         $categoryContestant = $category->categoryContestants()->findOrFail($categoryContestant);
 
-        abort_unless('done' === $category->status, 403, 'Could not acess contestant score. Please make sure that this category has finished scoring.');
+        abort_unless($category->status === 'done', 403, 'Could not acess contestant score. Please make sure that this category has finished scoring.');
 
         $total = 0;
 
@@ -33,14 +33,14 @@ class CategoryContestantController extends Controller
         $averageTotal = $total / $category->categoryJudges()->count();
         $averagePercentage = ($averageTotal / $category->criterias()->sum('percentage')) * $category->percentage;
 
-        return view('admin.category-contestants.show', compact('contest', 'category', 'categoryContestant', 'averageTotal', 'averagePercentage'));
+        return view('admin.category-contestants.show', compact('contest', 'category', 'categoryContestant', 'total', 'averageTotal', 'averagePercentage'));
     }
 
     public function store(Contest $contest, $category, CreateCategoryContestantRequest $request)
     {
         $category = $contest->categories()->findOrFail($category);
 
-        if ('done' === $category->status) {
+        if ($category->status === 'done') {
             return redirect()
                 ->route('admin.contests.categories.show', ['contest' => $contest->id, 'category' => $category->id, 'activeTab' => 'Contestants'])
                 ->with('error', 'Could not add Contestant. Please make sure that this category is not yet finished scoring.');

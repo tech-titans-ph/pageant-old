@@ -36,7 +36,7 @@ class CreateCategoryRequest extends FormRequest
     {
         return [
             'name' => 'Name',
-            'percentage' => 'Percentage',
+            'percentage' => 'Points',
         ];
     }
 }

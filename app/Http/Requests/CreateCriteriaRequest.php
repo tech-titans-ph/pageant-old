@@ -38,7 +38,7 @@ class CreateCriteriaRequest extends FormRequest
     {
         return [
             'name' => 'Name',
-            'percentage' => 'Percentage',
+            'percentage' => 'Points',
         ];
     }
 }

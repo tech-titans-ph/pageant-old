@@ -8,10 +8,10 @@
 					<th class="p-1 border-r" v-for="(criteria) in criterias" :key="criteria.id + '-criteria'">
 						{{ criteria.name }}
 						<br />
-						{{ criteria.percentage }}%
+						{{ criteria.percentage }} points
 					</th>
 					<th class="p-1 border-r">Total</th>
-					<th class="p-1">Percentage</th>
+					<!-- <th class="p-1">Percentage</th> -->
 				</tr>
 			</thead>
 			<tbody>
@@ -23,18 +23,18 @@
 					>
 						<template v-if="i <= 0">
 							<td
-								class="p-1 border-r align-top text-center w-40"
+								class="w-40 p-1 text-center align-top border-r"
 								style="min-width: 10rem;"
 								:rowspan="categoryContestant.categoryJudges.length"
 							>
 								<img
 									:src="categoryContestant.contestant.picture_url"
-									class="object-cover object-center w-32 h-32 rounded-full border mx-auto"
+									class="object-cover object-center w-32 h-32 mx-auto border rounded-full"
 								/>
 								Top {{ (top - 0) + 1 }}
 							</td>
 							<td
-								class="p-1 border-r align-top w-auto"
+								class="w-auto p-1 align-top border-r"
 								:rowspan="categoryContestant.categoryJudges.length"
 							>
 								<span
@@ -46,17 +46,17 @@
 						</template>
 						<td class="p-1 border-r">{{ categoryJudge.judge.user.name}}</td>
 						<td
-							class="p-1 border-r text-center"
+							class="p-1 text-center border-r"
 							v-for="criteriaScore in categoryJudge.criteriaScores"
 							:key="criteriaScore.id + '-criteria-score'"
 						>{{ criteriaScore.score }}</td>
-						<td class="p-1 border-r text-center font-medium">{{ categoryJudge.total }}</td>
-						<td class="p-1 text-center font-medium">{{ categoryJudge.percentage | round }}</td>
+						<td class="p-1 font-medium text-center border-r">{{ categoryJudge.total }}</td>
+						<!-- <td class="p-1 font-medium text-center">{{ categoryJudge.percentage | round }}</td> -->
 					</tr>
-					<tr class="border-t" :key="categoryContestant.id + '-average'">
-						<td class="p-1 border-r font-bold text-right" :colspan="(criterias.length - 0) + 4">Average:</td>
+					<!-- <tr class="border-t" :key="categoryContestant.id + '-average'">
+						<td class="p-1 font-bold text-right border-r" :colspan="(criterias.length - 0) + 4">Average:</td>
 						<td class="p-1 font-bold text-center">{{ categoryContestant.averagePercentage | round }}</td>
-					</tr>
+					</tr> -->
 					<tr class="border-t" :key="categoryContestant.id + '-divider'">
 						<td class="p-1" :colspan="(criterias.length - 0) + 5">&nbsp;</td>
 					</tr>

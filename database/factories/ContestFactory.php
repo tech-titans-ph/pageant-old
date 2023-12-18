@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 $factory->define(Contest::class, function (Faker $faker) {
     return [
         'name' => $faker->unique()->company,
-        'description' => $faker->catchPhrase,
+        'description' => '$faker->catchPhrase',
         'logo' => Storage::put('logos', UploadedFile::fake()->image('logo.png')),
     ];
 });

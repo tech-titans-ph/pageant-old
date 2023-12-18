@@ -10,7 +10,7 @@
 	])
 		@pageHeader() Edit Criteria @endpageHeader
 	@endbreadcrumb
-		
+
 	<div class="flex">
 		<div class="w-3/4">
 			@card
@@ -29,8 +29,8 @@
 								placeholder="Enter name of criteria..."
 						></input-picker>
 					@endformField
-					@formField(['label' => 'Percentage', 'error' => 'percentage'])
-						<input type="text" name="percentage" class="form-input block w-full" value="{{ old('percentage') ?? $criteria->percentage }}" placeholder="Enter percentage of criteria...">
+					@formField(['label' => 'Points', 'error' => 'percentage'])
+						<input type="text" name="percentage" class="block w-full form-input" value="{{ old('percentage') ?? $criteria->percentage }}" placeholder="Enter points of criteria...">
 					@endformField
 					@button(['type' => 'Submit']) Edit @endbutton
 				</form>

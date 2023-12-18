@@ -287,6 +287,7 @@ class ContestManager
             $averageTotal = $total / $category->categoryJudges()->count();
             $averagePercentage = ($averageTotal / $category->criterias()->sum('percentage')) * $category->percentage;
 
+            $categoryContestant['total'] = $total;
             $categoryContestant['averageTotal'] = $averageTotal;
             $categoryContestant['averagePercentage'] = $averagePercentage;
 
