@@ -48,7 +48,7 @@
                 <td class="p-2 font-medium text-gray-700">
                   {{ $categoryJudge->judge->user->name }}
                 </td>
-                @foreach ($categoryContestant->categoryScores()->where('category_judge_id', $categoryJudge->id)->first()->criteriaScores()->get() as $criteriaScore)
+                @foreach ($categoryContestant->categoryScores()->where('category_judge_id', $categoryJudge->id)->first()->criteriaScores()->orderBy('criteria_id')->get() as $criteriaScore)
                   <td class="p-2 text-3xl font-medium text-center text-gray-700">
                     {{ $criteriaScore->score }}
                   </td>
