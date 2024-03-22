@@ -52,7 +52,7 @@
 										</td>
 									@endif
 									<td class="p-1 border">{{ $categoryJudge->judge->user->name }}</td>
-									@foreach($categoryContestant->categoryScores()->where('category_judge_id', $categoryJudge->id)->first()->criteriaScores()->get() as $criteriaScore)
+									@foreach($categoryContestant->categoryScores()->where('category_judge_id', $categoryJudge->id)->first()->criteriaScores()->orderBy('criteria_id')->get() as $criteriaScore)
 										<td class="p-1 text-center border">&nbsp;{{ $criteriaScore->score }}</td>
 									@endforeach
 									<td class="p-1 font-medium text-center border">{{ $categoryContestant->categoryScores()->where('category_judge_id', $categoryJudge->id)->first()->criteriaScores()->sum('score') }}</td>
