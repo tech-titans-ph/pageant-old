@@ -1,56 +1,24 @@
 <?php
 
-use App\Category;
-use App\CategoryContestant;
-use App\CategoryCriteria;
-use App\CategoryJudge;
-use App\Contest;
-use App\Contestant;
-use App\ContestCategory;
-use App\Criteria;
-use App\Judge;
-use App\Score;
-use App\User;
+use App\{Category, CategoryContestant, CategoryCriteria, CategoryJudge, Contest, ContestCategory, Contestant, Criteria, Judge, Score, User};
 use Faker\Generator as Faker;
 use Illuminate\Database\Seeder;
 use Illuminate\Http\File;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\{Artisan, Storage};
 use Illuminate\Support\Str;
 
 class ContestSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
     public function run(Faker $faker)
     {
-        /* $file = Storage::putFile('profile_pictures', new File(public_path('images/avatar-contestant.png')));
-
-        dd($file); */
-
-        Storage::deleteDirectory('logos');
-        Storage::deleteDirectory('profile_pictures');
-
-        User::truncate();
-        Contest::truncate();
-        Contestant::truncate();
-        Judge::truncate();
-        Category::truncate();
-        ContestCategory::truncate();
-        CategoryCriteria::truncate();
-        Criteria::truncate();
-        CategoryContestant::truncate();
-        CategoryJudge::truncate();
-        Score::truncate();
-
-        factory(User::class)->create([
-            'name' => 'Administrator',
-            'username' => 'admin',
-        ]);
+        Artisan::call('migrate:fresh --seed');
 
         $contest = factory(Contest::class)->create();
+
+        return;
 
         $contestants = [
             /* [
