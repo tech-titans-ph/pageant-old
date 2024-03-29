@@ -2,7 +2,7 @@
 
 use App\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\{DB, Storage};
+use Illuminate\Support\Facades\Storage;
 
 class DatabaseSeeder extends Seeder
 {
@@ -11,8 +11,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        Storage::deleteDirectory('logos');
-        Storage::deleteDirectory('profile-pictures');
+        collect(Storage::directories())->each(function ($directory) {
+            Storage::deleteDirectory($directory);
+        });
 
         /* DB::statement('SET FOREIGN_KEY_CHECKS=0');
 
