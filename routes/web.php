@@ -21,7 +21,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 Auth::routes(['register' => false]);
 
 Route::middleware('auth')->group(function () {
-    Route::namespace('Admin')->name('admin.')->prefix('admin')->middleware('role:admin')->group(function () {
+    Route::namespace('Admin')->name('admin.')->prefix('admin')->group(function () {
         Route::get('judges', 'JudgeController@index')
             ->name('judges.index');
 
@@ -67,8 +67,10 @@ Route::middleware('auth')->group(function () {
             ->parameters(['category-contestants' => 'categoryContestant'])
             ->only(['show', 'store', 'destroy']);
     });
+});
 
-    Route::namespace('Judge')->name('judge.')->prefix('judge')->middleware('role:judge')->group(function () {
+Route::middleware('auth:judge')->group(function () {
+    Route::namespace('Judge')->name('judge.')->prefix('judge')->group(function () {
         Route::name('categories.')->prefix('categories')->group(function () {
             Route::get('status', 'CategoryController@status')->name('status');
             Route::get('list-categories', 'CategoryController@listCategories')->name('list-categories');
