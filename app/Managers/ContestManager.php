@@ -2,18 +2,9 @@
 
 namespace App\Managers;
 
-use App\Category;
-use App\CategoryContestant;
-use App\CategoryJudge;
-use App\Contest;
-use App\Contestant;
-use App\Criteria;
-use App\CriteriaScore;
-use App\Judge;
-use App\User;
+use App\{Category, CategoryContestant, CategoryJudge, Contest, Contestant, Criteria, CriteriaScore, Judge, User};
 use Illuminate\Http\File;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\{Hash, Storage};
 use Illuminate\Support\Str;
 
 class ContestManager
@@ -49,21 +40,7 @@ class ContestManager
 
     public function addJudge(Contest $contest, $data)
     {
-        if (isset($data['user_id'])) {
-            $user = User::find($data['user_id']);
-        } else {
-            $user = User::create([
-                'name' => $data['name'],
-                'username' => Str::slug($data['name']),
-                'password' => Hash::make('password'),
-            ]);
-
-            $user->assign('judge');
-        }
-
-        $judge = $contest->judges()->create([
-            'user_id' => $user->id,
-        ]);
+        $judge = $contest->judges()->create($data);
 
         $this->addCategoryJudge($judge);
 
@@ -98,7 +75,7 @@ class ContestManager
 
     public function loginJudge(Judge $judge)
     {
-        auth()->login($judge->user);
+        auth('judge')->login($judge);
 
         session(['judge' => $judge->id]);
 
@@ -184,9 +161,7 @@ class ContestManager
 
     public function addCriteria(Category $category, $data)
     {
-        $criteria = $category->criterias()->create($data);
-
-        return $criteria;
+        return $category->criterias()->create($data);
     }
 
     public function editCriteria(Criteria $criteria, $data)
@@ -260,12 +235,10 @@ class ContestManager
             'category_contestant_id' => $categoryContestant->id,
         ]);
 
-        $criteriaScore = $categoryScore->criteriaScores()->updateOrCreate(
+        return $categoryScore->criteriaScores()->updateOrCreate(
             ['criteria_id' => $criteria->id],
             ['score' => $score]
         );
-
-        return $criteriaScore;
     }
 
     public function completeScore(CategoryJudge $categoryJudge)
