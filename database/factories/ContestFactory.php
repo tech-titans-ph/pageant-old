@@ -23,5 +23,5 @@ $factory->define(Contest::class, function (Faker $faker) {
 
 function uploadedLogo()
 {
-    return UploadedFile::fake()->image('logo.jpg');
+    return UploadedFile::fake()->image('logo.png');
 }
