@@ -21,18 +21,16 @@ class Category extends Model
             ->withTimestamps();
     }
 
+    public function contestants()
+    {
+        return $this->belongsToMany(Contestant::class, 'category_contestants')
+            ->using(CategoryContestant::class)
+            ->withPivot(['id'])
+            ->withTimestamps();
+    }
+
     public function criterias()
     {
         return $this->hasMany(Criteria::class);
-    }
-
-    public function categoryScores()
-    {
-        return $this->hasMany(CategoryScore::class);
-    }
-
-    public function categoryContestants()
-    {
-        return $this->hasMany(CategoryContestant::class);
     }
 }

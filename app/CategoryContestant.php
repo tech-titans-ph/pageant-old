@@ -2,13 +2,12 @@
 
 namespace App;
 
-use App\Category;
-use App\CategoryScore;
-use App\Contestant;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class CategoryContestant extends Model
+class CategoryContestant extends Pivot
 {
+    protected $table = 'category_contestants';
+
     protected $guarded = [];
 
     public function category()
@@ -19,10 +18,5 @@ class CategoryContestant extends Model
     public function contestant()
     {
         return $this->belongsTo(Contestant::class);
-    }
-
-    public function categoryScores()
-    {
-        return $this->hasMany(CategoryScore::class);
     }
 }
