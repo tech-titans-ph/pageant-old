@@ -8,16 +8,15 @@ class CreateCategoryContestantsTable extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
         Schema::create('category_contestants', function (Blueprint $table) {
             $table->bigIncrements('id');
-
             $table->unsignedBigInteger('category_id');
             $table->unsignedBigInteger('contestant_id');
+
+            $table->unsignedTinyInteger('order')->default(0);
 
             $table->timestamps();
         });
@@ -25,8 +24,6 @@ class CreateCategoryContestantsTable extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {
