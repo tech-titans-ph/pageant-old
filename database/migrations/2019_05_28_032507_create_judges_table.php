@@ -8,16 +8,15 @@ class CreateJudgesTable extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
         Schema::create('judges', function (Blueprint $table) {
             $table->bigIncrements('id');
-
             $table->unsignedBigInteger('contest_id');
-            $table->unsignedBigInteger('user_id');
+
+            $table->string('name');
+            $table->unsignedTinyInteger('order')->default(0);
 
             $table->timestamps();
         });
@@ -25,8 +24,6 @@ class CreateJudgesTable extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {
