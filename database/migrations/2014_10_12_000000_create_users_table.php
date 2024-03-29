@@ -8,8 +8,6 @@ class CreateUsersTable extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
@@ -22,8 +20,6 @@ class CreateUsersTable extends Migration
 
             $table->string('username')->unique();
             $table->string('name');
-            $table->string('description')->nullable();
-            $table->string('picture')->nullable();
 
             $table->timestamps();
             $table->SoftDeletes();
@@ -32,8 +28,6 @@ class CreateUsersTable extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {
