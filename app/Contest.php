@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Contest extends Model
 {
@@ -21,5 +22,10 @@ class Contest extends Model
     public function categories()
     {
         return $this->hasMany(Category::class);
+    }
+
+    public function getLogoUrlAttribute()
+    {
+        return Storage::url($this->logo);
     }
 }
