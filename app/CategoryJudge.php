@@ -2,13 +2,12 @@
 
 namespace App;
 
-use App\Category;
-use App\CategoryScore;
-use App\Judge;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class CategoryJudge extends Model
+class CategoryJudge extends Pivot
 {
+    protected $table = 'category_judges';
+
     protected $guarded = [];
 
     public function category()
@@ -19,10 +18,5 @@ class CategoryJudge extends Model
     public function judge()
     {
         return $this->belongsTo(Judge::class);
-    }
-
-    public function categoryScores()
-    {
-        return $this->hasMany(CategoryScore::class);
     }
 }

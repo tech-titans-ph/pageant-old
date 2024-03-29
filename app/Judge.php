@@ -2,7 +2,6 @@
 
 namespace App;
 
-use App\{CategoryJudge, Contest};
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Judge extends Authenticatable
@@ -17,5 +16,13 @@ class Judge extends Authenticatable
     public function categoryJudges()
     {
         return $this->hasMany(CategoryJudge::class);
+    }
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'category_judges')
+            ->using(CategoryJudge::class)
+            ->withPivot(['id'])
+            ->withTimestamps();
     }
 }
