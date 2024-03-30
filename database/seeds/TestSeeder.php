@@ -1,27 +1,98 @@
 <?php
 
-use App\Category;
-use App\CategoryContestant;
-use App\CategoryJudge;
-use App\CategoryScore;
-use App\Contest;
-use App\Contestant;
-use App\Criteria;
-use App\CriteriaScore;
-use App\Judge;
-use App\User;
+use App\{Category, CategoryContestant, CategoryJudge, Contest, Contestant, Criteria, Judge, Score, User};
 use Faker\Generator as Faker;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\{Artisan, Storage};
 
 class TestSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
     public function run(Faker $faker)
+    {
+        Artisan::call('migrate:fresh --seed');
+
+        $this->scenario('average', true, 'average');
+        $this->scenario('average');
+
+        $this->scenario('ranking', true, 'average');
+
+        $this->scenario('ranking', true, 'ranking');
+        $this->scenario('ranking');
+    }
+
+    public function scenario($categoryScoringSystem, $hasCriterias = false, $criteriaScoringSystem = null)
+    {
+        if (! $hasCriterias) {
+            $criteriaScoringSystem = null;
+        }
+
+        $contest = factory(Contest::class)->create([
+            'scoring_system' => $categoryScoringSystem,
+        ]);
+
+        $judges = $contest->judges()->createMany(
+            factory(Judge::class, 3)->make(['contest_id' => $contest->id])->toArray()
+        )->each(function ($judge, $index) {
+            $judge->update(['order' => $index + 1]);
+        });
+
+        $contestants = $contest->contestants()->createMany(
+            factory(Contestant::class, 3)->make(['contest_id' => $contest->id])->toArray()
+        )->each(function ($contestant, $index) {
+            $contestant->update(['order' => $index + 1]);
+        });
+
+        $contest->categories()->createMany(
+            factory(Category::class, 3)->make([
+                'contest_id' => $contest->id,
+                'has_criterias' => $hasCriterias,
+                'scoring_system' => $criteriaScoringSystem,
+            ])->toArray()
+        )->each(function ($category, $index) use ($judges, $contestants) {
+            $category->update(['order' => $index + 1]);
+
+            $judges = $category->judges()->attach($judges->pluck('id'));
+
+            $category->contestants()->attach($contestants->pluck('id'));
+
+            $category->judges()->get()->each(function ($judge, $index) use ($category) {
+                $category->judges()->updateExistingPivot($judge->id, ['order' => $index + 1]);
+
+                $category->contestants()->get()->each(function ($contestant, $index) use ($category, $judge) {
+                    $category->contestants()->updateExistingPivot($contestant->id, ['order' => $index + 1]);
+
+                    if ($category->has_criterias) {
+                        $category->criterias()->createMany(
+                            factory(Criteria::class, 3)->make(['category_id' => $category->id])->toArray()
+                        )->each(function ($criteria, $index) use ($category, $judge, $contestant) {
+                            $criteria->update(['order' => $index + 1]);
+
+                            Score::create([
+                                'category_id' => $category->id,
+                                'criteria_id' => $criteria->id,
+                                'category_judge_id' => $judge->pivot->id,
+                                'category_contestant_id' => $contestant->pivot->id,
+                                'points' => random_int(10, $criteria->max_points_percentage),
+                            ]);
+                        });
+                    } else {
+                        Score::create([
+                            'category_id' => $category->id,
+                            'criteria_id' => null,
+                            'category_judge_id' => $judge->pivot->id,
+                            'category_contestant_id' => $contestant->pivot->id,
+                            'points' => random_int(10, $category->max_points_percentage),
+                        ]);
+                    }
+                });
+            });
+        });
+    }
+
+    public function oldTest(Faker $faker)
     {
         Storage::deleteDirectory('logos');
         Storage::deleteDirectory('profile-pictures');
@@ -96,7 +167,7 @@ class TestSeeder extends Seeder
             foreach ($contest->judges()->get() as $judge) {
                 $categoryJudge = $category->categoryJudges()->create([
                     'judge_id' => $judge->id,
-                    'completed' => 'done' === $category->status ? 1 : 0,
+                    'completed' => $category->status === 'done' ? 1 : 0,
                 ]);
 
                 foreach ($category->categoryContestants()->get() as $categoryContestant) {
@@ -108,7 +179,7 @@ class TestSeeder extends Seeder
                     foreach ($category->criterias()->get() as $criteria) {
                         $categoryScore->criteriaScores()->create([
                             'criteria_id' => $criteria->id,
-                            'score' => 'que' === $category->status ? 0 : $faker->numberBetween(1, $criteria->percentage),
+                            'score' => $category->status === 'que' ? 0 : $faker->numberBetween(1, $criteria->percentage),
                         ]);
                     }
                 }
