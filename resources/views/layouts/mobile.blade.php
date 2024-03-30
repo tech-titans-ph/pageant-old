@@ -16,13 +16,13 @@
 </head>
 <body class="antialiased leading-none">
 	<div id="app">
-		<div class="fixed w-full bg-white flex justify-between items-center h-12 flex shadow">
+		<div class="fixed flex items-center justify-between w-full h-12 bg-white shadow">
 			<div class="flex-none">
-				<a href="{{ route('judge.categories.index') }}" class="flex justify-center items-center no-underline block h-12 w-12 hover:bg-gray-200">
+				<a href="{{ route('judge.categories.index') }}" class="flex items-center justify-center block w-12 h-12 no-underline hover:bg-gray-200">
 					@svg('home-solid', 'w-6 h-6 fill-current')
 				</a>
 			</div>
-			<div class="flex-grow text-center font-normal flex items-center justify-center">
+			<div class="flex items-center justify-center flex-grow font-normal text-center">
 				<img src="{{ asset('images/logo.png')  }}" class="inline-block h-8 mr-2 rounded-full">
 				<div>
 					Contest<span class="font-bold">Hub</span>
@@ -36,8 +36,9 @@
 
 	<!-- Scripts -->
 	<script src="{{ mix('js/app.js') }}"></script>
-	<script>
+	{{-- <script>
+        // Failed to execute 'requestFullscreen' on 'Element': API can only be initiated by a user gesture.
 		document.body.requestFullscreen();
-	</script>
+	</script> --}}
 </body>
 </html>
