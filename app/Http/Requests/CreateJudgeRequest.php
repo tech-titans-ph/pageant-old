@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CreateJudgeRequest extends FormRequest
 {
@@ -27,7 +28,7 @@ class CreateJudgeRequest extends FormRequest
         $contest = $this->route('contest');
 
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255', Rule::unique('judges')->where('contest_id', $contest->id)],
         ];
     }
 
