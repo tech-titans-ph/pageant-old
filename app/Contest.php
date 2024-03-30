@@ -24,6 +24,11 @@ class Contest extends Model
         return $this->hasMany(Category::class);
     }
 
+    public function getScoringSystemLabelAttribute()
+    {
+        return config("options.scoring_systems.{$this->scoring_system}");
+    }
+
     public function getLogoUrlAttribute()
     {
         return Storage::url($this->logo);
