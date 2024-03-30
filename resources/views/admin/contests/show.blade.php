@@ -143,11 +143,11 @@
             <ul>
               <li class="p-4">
                 <form method="post"
-                  action="{{ route('admin.contests.categories.store', ['contest' => $contest->id, 'activeTab' => 'Categories']) }}"
-                  class="flex flex-col items-start lg:flex-row">
+                  action="{{ route('admin.contests.categories.store', ['contest' => $contest->id, 'activeTab' => 'Categories']) }}">
                   @csrf
-                  <div class="flex flex-col flex-grow w-full mb-6 lg:flex-row lg:mb-0 lg:mr-4">
-                    @formField(['error' => 'name', 'class' => 'w-full lg:w-1/2'])
+
+                  <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                    @formField(['error' => 'name'])
                     <input-picker api="{{ route('admin.categories.index') }}"
                       hidden-name="id"
                       display-name="name"
@@ -157,17 +157,44 @@
                       display-value="{{ old('name') ?? '' }}"
                       placeholder="Enter name of category..."></input-picker>
                     @endformField()
-                    @formField(['error' => 'percentage', 'class' => 'w-full lg:w-1/2 lg:ml-4 mt-6 lg:mt-0'])
+
+                    @formField(['error' => 'has_criterias'])
+                    <label class="flex items-center h-full space-x-2 cursor-pointer">
+                      <input type="checkbox"
+                        id="has_criterias"
+                        name="has_criterias"
+                        class="form-checkbox"
+                        value="1" />
+                      <span>Has Criterias</span>
+                    </label>
+                    @endformField()
+
+                    @formField(['error' => 'scoring_system', 'class'=> 'scoring-system-wrapper ' . (old('has_criterias') ? '' : 'hidden')])
+                    {!! Form::select('scoring_system', $contest->scoring_system == 'ranking' ? config('options.scoring_systems') : ['average' => 'Average'], old('scoring_system'), [
+                        'id' => 'scoring_system',
+                        'class' => 'block w-full form-select',
+                        'placeholder' => '- Select Scoring System -',
+                    ]) !!}
+                    @endformField
+
+                    @formField([
+                    'error' => 'max_points_percentage',
+                    'class' => 'max-points-percentage-wrapper ' . (old('has_criterias') && ($contest->scoring_system == 'ranking' || old('scoring_system') == 'ranking') ? 'hidden' : '')
+                    ])
                     <input type="text"
-                      name="percentage"
+                      id="max_points_percentage"
+                      name="max_points_percentage"
                       class="block w-full form-input"
-                      value="{{ old('percentage') }}"
-                      placeholder="Enter percentage of category...">
+                      value="{{ old('max_points_percentage') }}"
+                      placeholder="Enter maximum points or percentage of category...">
                     @endformField
                   </div>
-                  @button(['type' => 'submit', 'class' => 'flex-none'])
-                  Add Category
-                  @endbutton
+
+                  <div class="mt-4">
+                    @button(['type' => 'submit', 'class' => 'flex-none'])
+                    Add Category
+                    @endbutton
+                  </div>
                 </form>
               </li>
               @forelse ($contest->categories as $category)
@@ -325,3 +352,45 @@
     </div>
   </div>
 @endsection
+
+@push('scripts')
+  <script type="text/javascript">
+    window.addEventListener('load', () => {
+      let hasCriterias = document.querySelector('#has_criterias');
+
+      let scoringSystem = document.querySelector('#scoring_system');
+
+      let maxPointsPercentage = document.querySelector('#max_points_percentage');
+
+      let scoringSystemWrapper = document.querySelector('.scoring-system-wrapper');
+
+      let maxPointsPercentageWrapper = document.querySelector('.max-points-percentage-wrapper');
+
+      let contestScoringSystem = "{{ $contest->scoring_system }}";
+
+      hasCriterias.addEventListener('change', function(event) {
+        scoringSystem.value = '';
+
+        scoringSystemWrapper.classList.add('hidden');
+
+        if (contestScoringSystem == 'ranking') {
+          maxPointsPercentageWrapper.classList.remove('hidden');
+        }
+
+        if (event.target.checked) {
+          scoringSystemWrapper.classList.remove('hidden');
+        }
+      });
+
+      scoringSystem.addEventListener('change', function(event) {
+        maxPointsPercentageWrapper.classList.add('hidden');
+
+        if (event.target.value == 'average') {
+          maxPointsPercentageWrapper.classList.remove('hidden');
+        } else {
+          maxPointsPercentage.value = '';
+        }
+      });
+    });
+  </script>
+@endpush
