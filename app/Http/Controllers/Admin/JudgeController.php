@@ -60,7 +60,7 @@ class JudgeController extends Controller
     {
         $judge = $contest->judges()->findOrFail($judge);
 
-        if ($judge->categoryJudges()->first()) {
+        if ($judge->categories()->count()) {
             return redirect()
                 ->route('admin.contests.show', ['contest' => $contest->id, 'activeTab' => 'Judges'])
                 ->with('error', 'Could not Delete Judge. Please make sure that it is not yet added in any Category.');
