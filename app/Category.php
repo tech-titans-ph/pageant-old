@@ -38,4 +38,9 @@ class Category extends Model
     {
         return $this->hasMany(Score::class);
     }
+
+    public function getScoringSystemLabelAttribute()
+    {
+        return config("options.scoring_systems.{$this->scoring_system}");
+    }
 }
