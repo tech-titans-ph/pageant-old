@@ -89,9 +89,11 @@ class ContestManager
 
     public function addContestant(Contest $contest, $data)
     {
-        $data['picture'] = Storage::put('profile-pictures', $data['picture']);
+        $data['avatar'] = Storage::put("{$contest->id}/contestants", $data['avatar']);
 
         $contestant = $contest->contestants()->create($data);
+
+        $contestant->update(['order' => $contest->contestants()->count()]);
 
         $this->addCategoryContestant($contestant);
 
@@ -100,9 +102,10 @@ class ContestManager
 
     public function editContestant(Contestant $contestant, $data)
     {
-        if (isset($data['picture'])) {
-            Storage::delete($contestant->picture);
-            $data['picture'] = Storage::put('profile-pictures', $data['picture']);
+        if (isset($data['avatar'])) {
+            Storage::delete($contestant->avatar);
+
+            $data['avatar'] = Storage::put("{$contestant->contest()->first()->id}/contestants", $data['avatar']);
         }
 
         $contestant->update($data);
@@ -112,9 +115,15 @@ class ContestManager
 
     public function removeContestant(Contestant $contestant)
     {
+        $contest = $contestant->contest()->first();
+
+        Storage::delete($contestant->avatar);
+
         $contestant->delete();
 
-        Storage::delete($contestant->picture);
+        $contest->contestants()->orderBy('order')->get()->each(function ($contestant, $index) {
+            $contestant->update(['order' => $index + 1]);
+        });
 
         return $this;
     }
@@ -125,7 +134,7 @@ class ContestManager
             unset($data['scoring_system']);
         }
 
-        if ($data['has_criterias'] && ($contest->scoring_system == 'ranking' || ($data['scoring_system'] ?? '') == 'ranking')) {
+        if ($data['has_criterias'] ?? false && ($contest->scoring_system == 'ranking' || ($data['scoring_system'] ?? '') == 'ranking')) {
             unset($data['max_points_percentage']);
         }
 
@@ -216,13 +225,17 @@ class ContestManager
         return $this;
     }
 
-    public function removeCategoryJudge(Category $category, Judge $judge)
+    public function removeCategoryJudge(CategoryJudge $categoryJudge)
     {
-        $category->scores()->where('category_judge_id', $judge->pivot->id)->delete();
+        $category = $categoryJudge->category()->first();
+
+        $judge = $categoryJudge->judge()->first();
+
+        $category->scores()->where('category_judge_id', $categoryJudge->id)->delete();
 
         $category->judges()->detach($judge->id);
 
-        $categoryJudgeTable = $judge->pivot->getTable();
+        $categoryJudgeTable = $categoryJudge->getTable();
 
         $category->judges()->orderBy("{$categoryJudgeTable}.order")->each(function ($judge, $index) use ($category) {
             $category->judges()->updateExistingPivot($judge->id, ['order' => $index + 1]);
@@ -234,7 +247,7 @@ class ContestManager
     public function addCategoryContestant(Contestant $contestant)
     {
         $contestant->contest()->first()->categories()->get()->each(function ($category) use ($contestant) {
-            $contestant->categoryContestants()->create(['category_id' => $category->id]);
+            $category->contestants()->attach($contestant->id, ['order' => $category->contestants()->count() + 1]);
         });
 
         return $this;
@@ -242,12 +255,19 @@ class ContestManager
 
     public function removeCategoryContestant(CategoryContestant $categoryContestant)
     {
-        $categoryContestant->categoryScores()->get()->each(function ($categoryScore) {
-            $categoryScore->criteriaScores()->delete();
-            $categoryScore->delete();
-        });
+        $category = $categoryContestant->category()->first();
 
-        $categoryContestant->delete();
+        $contestant = $categoryContestant->contestant()->first();
+
+        $category->scores()->where('category_contestant_id', $categoryContestant->id)->delete();
+
+        $category->contestants()->detach($contestant->id);
+
+        $categoryContestantTable = $categoryContestant->getTable();
+
+        $category->contestants()->orderBy("{$categoryContestantTable}.order")->each(function ($contestant, $index) use ($category) {
+            $category->contestants()->updateExistingPivot($contestant->id, ['order' => $index + 1]);
+        });
 
         return $this;
     }
