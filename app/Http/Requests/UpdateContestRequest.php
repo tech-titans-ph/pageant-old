@@ -32,7 +32,12 @@ class UpdateContestRequest extends FormRequest
                 Rule::requiredIf(! $this->route('contest')->categories()->whereHas('scores')->count()),
                 Rule::in(array_keys(config('options.scoring_systems'))),
             ],
-            'logo' => ['nullable', 'file', 'image'],
+            'logo' => [
+                'nullable',
+                'file',
+                'mimes:' . collect(config('options.image.mimes'))->implode(','),
+                'mimetypes:' . collect(config('options.image.mime_types'))->implode(','),
+            ],
         ];
     }
 

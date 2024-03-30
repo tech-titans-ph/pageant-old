@@ -28,7 +28,12 @@ class CreateContestRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:255'],
             'scoring_system' => ['required', Rule::in(array_keys(config('options.scoring_systems')))],
-            'logo' => ['required', 'file', 'image'],
+            'logo' => [
+                'required',
+                'file',
+                'mimes:' . collect(config('options.image.mimes'))->implode(','),
+                'mimetypes:' . collect(config('options.image.mime_types'))->implode(','),
+            ],
         ];
     }
 
