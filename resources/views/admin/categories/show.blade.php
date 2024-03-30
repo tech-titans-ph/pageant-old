@@ -53,6 +53,7 @@
             action="{{ route('admin.contests.categories.update', ['contest' => $contest->id, 'category' => $category->id]) }}">
             @csrf
             @method('PATCH')
+
             @formField(['label' => 'Name', 'error' => 'name'])
             <input-picker api="{{ route('admin.categories.index') }}"
               hidden-name="id"
@@ -63,6 +64,7 @@
               display-value="{{ old('name') ?? $category->name }}"
               placeholder="Enter name of category..."></input-picker>
             @endformField()
+
             @formField(['label' => 'Percentage', 'error' => 'percentage'])
             <input type="text"
               name="percentage"
@@ -70,15 +72,18 @@
               value="{{ old('percentage') ?? $category->percentage }}"
               placeholder="Enter percentage of category...">
             @endformField
+
             <div class="mb-6">
               @status(['status' => $category->status])
                 {{ config("options.category_statuses.{$category->status}") }}
               @endstatus
             </div>
+
             @button(['type' => 'submit', 'class' => 'flex-none'])
             Edit
             @endbutton
           </form>
+
           <div class="absolute bottom-0 right-0">
             @if ($category->status == 'que')
               <form method="post"
