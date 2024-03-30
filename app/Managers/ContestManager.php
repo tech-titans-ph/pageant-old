@@ -42,6 +42,8 @@ class ContestManager
     {
         Storage::delete($contest->logo);
 
+        Storage::deleteDirectory($contest->id);
+
         $contest->delete();
 
         return $this;
