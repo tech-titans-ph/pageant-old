@@ -58,6 +58,14 @@ class TestSeeder extends Seeder
 
             $category->contestants()->attach($contestants->pluck('id'));
 
+            if ($category->has_criterias) {
+                $category->criterias()->createMany(
+                    factory(Criteria::class, 3)->make(['category_id' => $category->id])->toArray()
+                )->each(function ($criteria, $index) {
+                    $criteria->update(['order' => $index + 1]);
+                });
+            }
+
             $category->judges()->get()->each(function ($judge, $index) use ($category) {
                 $category->judges()->updateExistingPivot($judge->id, ['order' => $index + 1]);
 
@@ -65,11 +73,7 @@ class TestSeeder extends Seeder
                     $category->contestants()->updateExistingPivot($contestant->id, ['order' => $index + 1]);
 
                     if ($category->has_criterias) {
-                        $category->criterias()->createMany(
-                            factory(Criteria::class, 3)->make(['category_id' => $category->id])->toArray()
-                        )->each(function ($criteria, $index) use ($category, $judge, $contestant) {
-                            $criteria->update(['order' => $index + 1]);
-
+                        $category->criterias()->get()->each(function ($criteria) use ($category, $judge, $contestant) {
                             Score::create([
                                 'category_id' => $category->id,
                                 'criteria_id' => $criteria->id,
