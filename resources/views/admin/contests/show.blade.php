@@ -189,7 +189,6 @@
                       placeholder="Enter maximum points or percentage of category...">
                     @endformField
                   </div>
-
                   <div class="mt-4">
                     @button(['type' => 'submit', 'class' => 'flex-none'])
                     Add Category
@@ -197,6 +196,7 @@
                   </div>
                 </form>
               </li>
+
               @forelse ($contest->categories as $category)
                 <li class="p-4 border-t">
                   <div class="flex flex-wrap lg:flex-no-wrap">
@@ -204,10 +204,15 @@
                       class="flex-grow lg:pr-4">
                       <div class="flex flex-col">
                         <div class="font-bold">{{ $category->name }}</div>
-                        <div class="mt-2 italic">{{ $category->percentage }}%</div>
+                        <div class="mt-2">{{ $category->scoring_system_label }} Scoring System</div>
+
+                        @if ($category->max_points_percentage)
+                          <div class="mt-2 italic">{{ $category->max_points_percentage }} {{ $contest->scoring_system == 'average' ? '%' : 'points' }}</div>
+                        @endif
+
                         <div class="mt-2">
                           @status(['status' => $category->status])
-                            {{ $status[$category->status] }}
+                            {{ config("options.category_statuses.{$category->status}") }}
                           @endstatus
                         </div>
                       </div>
@@ -259,6 +264,7 @@
               @endforelse
             </ul>
           </tab-item>
+
           @if (!$contest->categories()->whereIn('status', ['que', 'scoring'])->count())
             <tab-item title="Scores">
               <ul>
@@ -267,9 +273,11 @@
                     Print Scores
                   @endbuttonLink
                 </li>
+
                 @php
                   $top = 0;
                 @endphp
+
                 @forelse($scoredContestants as $contestant)
                   @php
                     $top++;
@@ -278,16 +286,16 @@
                     <a href="{{ route('admin.contests.contestants.show', ['contest' => $contest->id, 'contestant' => $contestant->id]) }}"
                       class="flex flex-wrap lg:flex-no-wrap">
                       <div class="flex-none">
-                        <img src="{{ Storage::url($contestant->picture) }}"
+                        <img src="{{ Storage::url($contestant->avatar_url) }}"
                           class="object-cover object-center w-64 h-64 mx-auto border rounded-full lg:w-32 lg:h-32 lg:ml-0 lg:mr-2">
                         <div class="mt-1 text-sm font-medium text-center">Top {{ $top }}</div>
                       </div>
                       <div class="self-center flex-grow mt-4 lg:mt-0">
                         <div class="block font-bold">
-                          # {{ $contestant->number . ' - ' . $contestant->name }}
+                          # {{ $contestant->order . ' - ' . $contestant->name }}
                         </div>
                         <div class="mt-2 italic">
-                          {{ $contestant->description }}
+                          {{ $contestant->alias }}
                         </div>
                       </div>
                       <div class="self-center flex-none w-full text-6xl font-bold text-center text-green-700 whitespace-no-wrap lg:pl-2 lg:w-auto">
