@@ -28,9 +28,13 @@ class CreateContestantRequest extends FormRequest
 
         return [
             'name' => ['required', 'string', 'max:255', Rule::unique('contestants')->where('contest_id', $contest->id)],
-            'description' => ['required', 'string', 'max:255'],
-            'number' => ['required', 'integer', 'min:1', 'max:255', Rule::unique('contestants')->where('contest_id', $contest->id)],
-            'picture' => ['required', 'file', 'image'],
+            'alias' => ['required', 'string', 'max:255'],
+            'avatar' => [
+                'required',
+                'file',
+                'mimes:' . collect(config('options.image.mimes'))->implode(','),
+                'mimetypes:' . collect(config('options.image.mime_types'))->implode(','),
+            ],
         ];
     }
 
@@ -38,9 +42,8 @@ class CreateContestantRequest extends FormRequest
     {
         return [
             'name' => 'Full Name',
-            'description' => 'Description',
-            'number' => 'Number',
-            'picture' => 'Profile Picture',
+            'alias' => 'Alias',
+            'avatar' => 'Profile Picture',
         ];
     }
 }
