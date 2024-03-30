@@ -17,7 +17,7 @@ class Category extends Model
     {
         return $this->belongsToMany(Judge::class, 'category_judges')
             ->using(CategoryJudge::class)
-            ->withPivot(['id'])
+            ->withPivot(['id', 'order', 'completed'])
             ->withTimestamps();
     }
 
@@ -25,7 +25,7 @@ class Category extends Model
     {
         return $this->belongsToMany(Contestant::class, 'category_contestants')
             ->using(CategoryContestant::class)
-            ->withPivot(['id'])
+            ->withPivot(['id', 'order'])
             ->withTimestamps();
     }
 
