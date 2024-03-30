@@ -34,11 +34,17 @@ class CategoryController extends Controller
     {
         $category = $contest->categories()->findOrFail($category);
 
-        $status = [
-            'que' => 'Pending',
-            'scoring' => 'Scoring',
-            'done' => 'Completed',
-        ];
+        $category->load([
+            'judges' => function ($query) {
+                $query->orderBy('category_judges.order');
+            },
+            'contestants' => function ($query) {
+                $query->orderBy('category_contestants.order');
+            },
+            'criterias' => function ($query) {
+                $query->orderBy('order');
+            },
+        ]);
 
         $removedContestants = $contest->contestants()->whereDoesntHave('categories', function (Builder $query) use ($category) {
             $query->where('category_id', $category->id);
@@ -54,7 +60,7 @@ class CategoryController extends Controller
             $scoredCategoryContestants = $this->contestManager->getScoredCategoryContestants($category);
         }
 
-        return view('admin.categories.show', compact('contest', 'category', 'status', 'removedContestants', 'removedJudges', 'scoredCategoryContestants'));
+        return view('admin.categories.show', compact('contest', 'category', 'removedContestants', 'removedJudges', 'scoredCategoryContestants'));
     }
 
     public function store(CreateCategoryRequest $request, Contest $contest)
