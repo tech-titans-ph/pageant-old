@@ -63,15 +63,17 @@ class ContestController extends Controller
      */
     public function show(Contest $contest)
     {
-        $contest->load(['contestants' => function ($query) {
-            $query->orderBy('order');
-        }]);
-
-        $status = [
-            'que' => 'Pending',
-            'scoring' => 'Scoring',
-            'done' => 'Completed',
-        ];
+        $contest->load([
+            'judges' => function ($query) {
+                $query->orderBy('order');
+            },
+            'contestants' => function ($query) {
+                $query->orderBy('order');
+            },
+            'categories' => function ($query) {
+                $query->orderBy('order');
+            },
+        ]);
 
         $scoredContestants = [];
 
@@ -79,7 +81,7 @@ class ContestController extends Controller
             $scoredContestants = $this->contestManager->getScoredContestants($contest);
         }
 
-        return view('admin.contests.show', compact('contest', 'status', 'scoredContestants'));
+        return view('admin.contests.show', compact('contest', 'scoredContestants'));
     }
 
     /**
