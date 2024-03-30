@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CreateContestRequest extends FormRequest
 {
@@ -26,6 +27,7 @@ class CreateContestRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:255'],
+            'scoring_system' => ['required', Rule::in(array_keys(config('options.scoring_systems')))],
             'logo' => ['required', 'file', 'image'],
         ];
     }
@@ -35,6 +37,7 @@ class CreateContestRequest extends FormRequest
         return [
             'name' => 'Name',
             'description' => 'Description',
+            'scoring_system' => 'Scoring System',
             'logo' => 'Logo',
         ];
     }
