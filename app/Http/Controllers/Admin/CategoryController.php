@@ -2,17 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Category;
-use App\Contest;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CreateCategoryFromScoreRequest;
-use App\Http\Requests\CreateCategoryRequest;
-use App\Http\Requests\UpdateCategoryRequest;
+use App\Http\Requests\{CreateCategoryFromScoreRequest, CreateCategoryRequest, UpdateCategoryRequest};
 use App\Managers\ContestManager;
+use App\{Category, Contest};
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
@@ -46,17 +40,17 @@ class CategoryController extends Controller
             'done' => 'Completed',
         ];
 
-        $removedContestants = $contest->contestants()->whereDoesntHave('categoryContestants', function (Builder $query) use ($category) {
+        $removedContestants = $contest->contestants()->whereDoesntHave('categories', function (Builder $query) use ($category) {
             $query->where('category_id', $category->id);
-        })->orderBy('number')->get();
+        })->orderBy('order')->get();
 
-        $removedJudges = $contest->judges()->whereDoesntHave('categoryJudges', function (Builder $query) use ($category) {
+        $removedJudges = $contest->judges()->whereDoesntHave('categories', function (Builder $query) use ($category) {
             $query->where('category_id', $category->id);
-        })->get();
+        })->orderBy('order')->get();
 
         $scoredCategoryContestants = [];
 
-        if ('done' === $category->status) {
+        if ($category->status === 'done') {
             $scoredCategoryContestants = $this->contestManager->getScoredCategoryContestants($category);
         }
 
@@ -146,7 +140,7 @@ class CategoryController extends Controller
                 ->with('error', 'Could not Start Scores. Please make sure that this category has Contestant.');
         }
 
-        if ('scoring' === $category->status) {
+        if ($category->status === 'scoring') {
             return redirect($redirects[$page])
                 ->with('error', 'Could not Start Scores. Please make sure that this category has not started scoring.');
         }
@@ -168,7 +162,7 @@ class CategoryController extends Controller
 
         $page = request()->query('redirect') ?? 'contest';
 
-        if ('scoring' !== $category->status) {
+        if ($category->status !== 'scoring') {
             return redirect($redirects[$page])
                 ->with('error', 'Could not Finish Scores. Please make sure that this category has started scoring.');
         }
@@ -190,7 +184,7 @@ class CategoryController extends Controller
     {
         $category = $contest->categories()->findOrFail($category);
 
-        abort_unless('done' === $category->status, 403, 'Could not print scores. Please make sure that this category has finished scoring.');
+        abort_unless($category->status === 'done', 403, 'Could not print scores. Please make sure that this category has finished scoring.');
 
         $scoredCategoryContestants = $this->contestManager->getScoredCategoryContestants($category);
 
@@ -253,7 +247,7 @@ class CategoryController extends Controller
     {
         $category = $contest->categories()->findOrFail($category);
 
-        if ('done' !== $category->status) {
+        if ($category->status !== 'done') {
             return redirect()
                 ->route('admin.contests.categories.show', ['contest' => $contest->id, 'category' => $category->id, 'activeTab' => 'Create Category from Results'])
                 ->with('error', 'Could not create category from results. Please make sure that this category has finished scoring.');
