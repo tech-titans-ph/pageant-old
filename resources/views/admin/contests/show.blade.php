@@ -26,9 +26,10 @@
         <div class="flex flex-wrap mb-4 lg:flex-no-wrap">
           <img src="{{ Storage::url($contest->logo) }}"
             class="flex-none object-contain object-center w-64 h-64 mx-auto border rounded lg:mr-4">
-          <div class="self-center flex-grow mt-4 lg:mt-0">
-            <div class="mb-4 font-medium">{{ $contest->name }}</div>
-            <div class="italic">{{ $contest->description }}</div>
+          <div class="self-center flex-grow mt-4 space-y-2 lg:mt-0">
+            <div class="text-lg font-bold">{{ $contest->name }}</div>
+            <div class="italic font-medium">{{ $contest->description }}</div>
+            <div>{{ $contest->scoring_system_label }} Scoring System</div>
           </div>
           <div class="self-start order-first w-full pl-2 mb-4 text-right whitespace-no-wrap lg:w-auto lg:flex-none lg:order-none lg:mb-0">
             @buttonLink(['href' => route('admin.contests.edit', ['contest' => $contest->id])])
