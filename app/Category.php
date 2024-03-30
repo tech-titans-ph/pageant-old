@@ -33,4 +33,9 @@ class Category extends Model
     {
         return $this->hasMany(Criteria::class);
     }
+
+    public function scores()
+    {
+        return $this->hasMany(Score::class);
+    }
 }
