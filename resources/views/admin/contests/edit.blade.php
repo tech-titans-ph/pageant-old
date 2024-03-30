@@ -40,7 +40,7 @@
           @endif
 
           <label class="block mb-4">
-            <img src="{{ Storage::url($contest->logo) }}"
+            <img src="{{ $contest->logo_url }}"
               class="object-contain object-center w-64 h-64 mx-auto bg-white border rounded">
           </label>
 

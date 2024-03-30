@@ -13,7 +13,7 @@
 		<div class="w-3/4">
 			@card()
 				<div class="flex mb-4 mx-auto">
-					<img src="{{ Storage::url($contestant->picture) }}" class="flex-none object-cover object-center w-32 h-32 rounded-full border">
+					<img src="{{ $contestant->avatar_url }}" class="flex-none object-cover object-center w-32 h-32 rounded-full border">
 					<div class="flex-grow self-center px-4">
 						<div class="mb-2 font-bold">#{{ $contestant->number }} - {{ $contestant->name }}</div>
 						<div class="italic">{{ $contestant->description }}</div>

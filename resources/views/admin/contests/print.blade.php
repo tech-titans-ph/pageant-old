@@ -11,7 +11,7 @@
 	<div id="app">
 		<div class="flex w-1/3 mb-4 mx-auto">
 			<div class="flex-none">
-				<img src="{{ Storage::url($contest->logo) }}" class="object-contain object-center h-32 w-32 border rounded">
+				<img src="{{ $contest->logo_url }}" class="object-contain object-center h-32 w-32 border rounded">
 			</div>
 			<div class="flex-shrink self-center px-4">
 				<div class="font-medium text-2xl">{{ $contest->name }}</div>

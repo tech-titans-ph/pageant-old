@@ -24,7 +24,7 @@
         <div class="flex justify-between mx-auto">
           <div class="flex flex-grow">
             <div class="flex-none">
-              <img src="{{ Storage::url($contestant->contestant->picture) }}"
+              <img src="{{ $contestant->avatar_url }}"
                 class="object-cover object-center w-32 h-32 border rounded-full">
               <div class="mt-1 text-sm font-medium text-center">Top {{ $top }}</div>
             </div>

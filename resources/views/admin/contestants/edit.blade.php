@@ -26,7 +26,7 @@
 						<input type="text" name="number" value="{{ old('number') ? old('number') : $contestant->number }}" class="form-input mt-1 block w-full" placeholder="Enter Contestant Number">
 					@endformField
 					@formField()
-						<img src="{{ Storage::url($contestant->picture) }}" class="w-full object-contain object-center border">
+						<img src="{{ $contestant->avatar_url }}" class="w-full object-contain object-center border">
 					@endformField
 					@formField(['label' => 'Change Profile Picture', 'error' => 'picture'])
 						<input type="file" name="picture" class="form-input mt-1 block w-full">

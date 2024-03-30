@@ -4,15 +4,15 @@
       <li class="p-4 {{ $key ? 'border-t' : '' }}">
         <div class="flex">
           <div class="flex-none">
-            <img src="{{ Storage::url($contestant->contestant->picture) }}"
+            <img src="{{ $contestant->avatar_url }}"
               class="object-cover object-center w-32 h-32 mx-auto border rounded-full">
           </div>
           <div class="self-center flex-grow px-4">
             <div class="font-bold">
-              # {{ $contestant->contestant->number . ' - ' . $contestant->contestant->name }}
+              # {{ $contestant->order . ' - ' . $contestant->name }}
             </div>
             <div class="mt-2 italic">
-              {{ $contestant->contestant->description }}
+              {{ $contestant->description }}
             </div>
             <div class="inline-block px-2 py-1 mt-2 font-normal text-blue-100 bg-blue-500 rounded">Added</div>
           </div>
@@ -37,7 +37,7 @@
       <li class="p-4 border-t">
         <div class="flex">
           <div class="flex-none">
-            <img src="{{ Storage::url($contestant->picture) }}"
+            <img src="{{ $contestant->avatar_url }}"
               class="object-cover object-center w-32 h-32 mx-auto border rounded-full">
           </div>
           <div class="self-center flex-grow px-4">

@@ -24,7 +24,7 @@
     <div class="w-full lg:w-3/4">
       @card()
         <div class="flex flex-wrap mb-4 lg:flex-no-wrap">
-          <img src="{{ Storage::url($contest->logo) }}"
+          <img src="{{ $contest->logo_url }}"
             class="flex-none object-contain object-center w-64 h-64 mx-auto border rounded lg:mr-4">
           <div class="self-center flex-grow mt-4 space-y-2 lg:mt-0">
             <div class="text-lg font-bold">{{ $contest->name }}</div>

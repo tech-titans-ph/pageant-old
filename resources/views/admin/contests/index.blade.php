@@ -33,7 +33,7 @@
       <a href="{{ route('admin.contests.show', ['contest' => $contest->id]) }}"
         class="px-2 mb-4 md:w-1/3 lg:w-1/4">
         @card()
-          <img src="{{ Storage::url($contest->logo) }}"
+          <img src="{{ $contest->logo_url }}"
             class="object-cover object-center w-full h-64 mx-auto bg-white border rounded">
           <div class="mt-4 space-y-2 text-center">
             <div class="text-lg font-bold">{{ $contest->name }}</div>
