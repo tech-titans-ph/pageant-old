@@ -5,7 +5,6 @@ namespace App\Managers;
 use App\{Category, CategoryContestant, CategoryJudge, Contest, Contestant, Criteria, CriteriaScore, Judge, User};
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\{Hash, Storage};
-use Illuminate\Support\Str;
 
 class ContestManager
 {
@@ -54,31 +53,27 @@ class ContestManager
 
         $this->addCategoryJudge($judge);
 
+        $judge->update(['order' => $contest->judges()->count()]);
+
         return $judge;
     }
 
     public function editJudge(Judge $judge, $data)
     {
-        if (isset($data['user_id'])) {
-            $user = User::find($data['user_id']);
-        } else {
-            $user = User::create([
-                'name' => $data['name'],
-                'username' => Str::slug($data['name']),
-                'password' => Hash::make('password'),
-            ]);
-
-            $user->assign('judge');
-        }
-
-        $judge->update(['user_id' => $user->id]);
+        $judge->update($data);
 
         return $judge;
     }
 
     public function removeJudge(Judge $judge)
     {
+        $contest = $judge->contest()->first();
+
         $judge->delete();
+
+        $contest->judges()->orderBy('order')->get()->each(function ($judge, $index) {
+            $judge->update(['order' => $index + 1]);
+        });
 
         return $this;
     }
@@ -126,14 +121,24 @@ class ContestManager
 
     public function addCategory(Contest $contest, $data)
     {
+        if (! ($data['has_criterias'] ?? false)) {
+            unset($data['scoring_system']);
+        }
+
+        if ($data['has_criterias'] && ($contest->scoring_system == 'ranking' || ($data['scoring_system'] ?? '') == 'ranking')) {
+            unset($data['max_points_percentage']);
+        }
+
         $category = $contest->categories()->create($data);
 
+        $category->update(['order' => $contest->categories()->count()]);
+
         $contest->judges()->get()->each(function ($judge) use ($category) {
-            $category->categoryJudges()->create(['judge_id' => $judge->id]);
+            $category->judges()->attach($judge->id, ['order' => $category->judges()->count() + 1]);
         });
 
         $contest->contestants()->get()->each(function ($contestant) use ($category) {
-            $category->categoryContestants()->create(['contestant_id' => $contestant->id]);
+            $category->contestants()->attach($contestant->id, ['order' => $category->contestants()->count() + 1]);
         });
 
         return $category;
@@ -141,6 +146,18 @@ class ContestManager
 
     public function editCategory(Category $category, $data)
     {
+        if (collect($data)->only(['has_criterias', 'scoring_system', 'max_points_percentage'])->filter()->count() && $category->scores()->count()) {
+            unset($data['has_criterias'], $data['scoring_system'], $data['max_points_percentage']);
+        } else {
+            if (! ($data['has_criterias'] ?? false)) {
+                $data['scoring_system'] = null;
+            }
+
+            if ($data['has_criterias'] && ($category->contest->scoring_system == 'ranking' || ($data['scoring_system'] ?? '') == 'ranking')) {
+                $data['max_points_percentage'] = null;
+            }
+        }
+
         $category->update($data);
 
         return $category;
@@ -193,20 +210,23 @@ class ContestManager
     public function addCategoryJudge(Judge $judge)
     {
         $judge->contest()->first()->categories()->get()->each(function ($category) use ($judge) {
-            $judge->categoryJudges()->create(['category_id' => $category->id]);
+            $category->judges()->attach($judge->id, ['order' => $category->judges()->count() + 1]);
         });
 
         return $this;
     }
 
-    public function removeCategoryJudge(CategoryJudge $categoryJudge)
+    public function removeCategoryJudge(Category $category, Judge $judge)
     {
-        $categoryJudge->categoryScores()->get()->each(function ($categoryScore) {
-            $categoryScore->criteriaScores()->delete();
-            $categoryScore->delete();
-        });
+        $category->scores()->where('category_judge_id', $judge->pivot->id)->delete();
 
-        $categoryJudge->delete();
+        $category->judges()->detach($judge->id);
+
+        $categoryJudgeTable = $judge->pivot->getTable();
+
+        $category->judges()->orderBy("{$categoryJudgeTable}.order")->each(function ($judge, $index) use ($category) {
+            $category->judges()->updateExistingPivot($judge->id, ['order' => $index + 1]);
+        });
 
         return $this;
     }
