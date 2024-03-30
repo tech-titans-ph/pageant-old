@@ -13,11 +13,6 @@ class Judge extends Authenticatable
         return $this->belongsTo(Contest::class);
     }
 
-    public function categoryJudges()
-    {
-        return $this->hasMany(CategoryJudge::class);
-    }
-
     public function categories()
     {
         return $this->belongsToMany(Category::class, 'category_judges')
