@@ -10,7 +10,7 @@ $factory->define(Criteria::class, function (Faker $faker) {
         'category_id' => function () {
             return factory(Category::class)->create(['has_criterias' => true]);
         },
-        'name' => $faker->randomElement([
+        'name' => $faker->unique(true)->randomElement([
             'Diction',
             'Content',
             'Personality & Presence, Confidence and walk',

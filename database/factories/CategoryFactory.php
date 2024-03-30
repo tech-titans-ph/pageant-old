@@ -8,7 +8,7 @@ use Faker\Generator as Faker;
 $factory->define(Category::class, function (Faker $faker) {
     return [
         'contest_id' => factory(Contest::class),
-        'name' => $faker->randomElement(['Introduction', 'Evening Wear', 'Question and Answer', 'Essay', 'Pre-Pageant Interview', 'Talent']),
+        'name' => $faker->unique(true)->randomElement(['Introduction', 'Evening Wear', 'Question and Answer', 'Essay', 'Pre-Pageant Interview', 'Talent']),
         'status' => $faker->randomKey(config('options.category_statuses')),
         'has_criterias' => $faker->boolean(),
         'scoring_system' => function (array $attributes) use ($faker) {
