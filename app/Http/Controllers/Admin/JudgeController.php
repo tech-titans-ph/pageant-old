@@ -2,16 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\CategoryJudge;
-use App\Contest;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CreateJudgeRequest;
-use App\Http\Requests\UpdateJudgeRequest;
+use App\Http\Requests\{CreateJudgeRequest, UpdateJudgeRequest};
 use App\Managers\ContestManager;
-use App\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
+use App\{ Contest,  Judge};
 
 class JudgeController extends Controller
 {
@@ -24,13 +18,11 @@ class JudgeController extends Controller
 
     public function index()
     {
-        $judges = User::whereIs('judge')
-            ->when(request('search-keyword'), function ($query) {
-                $searchKeyword = request('search-keyword');
+        $judges = Judge::when(request('search-keyword'), function ($query) {
+            $searchKeyword = request('search-keyword');
 
-                return $query->where('name', 'like', '%' . $searchKeyword . '%');
-            })
-            ->oldest('name')
+            return $query->where('name', 'like', '%' . $searchKeyword . '%');
+        })->oldest('name')
             ->get();
 
         return response()->json($judges);
