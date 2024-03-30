@@ -28,7 +28,7 @@
     <div class="fixed flex items-center justify-between w-full h-12 bg-white shadow">
       <div class="flex-none">
         <a href="{{ route('judge.categories.index') }}"
-          class="flex items-center justify-center block w-12 h-12 no-underline hover:bg-gray-200">
+          class="flex items-center justify-center w-12 h-12 no-underline hover:bg-gray-200">
           @svg('home-solid', 'w-6 h-6 fill-current')
         </a>
       </div>
