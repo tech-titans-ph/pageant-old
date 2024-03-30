@@ -1,11 +1,11 @@
 <label class="{{ $class ?? 'block mb-6' }}">
-	@if(isset($label))
-		<span class="block text-gray-700 mb-2">{{ $label }}</span>
-	@endif
-	{{ $slot }}
-	@if(isset($error))
-		@error($error)
-			<p class="text-red-500 text-xs italic mt-4">{{ $message }}</p>
-		@enderror
-	@endif
+  @if (isset($label))
+    <span class="block mb-2 text-gray-700">{{ $label }}</span>
+  @endif
+  {{ $slot }}
+  @if (isset($error))
+    @error($error)
+      <p class="mt-1 text-sm italic text-red-500">{{ $message }}</p>
+    @enderror
+  @endif
 </label>
