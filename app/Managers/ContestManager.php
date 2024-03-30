@@ -11,17 +11,27 @@ class ContestManager
 {
     public function create($data)
     {
-        $data['logo'] = Storage::put('logos', $data['logo']);
+        $logo = $data['logo'];
 
-        return Contest::create($data);
+        unset($data['logo']);
+
+        $contest = Contest::create($data);
+
+        $contest->update(['logo' => Storage::put("{$contest->id}/logo", $logo)]);
+
+        return $contest;
     }
 
     public function update(Contest $contest, $data)
     {
+        if (isset($data['scoring_system']) && $contest->categories()->whereHas('scores')->count()) {
+            unset($data['scoring_system']);
+        }
+
         if (isset($data['logo'])) {
             Storage::delete($contest->logo);
 
-            $data['logo'] = Storage::put('logos', $data['logo']);
+            $data['logo'] = Storage::put("{$contest->id}/logo", $data['logo']);
         }
 
         $contest->update($data);
@@ -31,9 +41,9 @@ class ContestManager
 
     public function delete(Contest $contest)
     {
-        $contest->delete();
-
         Storage::delete($contest->logo);
+
+        $contest->delete();
 
         return $this;
     }
