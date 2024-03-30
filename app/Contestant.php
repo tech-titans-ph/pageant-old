@@ -24,6 +24,6 @@ class Contestant extends Model
 
     public function getAvatarUrlAttribute()
     {
-        return Storage::url($this->picture);
+        return Storage::url($this->avatar);
     }
 }
