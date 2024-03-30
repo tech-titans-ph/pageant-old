@@ -2,15 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\CategoryContestant;
 use App\Contest;
-use App\Contestant;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CreateContestantRequest;
-use App\Http\Requests\UpdateContestantRequest;
+use App\Http\Requests\{CreateContestantRequest, UpdateContestantRequest};
 use App\Managers\ContestManager;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
 
 class ContestantController extends Controller
 {
@@ -85,7 +80,7 @@ class ContestantController extends Controller
     {
         $contestant = $contest->contestants()->findOrFail($contestant);
 
-        if ($contestant->categoryContestants()->first()) {
+        if ($contestant->categories()->count()) {
             return redirect()
                 ->route('admin.contests.show', ['contests' => $contest->id, 'activeTab' => 'Contestants'])
                 ->with('error', 'Could not Delete Contestant. Please make sure that it is not yet added in any Category.');
