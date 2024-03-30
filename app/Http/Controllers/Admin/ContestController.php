@@ -2,16 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Category;
-use App\Contest;
-use App\Contestant;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CreateContestFromScoreRequest;
-use App\Http\Requests\CreateContestRequest;
-use App\Http\Requests\UpdateContestRequest;
+use App\Http\Requests\{CreateContestFromScoreRequest, CreateContestRequest, UpdateContestRequest};
 use App\Managers\ContestManager;
+use App\{Category, Contest, Contestant};
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ContestController extends Controller
@@ -48,7 +43,7 @@ class ContestController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Http\Response
      */
@@ -63,8 +58,6 @@ class ContestController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  \App\Contest  $contest
      *
      * @return \Illuminate\Http\Response
      */
@@ -92,8 +85,6 @@ class ContestController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Contest  $contest
-     *
      * @return \Illuminate\Http\Response
      */
     public function edit(Contest $contest)
@@ -104,8 +95,7 @@ class ContestController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Contest  $contest
+     * @param \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Http\Response
      */
@@ -120,8 +110,6 @@ class ContestController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  \App\Contest  $contest
      *
      * @return \Illuminate\Http\Response
      */
@@ -171,11 +159,10 @@ class ContestController extends Controller
     {
         $category = Category::with(['contest'])
             ->where('status', 'scoring')
-            ->has('categoryJudges')
-            ->whereDoesntHave('categoryJudges', function (Builder $query) {
+            ->has('judges')
+            ->whereDoesntHave('judges', function (Builder $query) {
                 $query->where('completed', 0);
-            })
-            ->first();
+            })->first();
 
         return response()->json($category);
     }
