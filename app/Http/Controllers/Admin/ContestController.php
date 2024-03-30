@@ -64,7 +64,7 @@ class ContestController extends Controller
     public function show(Contest $contest)
     {
         $contest->load(['contestants' => function ($query) {
-            $query->orderBy('number');
+            $query->orderBy('order');
         }]);
 
         $status = [
