@@ -167,6 +167,7 @@ return [
         App\Providers\EventServiceProvider::class,
         // App\Providers\TelescopeServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        \App\Providers\RankingServiceProvider::class,
     ],
 
     /*
