@@ -63,6 +63,7 @@
             class="flex-grow lg:pr-4">
             <div class="flex flex-col">
               <div class="font-bold">{{ $category->name }}</div>
+              <div class="mt-2">{{ $category->has_criterias ? 'Has' : 'No' }} Criterias</div>
               <div class="mt-2">{{ $category->scoring_system_label }} Scoring System</div>
 
               @if ($category->max_points_percentage)
