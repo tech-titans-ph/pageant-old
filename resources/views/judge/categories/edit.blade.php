@@ -1,4 +1,5 @@
 @extends('layouts.mobile')
+
 @section('content')
   <div class="pt-24 mx-auto">
     @if (session('success'))
@@ -18,14 +19,14 @@
           class="inline-block px-6 py-3 font-bold text-gray-700 bg-gray-300 rounded-full">Continue Scoring</a>
       </div>
       <div class="mt-6 border-b">
-        @foreach ($categoryContestants as $categoryContestant)
-          <a class="flex block p-6 border-t"
-            href="{{ route('judge.categories.contestants.index', ['category' => $category->id, 'page' => $categoryContestant->contestant->number]) }}">
-            <img src="{{ Storage::url($categoryContestant->contestant->picture) }}"
+        @foreach ($contestants as $contestant)
+          <a class="flex p-6 border-t"
+            href="{{ route('judge.categories.contestants.index', ['category' => $category->id, 'page' => $contestant->order]) }}">
+            <img src="{{ $contestant->avatar_url }}"
               class="flex-none object-contain object-center w-16 h-16 mr-4 border rounded-full">
             <div class="self-center flex-grow mr-4 font-bold">
-              <div class="mb-2">#{{ $categoryContestant->contestant->number }}</div>
-              <div>{{ $categoryContestant->contestant->name }}</div>
+              <div class="mb-2">#{{ $contestant->order }}</div>
+              <div>{{ $contestant->name }}</div>
             </div>
           </a>
         @endforeach
