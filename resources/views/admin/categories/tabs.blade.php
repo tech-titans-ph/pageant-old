@@ -1,5 +1,8 @@
 <tabs>
-  @include('admin.categories.tabs.criterias')
+  @if ($category->has_criterias)
+    @include('admin.categories.tabs.criterias')
+  @endif
+
   @include('admin.categories.tabs.judges')
   @include('admin.categories.tabs.contestants')
 
