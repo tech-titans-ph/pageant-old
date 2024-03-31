@@ -54,8 +54,12 @@
 
           <tr>
             @if (!$judgeKey)
-              <td class="px-2 py-1 align-top border whitespace-nowrap"
-                rowspan="{{ $category->judges->count() }}">Top {{ $contestant->ranking }}</td>
+              <td class="px-2 py-1 text-center align-top border whitespace-nowrap"
+                rowspan="{{ $category->judges->count() }}">
+                <image src="{{ $contestant->avatar_url }}"
+                  class="object-cover object-center w-32 h-32 mx-auto mb-1 border rounded-full" />
+                <div>Top {{ $contestant->ranking }}</div>
+              </td>
               <td class="px-2 py-1 align-top border whitespace-nowrap"
                 rowspan="{{ $category->judges->count() }}">
                 <div>#{{ $contestant->order }} - {{ $contestant->name }}</div>
