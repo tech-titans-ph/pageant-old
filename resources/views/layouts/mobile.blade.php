@@ -33,10 +33,10 @@
         </a>
       </div>
       <div class="flex items-center justify-center flex-grow font-normal text-center">
-        <img src="{{ asset('images/logo.png') }}"
+        <img src="{{ asset('images/' . env('LOGO_ONLY')) }}"
           class="inline-block h-8 mr-2 rounded-full">
-        <div>
-          Contest<span class="font-bold">Hub</span>
+        <div class="font-bold">
+          {{ config('app.name') }}
         </div>
       </div>
       @yield('navbar-right')
