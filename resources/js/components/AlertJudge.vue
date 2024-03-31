@@ -42,7 +42,7 @@ export default {
                                 if (result.value) {
                                     window.location.href =
                                         "/judge/categories/" +
-                                        category_id +
+                                        category.id +
                                         "/contestants";
                                 }
                             });
