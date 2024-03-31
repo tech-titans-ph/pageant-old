@@ -18,12 +18,12 @@
             placeholder="Enter name of criteria..."></input-picker>
           @endformField
 
-          @formField(['error' => 'percentage', 'class' => 'w-1/2 ml-4'])
+          @formField(['error' => 'max_points_percentage', 'class' => 'w-1/2 ml-4'])
           <input type="text"
-            name="percentage"
+            name="max_points_percentage"
             class="block w-full form-input"
-            value="{{ old('percentage') }}"
-            placeholder="Enter percentage of criteria...">
+            value="{{ old('max_points_percentage') }}"
+            placeholder="Enter maximum points or percentage of criteria..." />
           @endformField
         </div>
 
@@ -37,7 +37,7 @@
           <a href="{{ route('admin.contests.categories.criterias.edit', ['contest' => $contest->id, 'category' => $category->id, 'criteria' => $criteria->id]) }}"
             class="flex-grow pr-4">
             <div class="font-bold">{{ $criteria->name }}</div>
-            <div class="mt-2 italic">{{ $criteria->percentage }}%</div>
+            <div class="mt-2 italic">{{ $criteria->max_points_percentage }} {{ $category->scoring_system == 'average' ? '%' : 'points' }}</div>
           </a>
           <form method="post"
             action="{{ route('admin.contests.categories.criterias.destroy', ['contest' => $contest->id, 'category' => $category->id, 'criteria' => $criteria->id]) }}"

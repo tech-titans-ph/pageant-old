@@ -175,6 +175,10 @@ class ContestManager
 
         $category->update($data);
 
+        if (! $category->has_criterias) {
+            $category->criterias()->delete();
+        }
+
         return $category;
     }
 
@@ -203,7 +207,11 @@ class ContestManager
 
     public function addCriteria(Category $category, $data)
     {
-        return $category->criterias()->create($data);
+        $criteria = $category->criterias()->create($data);
+
+        $criteria->update(['order' => $category->criterias()->count()]);
+
+        return $criteria;
     }
 
     public function editCriteria(Criteria $criteria, $data)
@@ -215,9 +223,15 @@ class ContestManager
 
     public function removeCriteria(Criteria $criteria)
     {
-        CriteriaScore::where(['criteria_id' => $criteria->id])->delete();
+        $criteria->scores()->delete();
+
+        $category = $criteria->category()->first();
 
         $criteria->delete();
+
+        $category->criterias()->orderBy('order')->get()->each(function ($criteria, $index) {
+            $criteria->update(['order' => $index + 1]);
+        });
 
         return $this;
     }

@@ -33,6 +33,8 @@ class CriteriaController extends Controller
     {
         $category = $contest->categories()->findOrFail($category);
 
+        abort_unless($category->has_criterias, 404);
+
         if ($category->status === 'done') {
             return redirect()
                 ->route('admin.contests.categories.show', ['contest' => $contest->id, 'category' => $category->id, 'activeTab' => 'Criterias'])
