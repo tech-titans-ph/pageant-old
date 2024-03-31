@@ -54,34 +54,78 @@
             @csrf
             @method('PATCH')
 
-            @formField(['label' => 'Name', 'error' => 'name'])
-            <input-picker api="{{ route('admin.categories.index') }}"
-              hidden-name="id"
-              display-name="name"
-              hidden-property="id"
-              display-property="name"
-              hidden-value="{{ old('id') ?? $category->id }}"
-              display-value="{{ old('name') ?? $category->name }}"
-              placeholder="Enter name of category..."></input-picker>
-            @endformField()
-
-            @formField(['label' => 'Percentage', 'error' => 'percentage'])
-            <input type="text"
-              name="percentage"
-              class="block w-full form-input"
-              value="{{ old('percentage') ?? $category->percentage }}"
-              placeholder="Enter percentage of category...">
-            @endformField
-
-            <div class="mb-6">
-              @status(['status' => $category->status])
-                {{ config("options.category_statuses.{$category->status}") }}
-              @endstatus
+            <div class="grid grid-cols-1 gap-4 mb-6">
+              @formField(['label' => 'Name', 'error' => 'name', 'class' => "name-wrapper"])
+              <input-picker api="{{ route('admin.categories.index') }}"
+                hidden-name="id"
+                display-name="name"
+                hidden-property="id"
+                display-property="name"
+                hidden-value="{{ old('id', $category->id) }}"
+                display-value="{{ old('name', $category->name) }}"
+                placeholder="Enter name of category..."></input-picker>
+              @endformField()
+              @if ($category->scores()->count())
+                <div>
+                  <label class="flex items-center h-full space-x-2">
+                    <input type="checkbox"
+                      disabled
+                      class="form-checkbox"
+                      {{ $category->has_criterias ? 'checked' : null }} />
+                    <span>Has Criterias</span>
+                  </label>
+                </div>
+                @if ($category->scoring_system)
+                  <div>
+                    {{ $category->scoring_system_label }} Scoring System
+                  </div>
+                @endif
+                @if ($category->max_points_percentage)
+                  <div>{{ $category->max_points_percentage }} {{ $category->has_criterias && ($contest->scoring_system == 'ranking' || $category->scoring_system == 'ranking') ? 'points' : '%' }}</div>
+                @endif
+              @else
+                @formField(['error' => 'has_criterias', 'class' => 'has-criterias-wrapper'])
+                <label class="flex items-center h-full space-x-2 cursor-pointer">
+                  <input type="checkbox"
+                    id="has_criterias"
+                    name="has_criterias"
+                    class="form-checkbox"
+                    value="1"
+                    {{ old('has_criteiras', $category->has_criterias) ? 'checked' : null }} />
+                  <span>Has Criterias</span>
+                </label>
+              @endformField()
+              @formField(['error' => 'scoring_system', 'class'=> 'scoring-system-wrapper ' . (old('has_criterias', $category->has_criterias) ? '' : 'hidden')])
+              {!! Form::select('scoring_system', $contest->scoring_system == 'ranking' ? config('options.scoring_systems') : ['average' => 'Average'], old('scoring_system', $category->scoring_system), [
+                  'id' => 'scoring_system',
+                  'class' => 'block w-full form-select',
+                  'placeholder' => '- Select Scoring System -',
+              ]) !!}
+              @endformField
+              @formField([
+              'error' => 'max_points_percentage',
+              'class' => 'max-points-percentage-wrapper '
+              . ( old('has_criterias', $category->has_criterias)
+              && ($contest->scoring_system == 'ranking'
+              && old('scoring_system', $category->scoring_system) == 'ranking'
+              ) ? 'hidden' : '')
+              ])
+              <input type="text"
+                id="max_points_percentage"
+                name="max_points_percentage"
+                class="block w-full form-input"
+                value="{{ old('max_points_percentage', $category->max_points_percentage) }}"
+                placeholder="Enter maximum points or percentage of category..." />
+              @endformField
+              @endif
+              <div>
+                @status(['status' => $category->status])
+                  {{ config("options.category_statuses.{$category->status}") }}
+                @endstatus
+              </div>
             </div>
 
-            @button(['type' => 'submit', 'class' => 'flex-none'])
-            Edit
-            @endbutton
+            @button(['type' => 'submit', 'class' => 'flex-none']) Edit @endbutton
           </form>
 
           <div class="absolute bottom-0 right-0">
@@ -128,3 +172,7 @@
     </div>
   </div>
 @endsection
+
+@if (!$category->scores()->count())
+  @include('admin.categories.form-script')
+@endif
