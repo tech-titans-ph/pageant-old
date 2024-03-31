@@ -126,22 +126,22 @@ class CategoryController extends Controller
 
         $page = request()->query('redirect') ?? 'contest';
 
-        if ($contest->categories()->where('status', 'scoring')->first()) {
+        if ($contest->categories()->where('status', 'scoring')->count()) {
             return redirect($redirects[$page])
                 ->with('error', 'Could not Start Scores. Please make sure that there is no other category that has started scoring.');
         }
 
-        if (! $category->criterias()->first()) {
+        if (! $category->criterias()->count()) {
             return redirect($redirects[$page])
                 ->with('error', 'Could not Start Scores. Please make sure that this category has Criteria.');
         }
 
-        if (! $category->categoryJudges()->first()) {
+        if (! $category->judges()->count()) {
             return redirect($redirects[$page])
                 ->with('error', 'Could not Start Scores. Please make sure that this category has Judge.');
         }
 
-        if (! $category->categoryContestants()->first()) {
+        if (! $category->contestants()->count()) {
             return redirect($redirects[$page])
                 ->with('error', 'Could not Start Scores. Please make sure that this category has Contestant.');
         }
