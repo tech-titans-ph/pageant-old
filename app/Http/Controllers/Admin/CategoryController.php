@@ -191,23 +191,18 @@ class CategoryController extends Controller
 
         abort_unless($category->status === 'done', 403, 'Could not print scores. Please make sure that this category has finished scoring.');
 
-        $scoredCategoryContestants = $this->contestManager->getScoredCategoryContestants($category);
+        $category = $this->contestManager->getRankedCategoryContestants($category);
 
-        return view('admin.categories.print', compact('contest', 'category', 'scoredCategoryContestants'));
+        $contest = $category->contest;
+
+        return view('admin.categories.print', compact('contest', 'category'));
     }
 
     public function live(Contest $contest, $category)
     {
         $category = $contest->categories()->findOrFail($category);
 
-        $category->load([
-            'contest',
-            'judges',
-            'criterias',
-            'scores',
-        ]);
-
-        $category->ranked_contestants = $category->contestants()->get()->rankCategoryContestants($category, $category->contest);
+        $category = $this->contestManager->getRankedCategoryContestants($category);
 
         $contest = $category->contest;
 

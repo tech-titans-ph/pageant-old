@@ -34,8 +34,9 @@ class CategoryContestantController extends Controller
 
         $contestant = $contest->contestants()->findOrFail($contestant);
 
-        $category->ranked_contestants = $category->contestants
-            ->rankCategoryContestants($category, $category->contest)
+        $category = $this->contestManager->getRankedCategoryContestants($category);
+
+        $category->ranked_contestants = $category->ranked_contestants
             ->where('id', '=', $contestant->id);
 
         return view('admin.category-contestants.show', compact('contest', 'category'));
