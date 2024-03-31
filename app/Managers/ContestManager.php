@@ -255,17 +255,13 @@ class ContestManager
         return $this;
     }
 
-    public function removeCategoryContestant(CategoryContestant $categoryContestant)
+    public function removeCategoryContestant(Category $category, Contestant $contestant)
     {
-        $category = $categoryContestant->category()->first();
-
-        $contestant = $categoryContestant->contestant()->first();
-
-        $category->scores()->where('category_contestant_id', $categoryContestant->id)->delete();
+        $category->scores()->where('category_contestant_id', $contestant->pivot->id);
 
         $category->contestants()->detach($contestant->id);
 
-        $categoryContestantTable = $categoryContestant->getTable();
+        $categoryContestantTable = $contestant->pivot->getTable();
 
         $category->contestants()->orderBy("{$categoryContestantTable}.order")->each(function ($contestant, $index) use ($category) {
             $category->contestants()->updateExistingPivot($contestant->id, ['order' => $index + 1]);
