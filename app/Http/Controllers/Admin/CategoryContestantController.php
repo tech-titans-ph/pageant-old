@@ -22,7 +22,7 @@ class CategoryContestantController extends Controller
 
         $categoryContestant = $category->categoryContestants()->findOrFail($categoryContestant);
 
-        abort_unless('done' === $category->status, 403, 'Could not acess contestant score. Please make sure that this category has finished scoring.');
+        abort_unless($category->status === 'done', 403, 'Could not acess contestant score. Please make sure that this category has finished scoring.');
 
         $total = 0;
 
@@ -40,26 +40,26 @@ class CategoryContestantController extends Controller
     {
         $category = $contest->categories()->findOrFail($category);
 
-        if ('done' === $category->status) {
+        if ($category->status === 'done') {
             return redirect()
                 ->route('admin.contests.categories.show', ['contest' => $contest->id, 'category' => $category->id, 'activeTab' => 'Contestants'])
                 ->with('error', 'Could not add Contestant. Please make sure that this category is not yet finished scoring.');
         }
 
-        $category->categoryContestants()->create($request->validated());
+        $category->contestants()->attach($request->validated()['contestant_id'], ['order' => $category->contestants()->count() + 1]);
 
         return redirect()
             ->route('admin.contests.categories.show', ['contest' => $contest->id, 'category' => $category->id, 'activeTab' => 'Contestants'])
             ->with('success', 'Contestant has been Added.');
     }
 
-    public function destroy(Contest $contest, $category, $categoryContestant)
+    public function destroy(Contest $contest, $category, $contestant)
     {
         $category = $contest->categories()->findOrFail($category);
 
-        $categoryContestant = $category->categoryContestants()->findOrFail($categoryContestant);
+        $contestant = $category->contestants()->where('contestant_id', $contestant)->firstOrFail();
 
-        $this->contestManager->removeCategoryContestant($categoryContestant);
+        $this->contestManager->removeCategoryContestant($category, $contestant);
 
         return redirect()
             ->route('admin.contests.categories.show', ['contest' => $contest->id, 'category' => $category->id, 'activeTab' => 'Contestants'])
