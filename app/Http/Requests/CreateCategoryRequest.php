@@ -41,7 +41,7 @@ class CreateCategoryRequest extends FormRequest
             ],
             'max_points_percentage' => [
                 'nullable',
-                Rule::requiredIf(! ($this->has_criterias && ($this->scoring_system == 'ranking' || $contest->scoring_system == 'ranking'))),
+                Rule::requiredIf(($contest->scoring_system == 'ranking' && ! $this->has_criterias) || $contest->scoring_system == 'average'),
                 'integer',
                 'min:2',
                 'max:100',
