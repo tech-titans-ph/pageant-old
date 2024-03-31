@@ -11,7 +11,7 @@
           </div>
           <div class="flex-none ml-4 whitespace-no-wrap">
             <form method="post"
-              action="{{ route('admin.contests.categories.category-judges.destroy', ['contest' => $contest->id, 'category' => $category->id, 'categoryJudge' => $judge->id]) }}"
+              action="{{ route('admin.contests.categories.judges.destroy', ['contest' => $contest->id, 'category' => $category->id, 'judge' => $judge->id]) }}"
               class="inline-block btn">
               @csrf
               @method('DELETE')
@@ -30,14 +30,14 @@
       <li class="p-4 border-t">
         <div class="flex items-center">
           <div class="flex-grow">
-            <div class="font-bold">{{ $judge->user->name }}</div>
+            <div class="font-bold">{{ $judge->name }}</div>
             <div class="mt-2">
               <span class="px-2 font-normal text-red-100 bg-red-500 rounded">Removed</span>
             </div>
           </div>
           <div class="flex-none ml-4 whitespace-no-wrap">
             <form method="post"
-              action="{{ route('admin.contests.categories.category-judges.store', ['contest' => $contest->id, 'category' => $category->id]) }}"
+              action="{{ route('admin.contests.categories.judges.store', ['contest' => $contest->id, 'category' => $category->id]) }}"
               class="inline-block btn">
               @csrf
               <input type="hidden"
