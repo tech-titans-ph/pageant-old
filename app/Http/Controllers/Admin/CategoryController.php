@@ -44,6 +44,7 @@ class CategoryController extends Controller
             'criterias' => function ($query) {
                 $query->orderBy('order');
             },
+            'scores',
         ]);
 
         $removedContestants = $contest->contestants()->whereDoesntHave('categories', function (Builder $query) use ($category) {
@@ -54,13 +55,11 @@ class CategoryController extends Controller
             $query->where('category_id', $category->id);
         })->orderBy('order')->get();
 
-        $scoredCategoryContestants = [];
-
         if ($category->status === 'done') {
-            $scoredCategoryContestants = $this->contestManager->getScoredCategoryContestants($category);
+            $category->ranked_contestants = $category->contestants->rankCategoryContestants($category, $contest);
         }
 
-        return view('admin.categories.show', compact('contest', 'category', 'removedContestants', 'removedJudges', 'scoredCategoryContestants'));
+        return view('admin.categories.show', compact('contest', 'category', 'removedContestants', 'removedJudges'));
     }
 
     public function store(CreateCategoryRequest $request, Contest $contest)
@@ -131,7 +130,7 @@ class CategoryController extends Controller
                 ->with('error', 'Could not Start Scores. Please make sure that there is no other category that has started scoring.');
         }
 
-        if (! $category->criterias()->count()) {
+        if ($category->has_criterias && (! $category->criterias()->count())) {
             return redirect($redirects[$page])
                 ->with('error', 'Could not Start Scores. Please make sure that this category has Criteria.');
         }
