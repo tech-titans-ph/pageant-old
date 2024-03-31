@@ -82,6 +82,8 @@ class ContestManager
 
     public function loginJudge(Judge $judge)
     {
+        auth()->logout();
+
         auth('judge')->login($judge);
 
         return $this;
