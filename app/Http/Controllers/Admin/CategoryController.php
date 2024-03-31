@@ -201,52 +201,18 @@ class CategoryController extends Controller
     {
         $category = $contest->categories()->findOrFail($category);
 
-        $categoryContestants = $this->contestManager->getScoredCategoryContestants($category);
-
-        $categoryContestants = collect($categoryContestants->map(function ($categoryContestant, $index) use ($category) {
-            $categoryJudges = $category->categoryJudges()
-                ->with(['judge.user'])
-                ->orderBy('judge_id')
-                ->get()
-                ->map(function ($categoryJudge) use ($category, $categoryContestant) {
-                    $categoryScore = $categoryJudge->categoryScores()->where('category_contestant_id', $categoryContestant->id)->first();
-
-                    $criteriaScores = $category->criterias()->get()->map(function ($criteria) use ($categoryScore) {
-                        if ($categoryScore) {
-                            $criteriaScore = $categoryScore->criteriaScores()->where('criteria_id', $criteria->id)->first();
-
-                            if ($criteriaScore) {
-                                $criteria['score'] = $criteriaScore->score;
-
-                                return $criteria;
-                            }
-                        }
-
-                        $criteria['score'] = 0;
-
-                        return $criteria;
-                    });
-
-                    $categoryJudge['criteriaScores'] = $criteriaScores;
-
-                    $categoryJudge['total'] = $categoryJudge['criteriaScores']->sum('score');
-
-                    $categoryJudge['percentage'] = ($categoryJudge['total'] / $category->criterias()->sum('percentage')) * $category->percentage;
-
-                    return $categoryJudge;
-                });
-
-            $categoryContestant->contestant->picture_url = $categoryContestant->contestant->picture_url;
-
-            $categoryContestant['categoryJudges'] = $categoryJudges;
-
-            return $categoryContestant;
-        }))->sortByDesc('averageTotal')->values()->all();
-
-        return response()->json([
-            'criterias' => $category->criterias()->get(),
-            'categoryContestants' => $categoryContestants,
+        $category->load([
+            'contest',
+            'judges',
+            'criterias',
+            'scores',
         ]);
+
+        $category->ranked_contestants = $category->contestants()->get()->rankCategoryContestants($category, $category->contest);
+
+        $contest = $category->contest;
+
+        return view('admin.scores.category', compact('category', 'contest'));
     }
 
     public function storeFromScore(Contest $contest, $category, CreateCategoryFromScoreRequest $request)
