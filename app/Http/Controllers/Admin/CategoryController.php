@@ -94,17 +94,17 @@ class CategoryController extends Controller
 
         $page = request()->query('redirect') ?? 'contest';
 
-        if ($category->criterias()->first()) {
+        if ($category->criterias()->count()) {
             return redirect($redirects[$page])
                 ->with('error', 'Could not delete category. Please make sure that there are no criterias in this category.');
         }
 
-        if ($category->categoryJudges()->first()) {
+        if ($category->judges()->count()) {
             return redirect($redirects[$page])
                 ->with('error', 'Could not delete category. Please make sure that there are no judges in this category.');
         }
 
-        if ($category->categoryContestants()->first()) {
+        if ($category->contestants()->count()) {
             return redirect($redirects[$page])
                 ->with('error', 'Could not delete category. Please make sure that there are no contestants in this category.');
         }
