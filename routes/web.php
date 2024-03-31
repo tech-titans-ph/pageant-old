@@ -60,8 +60,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('contests.contestants', 'ContestantController')->except(['index']);
         Route::resource('contests.categories', 'CategoryController')->except(['index', 'create', 'edit']);
         Route::resource('contests.categories.criterias', 'CriteriaController')->except(['index', 'show', 'create']);
-        Route::resource('contests.categories.category-judges', 'CategoryJudgeController')
-            ->parameters(['category-judges' => 'categoryJudge'])
+        Route::resource('contests.categories.judges', 'CategoryJudgeController')
+            ->parameters(['judges' => 'judge'])
             ->only(['store', 'destroy']);
         Route::resource('contests.categories.category-contestants', 'CategoryContestantController')
             ->parameters(['category-contestants' => 'categoryContestant'])
