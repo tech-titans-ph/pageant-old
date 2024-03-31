@@ -1,6 +1,6 @@
 <tab-item title="Judges">
   <ul>
-    @forelse ($category->judges()->orderBy('order')->get() as $key => $judge)
+    @forelse ($category->judges as $key => $judge)
       <li class="p-4 {{ $key ? 'border-t' : '' }}">
         <div class="flex items-center">
           <div class="flex-grow">
