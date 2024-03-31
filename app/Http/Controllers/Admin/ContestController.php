@@ -77,7 +77,7 @@ class ContestController extends Controller
 
         $scoredContestants = [];
 
-        if (! $contest->categories()->whereIn('status', ['que', 'scoring'])->count()) {
+        if ($contest->categories->count() && ! $contest->categories->whereIn('status', ['que', 'scoring'])->count()) {
             $scoredContestants = $this->contestManager->getScoredContestants($contest);
         }
 
