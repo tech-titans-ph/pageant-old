@@ -16,24 +16,29 @@ class CategoryContestantController extends Controller
         $this->contestManager = new ContestManager();
     }
 
-    public function show(Contest $contest, $category, $categoryContestant)
+    public function show(Contest $contest, $category, $contestant)
     {
         $category = $contest->categories()->findOrFail($category);
 
-        $categoryContestant = $category->categoryContestants()->findOrFail($categoryContestant);
+        $category->load([
+            'contest',
+            'criterias' => function ($query) {
+                $query->orderBy('order');
+            },
+            'judges' => function ($query) {
+                $query->orderBy('category_judges.order');
+            },
+            'contestants',
+            'scores',
+        ]);
 
-        abort_unless($category->status === 'done', 403, 'Could not acess contestant score. Please make sure that this category has finished scoring.');
+        $contestant = $contest->contestants()->findOrFail($contestant);
 
-        $total = 0;
+        $category->ranked_contestants = $category->contestants
+            ->rankCategoryContestants($category, $category->contest)
+            ->where('id', '=', $contestant->id);
 
-        foreach ($categoryContestant->categoryScores as $categoryScore) {
-            $total += $categoryScore->criteriaScores()->sum('score');
-        }
-
-        $averageTotal = $total / $category->categoryJudges()->count();
-        $averagePercentage = ($averageTotal / $category->criterias()->sum('percentage')) * $category->percentage;
-
-        return view('admin.category-contestants.show', compact('contest', 'category', 'categoryContestant', 'averageTotal', 'averagePercentage'));
+        return view('admin.category-contestants.show', compact('contest', 'category'));
     }
 
     public function store(Contest $contest, $category, CreateCategoryContestantRequest $request)
