@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Contest;
-use App\Criteria;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CreateCriteriaRequest;
-use App\Http\Requests\UpdateCriteriaRequest;
+use App\Http\Requests\{CreateCriteriaRequest, UpdateCriteriaRequest};
 use App\Managers\ContestManager;
-use Illuminate\Validation\Rule;
+use App\{Contest, Criteria};
 
 class CriteriaController extends Controller
 {
@@ -36,7 +33,7 @@ class CriteriaController extends Controller
     {
         $category = $contest->categories()->findOrFail($category);
 
-        if ('done' === $category->status) {
+        if ($category->status === 'done') {
             return redirect()
                 ->route('admin.contests.categories.show', ['contest' => $contest->id, 'category' => $category->id, 'activeTab' => 'Criterias'])
                 ->with('error', 'Could not add Criteria. Please make sure that this Category is not finished scoring.');
