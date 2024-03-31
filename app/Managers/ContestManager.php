@@ -136,7 +136,7 @@ class ContestManager
             unset($data['scoring_system']);
         }
 
-        if ($data['has_criterias'] ?? false && ($contest->scoring_system == 'ranking' || ($data['scoring_system'] ?? '') == 'ranking')) {
+        if (($data['has_criterias'] ?? false) && ($contest->scoring_system == 'ranking' || ($data['scoring_system'] ?? '') == 'ranking')) {
             unset($data['max_points_percentage']);
         }
 
@@ -160,7 +160,11 @@ class ContestManager
         if (collect($data)->only(['has_criterias', 'scoring_system', 'max_points_percentage'])->filter()->count() && $category->scores()->count()) {
             unset($data['has_criterias'], $data['scoring_system'], $data['max_points_percentage']);
         } else {
-            if (! ($data['has_criterias'] ?? false)) {
+            if (! isset($data['has_criterias'])) {
+                $data['has_criterias'] = false;
+            }
+
+            if (! $data['has_criterias']) {
                 $data['scoring_system'] = null;
             }
 
