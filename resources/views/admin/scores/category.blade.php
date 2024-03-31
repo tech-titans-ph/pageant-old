@@ -13,7 +13,7 @@
     <thead>
       <tr>
         <th class="px-2 py-1 border"
-          colspan="2">Contestants</th>
+          colspan="2">{{ Str::plural('Contestant', $category->ranked_contestants->count()) }}</th>
         <th class="px-2 py-1 border">Judges</th>
 
         @if ($category->has_criterias)
