@@ -36,7 +36,7 @@ class CreateCategoryRequest extends FormRequest
             'has_criterias' => ['boolean'],
             'scoring_system' => [
                 'nullable',
-                'required_if:has_criterias,true',
+                'required_with:has_criterias',
                 Rule::in($contest->scoring_system == 'ranking' ? array_keys(config('options.scoring_systems')) : 'average'),
             ],
             'max_points_percentage' => [
