@@ -28,17 +28,43 @@ class UpdateCategoryRequest extends FormRequest
 
         $category = $contest->categories()->findOrFail($this->route('category'));
 
-        return [
-            'name' => ['required', 'string', 'max:255', Rule::unique('categories')->ignore($category)->where('contest_id', $contest->id)],
-            'percentage' => ['required', 'integer', 'min:1', 'max:100'],
+        $rules = [
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('categories')->ignore($category)->where('contest_id', $contest->id),
+            ],
         ];
+
+        if (! $category->scores()->count()) {
+            $rules = array_merge($rules, [
+                'has_criterias' => ['boolean'],
+                'scoring_system' => [
+                    'nullable',
+                    'required_with:has_criterias',
+                    Rule::in($contest->scoring_system == 'ranking' ? array_keys(config('options.scoring_systems')) : 'average'),
+                ],
+                'max_points_percentage' => [
+                    'nullable',
+                    Rule::requiredIf(! ($this->has_criterias && ($this->scoring_system == 'ranking' || $contest->scoring_system == 'ranking'))),
+                    'integer',
+                    'min:2',
+                    'max:100',
+                ],
+            ]);
+        }
+
+        return $rules;
     }
 
     public function attributes()
     {
         return [
             'name' => 'Name',
-            'percentage' => 'Percentage',
+            'has_criterias' => 'Has Criterias',
+            'scoring_system' => 'Scoring System',
+            'max_points_percentage' => 'Maximum Points or Percentage',
         ];
     }
 }
