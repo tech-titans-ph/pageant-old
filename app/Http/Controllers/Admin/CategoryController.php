@@ -173,7 +173,7 @@ class CategoryController extends Controller
                 ->with('error', 'Could not Finish Scores. Please make sure that this category has started scoring.');
         }
 
-        if ($category->categoryJudges()->where('completed', 0)->count()) {
+        if ($category->judges()->wherePivot('completed', 0)->count()) {
             return redirect($redirects[$page])
                 ->with('error', 'Could not Finish Scores. Please make sure that the judges in this category has completed scoring.');
         }
