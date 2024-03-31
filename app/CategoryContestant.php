@@ -19,4 +19,9 @@ class CategoryContestant extends Pivot
     {
         return $this->belongsTo(Contestant::class);
     }
+
+    public function scores()
+    {
+        return $this->hasMany(Score::class, 'category_contestant_id', 'id');
+    }
 }
