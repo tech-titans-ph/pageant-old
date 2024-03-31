@@ -53,7 +53,9 @@ class CreateCategoryRequest extends FormRequest
     {
         return [
             'name' => 'Name',
-            'percentage' => 'Percentage',
+            'has_criterias' => 'Has Criterias',
+            'scoring_system' => 'Scoring System',
+            'max_points_percentage' => 'Maximum Points or Percentage',
         ];
     }
 }
