@@ -193,7 +193,9 @@ class ContestManager
     {
         $category->update(['status' => 'scoring']);
 
-        $category->categoryJudges()->update(['completed' => 0]);
+        $category->judges()->get()->each(function ($judge) use ($category) {
+            $category->judges()->updateExistingPivot($judge->id, ['completed' => 0]);
+        });
 
         return $category;
     }
