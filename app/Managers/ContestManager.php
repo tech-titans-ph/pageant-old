@@ -314,23 +314,18 @@ class ContestManager
         return $judge;
     }
 
-    public function getScoredCategoryContestants(Category $category)
+    public function getRankedCategoryContestants(Category $category)
     {
-        return $category->categoryContestants()->get()->map(function ($categoryContestant) use ($category) {
-            $total = 0;
+        $category->load([
+            'contest',
+            'judges',
+            'criterias',
+            'scores',
+        ]);
 
-            foreach ($categoryContestant->categoryScores()->get() as $categoryScore) {
-                $total += $categoryScore->criteriaScores()->sum('score');
-            }
+        $category->ranked_contestants = $category->contestants()->get()->rankCategoryContestants($category, $category->contest);
 
-            $averageTotal = $total / $category->categoryJudges()->count();
-            $averagePercentage = ($averageTotal / $category->criterias()->sum('percentage')) * $category->percentage;
-
-            $categoryContestant['averageTotal'] = $averageTotal;
-            $categoryContestant['averagePercentage'] = $averagePercentage;
-
-            return $categoryContestant;
-        })->sortByDesc('averageTotal');
+        return $category;
     }
 
     public function getScoredContestants(Contest $contest)
