@@ -20,7 +20,7 @@ class CategoryJudgeController extends Controller
     {
         $category = $contest->categories()->findOrFail($category);
 
-        if ('done' === $category->status) {
+        if ($category->status === 'done') {
             return redirect()
                 ->route('admin.contests.categories.show', ['contest' => $contest->id, 'category' => $category->id, 'activeTab' => 'Judges'])
                 ->with('error', 'Could not add Judge. Please make sure that this Category is not yet finished scoring.');
@@ -33,13 +33,13 @@ class CategoryJudgeController extends Controller
             ->with('success', 'Judge has been Added.');
     }
 
-    public function destroy(Contest $contest, $category, $categoryJudge)
+    public function destroy(Contest $contest, $category, $judge)
     {
         $category = $contest->categories()->findOrFail($category);
 
-        $categoryJudge = $category->categoryJudges()->findOrFail($categoryJudge);
+        $judge = $category->judges()->where('judge_id', $judge)->firstOrFail();
 
-        $this->contestManager->removeCategoryJudge($categoryJudge);
+        $this->contestManager->removeCategoryJudge($category, $judge);
 
         return redirect()
             ->route('admin.contests.categories.show', ['contest' => $contest->id, 'category' => $category->id, 'activeTab' => 'Judges'])

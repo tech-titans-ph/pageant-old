@@ -231,17 +231,13 @@ class ContestManager
         return $this;
     }
 
-    public function removeCategoryJudge(CategoryJudge $categoryJudge)
+    public function removeCategoryJudge(Category $category, Judge $judge)
     {
-        $category = $categoryJudge->category()->first();
-
-        $judge = $categoryJudge->judge()->first();
-
-        $category->scores()->where('category_judge_id', $categoryJudge->id)->delete();
+        $category->scores()->where('category_judge_id', $judge->pivot->id)->delete();
 
         $category->judges()->detach($judge->id);
 
-        $categoryJudgeTable = $categoryJudge->getTable();
+        $categoryJudgeTable = $judge->pivot->getTable();
 
         $category->judges()->orderBy("{$categoryJudgeTable}.order")->each(function ($judge, $index) use ($category) {
             $category->judges()->updateExistingPivot($judge->id, ['order' => $index + 1]);
