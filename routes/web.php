@@ -63,8 +63,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('contests.categories.judges', 'CategoryJudgeController')
             ->parameters(['judges' => 'judge'])
             ->only(['store', 'destroy']);
-        Route::resource('contests.categories.category-contestants', 'CategoryContestantController')
-            ->parameters(['category-contestants' => 'categoryContestant'])
+        Route::resource('contests.categories.contestants', 'CategoryContestantController')
+            ->parameters(['contestants' => 'contestant'])
             ->only(['show', 'store', 'destroy']);
     });
 });
