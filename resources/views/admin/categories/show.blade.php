@@ -65,6 +65,7 @@
                 display-value="{{ old('name', $category->name) }}"
                 placeholder="Enter name of category..."></input-picker>
               @endformField()
+
               @if ($category->scores()->count())
                 <div>
                   <label class="flex items-center h-full space-x-2">
@@ -95,6 +96,7 @@
                   <span>Has Criterias</span>
                 </label>
               @endformField()
+
               @formField(['error' => 'scoring_system', 'class'=> 'scoring-system-wrapper ' . (old('has_criterias', $category->has_criterias) ? '' : 'hidden')])
               {!! Form::select('scoring_system', $contest->scoring_system == 'ranking' ? config('options.scoring_systems') : ['average' => 'Average'], old('scoring_system', $category->scoring_system), [
                   'id' => 'scoring_system',
@@ -102,13 +104,10 @@
                   'placeholder' => '- Select Scoring System -',
               ]) !!}
               @endformField
+
               @formField([
               'error' => 'max_points_percentage',
-              'class' => 'max-points-percentage-wrapper '
-              . ( old('has_criterias', $category->has_criterias)
-              && ($contest->scoring_system == 'ranking'
-              && old('scoring_system', $category->scoring_system) == 'ranking'
-              ) ? 'hidden' : '')
+              'class' => 'max-points-percentage-wrapper ' . ((($contest->scoring_system == 'ranking' && !old('has_criterias', $category->has_criterias)) || $contest->scoring_system == 'average') ? '' : 'hidden')
               ])
               <input type="text"
                 id="max_points_percentage"

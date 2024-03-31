@@ -23,7 +23,8 @@
               id="has_criterias"
               name="has_criterias"
               class="form-checkbox"
-              value="1" />
+              value="1"
+              {{ old('has_criterias') ? 'checked' : null }} />
             <span>Has Criterias</span>
           </label>
           @endformField()
@@ -38,7 +39,7 @@
 
           @formField([
           'error' => 'max_points_percentage',
-          'class' => 'max-points-percentage-wrapper ' . (old('has_criterias') && ($contest->scoring_system == 'ranking' || old('scoring_system') == 'ranking') ? 'hidden' : '')
+          'class' => 'max-points-percentage-wrapper ' . ((($contest->scoring_system == 'ranking' && !old('has_criterias')) || $contest->scoring_system == 'average') ? '' : 'hidden')
           ])
           <input type="text"
             id="max_points_percentage"
