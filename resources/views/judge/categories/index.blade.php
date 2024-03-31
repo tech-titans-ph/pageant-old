@@ -1,7 +1,8 @@
 @extends('layouts.mobile')
+
 @section('navbar-right')
   <a href="{{ route('logout') }}"
-    class="flex items-center justify-center block h-full px-4 no-underline hover:bg-gray-200"
+    class="flex items-center justify-center h-full px-4 no-underline hover:bg-gray-200"
     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
     Logout
   </a>
@@ -12,6 +13,7 @@
     {{ csrf_field() }}
   </form>
 @endsection
+
 @section('content')
   <div class="pt-12 mx-auto">
     <div class="p-4 leading-normal text-center border-b">
@@ -22,7 +24,7 @@
     <div class="mx-auto md:rounded md:shadow-md">
       <div class="justify-center border-t md:flex md:justify-between">
         <div class="w-full mx-auto md:w-1/2">
-          <img src="{{ Storage::url($judge->contest->logo) }}"
+          <img src="{{ $judge->contest->logo_url }}"
             class="object-contain object-center w-full"
             alt="Contestant">
         </div>
