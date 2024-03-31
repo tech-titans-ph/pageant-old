@@ -75,13 +75,9 @@ class ContestController extends Controller
             },
         ]);
 
-        $scoredContestants = [];
+        $contest = $this->contestManager->getRankedContestants($contest);
 
-        if ($contest->categories->count() && ! $contest->categories->whereIn('status', ['que', 'scoring'])->count()) {
-            $scoredContestants = $this->contestManager->getScoredContestants($contest);
-        }
-
-        return view('admin.contests.show', compact('contest', 'scoredContestants'));
+        return view('admin.contests.show', compact('contest'));
     }
 
     /**
