@@ -328,28 +328,44 @@ class ContestManager
         return $category;
     }
 
-    public function getScoredContestants(Contest $contest)
+    public function getRankedContestants(Contest $contest)
     {
-        return $contest->contestants()->get()->map(function ($contestant) {
-            $totalPercentage = 0;
+        $contest->load([
+            'judges' => function ($query) {
+                $query->whereHas('categories')->oldest('order');
+            },
+            'contestants' => function ($query) {
+                $query->whereHas('categories')->oldest('order');
+            },
+            'contestants.categories' => function ($query) {
+                $query->orderBy('categories.order', 'asc');
+            },
+            'categories' => function ($query) {
+                $query->oldest('order');
+            },
+            'categories.judges' => function ($query) {
+                $query->orderBy('category_judges.order', 'asc');
+            },
+            'categories.contestants' => function ($query) {
+                $query->orderBy('category_contestants.order', 'asc');
+            },
+            'categories.criterias' => function ($query) {
+                $query->oldest('order');
+            },
+            'categories.scores',
+        ])->first();
 
-            foreach ($contestant->categoryContestants as $categoryContestant) {
-                $total = 0;
+        if ($contest->categories->count() && ! $contest->categories->whereIn('status', ['que', 'scoring'])->count()) {
+            $contest->categories->transform(function ($category) use ($contest) {
+                $category->ranked_contestants = $category->contestants->rankCategoryContestants($category, $contest);
 
-                foreach ($categoryContestant->categoryScores as $categoryScore) {
-                    $total += $categoryScore->criteriaScores()->sum('score');
-                }
+                return $category;
+            });
 
-                $averageTotal = $total / $categoryContestant->category->categoryJudges()->count();
-                $averagePercentage = ($averageTotal / $categoryContestant->category->criterias()->sum('percentage')) * $categoryContestant->category->percentage;
+            $contest->ranked_contestants = $contest->contestants->rankContestants($contest);
+        }
 
-                $totalPercentage += $averagePercentage;
-            }
-
-            $contestant['totalPercentage'] = $totalPercentage;
-
-            return $contestant;
-        })->sortByDesc('totalPercentage');
+        return $contest;
     }
 
     public function createCategoryFromScore($category, $data)
