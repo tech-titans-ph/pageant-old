@@ -84,8 +84,6 @@ class ContestManager
     {
         auth('judge')->login($judge);
 
-        session(['judge' => $judge->id]);
-
         return $this;
     }
 
@@ -136,7 +134,7 @@ class ContestManager
             unset($data['scoring_system']);
         }
 
-        if (($data['has_criterias'] ?? false) && ($contest->scoring_system == 'ranking' || ($data['scoring_system'] ?? '') == 'ranking')) {
+        if (! (($contest->scoring_system == 'ranking' && ! ($data['has_criterias'] ?? false)) || $contest->scoring_system == 'average')) {
             unset($data['max_points_percentage']);
         }
 
@@ -157,6 +155,8 @@ class ContestManager
 
     public function editCategory(Category $category, $data)
     {
+        $contest = $category->contest()->first();
+
         if (collect($data)->only(['has_criterias', 'scoring_system', 'max_points_percentage'])->filter()->count() && $category->scores()->count()) {
             unset($data['has_criterias'], $data['scoring_system'], $data['max_points_percentage']);
         } else {
@@ -168,7 +168,7 @@ class ContestManager
                 $data['scoring_system'] = null;
             }
 
-            if ($data['has_criterias'] && ($category->contest->scoring_system == 'ranking' || ($data['scoring_system'] ?? '') == 'ranking')) {
+            if (! (($contest->scoring_system == 'ranking' && ! ($data['has_criterias'] ?? false)) || $contest->scoring_system == 'average')) {
                 $data['max_points_percentage'] = null;
             }
         }
