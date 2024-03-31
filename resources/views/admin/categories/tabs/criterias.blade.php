@@ -5,6 +5,7 @@
         action="{{ route('admin.contests.categories.criterias.store', ['contest' => $contest->id, 'category' => $category->id]) }}"
         class="flex items-start">
         @csrf
+
         <div class="flex flex-grow mr-4">
           @formField(['error' => 'name', 'class' => 'w-1/2'])
           <input-picker api="{{ route('admin.criterias.index') }}"
@@ -16,6 +17,7 @@
             display-value="{{ old('name') ?? '' }}"
             placeholder="Enter name of criteria..."></input-picker>
           @endformField
+
           @formField(['error' => 'percentage', 'class' => 'w-1/2 ml-4'])
           <input type="text"
             name="percentage"
@@ -24,9 +26,11 @@
             placeholder="Enter percentage of criteria...">
           @endformField
         </div>
+
         @button(['type' => 'submit', 'class' => 'flex-none']) Add Criteria @endbutton
       </form>
     </li>
+
     @forelse ($category->criterias as $criteria)
       <li class="p-4 border-t">
         <div class="flex items-center">
@@ -40,6 +44,7 @@
             class="flex-none inline-block">
             @csrf
             @method('DELETE')
+
             @button(['type' => 'submit', 'color' => 'danger']) Remove @endbutton
           </form>
         </div>
