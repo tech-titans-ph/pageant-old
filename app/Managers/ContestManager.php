@@ -286,30 +286,30 @@ class ContestManager
         return $this;
     }
 
-    public function setScore(CategoryContestant $categoryContestant, Criteria $criteria, $score)
+    public function setScore(Category $category, Contestant $contestant, $data)
     {
-        $judge = Judge::findOrFail(session('judge'));
+        $judge = auth('judge')->user();
 
-        $category = $categoryContestant->category()->first();
+        $judge = $category->judges()->where('judge_id', $judge->id)->first();
 
-        $categoryJudge = $category->categoryJudges()->where(['judge_id' => $judge->id])->firstOrFail();
+        $condition = [
+            'category_id' => $category->id,
+            'category_judge_id' => $judge->pivot->id,
+            'category_contestant_id' => $contestant->pivot->id,
+        ];
 
-        $categoryScore = $category->categoryScores()->firstOrCreate([
-            'category_judge_id' => $categoryJudge->id,
-            'category_contestant_id' => $categoryContestant->id,
-        ]);
+        if ($category->has_criterias) {
+            $condition['criteria_id'] = $data['group_id'];
+        }
 
-        return $categoryScore->criteriaScores()->updateOrCreate(
-            ['criteria_id' => $criteria->id],
-            ['score' => $score]
-        );
+        return $category->scores()->updateOrCreate($condition, ['points' => $data['points']]);
     }
 
-    public function completeScore(CategoryJudge $categoryJudge)
+    public function completeScore(Category $category, Judge $judge)
     {
-        $categoryJudge->update(['completed' => 1]);
+        $category->judges()->updateExistingPivot($judge->id, ['completed' => 1]);
 
-        return $categoryJudge;
+        return $judge;
     }
 
     public function getScoredCategoryContestants(Category $category)
