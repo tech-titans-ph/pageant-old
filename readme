@@ -12,6 +12,8 @@
    `APP_NAME="CreatvStudio - ContestHub"`
    
    `#put the ip address of your pc plus the port eg: 192.168.0.1:8000`
+   `#use unsecure connection eg: http and not https`
+   `#eg: https://192.168.0.1:8000`
    `APP_URL=`
    
    `DB_DATABASE=`
