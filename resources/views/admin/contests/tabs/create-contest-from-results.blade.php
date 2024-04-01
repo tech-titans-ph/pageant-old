@@ -20,6 +20,10 @@
       placeholder="Enter Contest Description">{{ old('description') }}</textarea>
     @endformField
 
+    @formField(['label' => 'Scoring System', 'error' => 'scoring_system'])
+    {!! Form::select('scoring_system', config('options.scoring_systems'), old('scoring_system'), ['class' => 'block w-full form-select', 'placeholder' => '-']) !!}
+    @endformField
+
     @formField(['label' => 'Logo', 'error' => 'logo'])
     <input type="file"
       name="logo"
