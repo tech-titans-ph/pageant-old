@@ -19,9 +19,23 @@
           <div class="flex-shrink whitespace-no-wrap">
             <form method="post"
               action="{{ route('admin.contests.categories.contestants.destroy', ['contest' => $contest->id, 'category' => $category->id, 'contestant' => $contestant->id]) }}"
-              class="inline-block btn">
+              class="inline-block btn @if ($contestant->pivot->scores()->count()) remove-score-confirmation-form @endif">
               @csrf
               @method('DELETE')
+
+              <input type="hidden"
+                name="column"
+                value="category_contestant_id" />
+              <input type="hidden"
+                name="value"
+                value="{{ $contestant->pivot->id }}" />
+              <input type="hidden"
+                name="auth_password" />
+
+
+              @if ($errors->{"category_contestant_id_{$contestant->pivot->id}"}->any())
+                <div class="mb-1 text-sm italic text-red-500">{{ $errors->{"category_contestant_id_{$contestant->pivot->id}"}->first() }}</div>
+              @endif
 
               @button(['type' => 'submit', 'color' => 'danger']) Remove @endbutton
             </form>

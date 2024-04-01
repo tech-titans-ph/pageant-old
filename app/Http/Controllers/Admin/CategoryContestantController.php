@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Contest;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CreateCategoryContestantRequest;
+use App\Http\Requests\{CreateCategoryContestantRequest, RemoveScoreRequest};
 use App\Managers\ContestManager;
 
 class CategoryContestantController extends Controller
@@ -47,7 +47,7 @@ class CategoryContestantController extends Controller
             ->with('success', 'Contestant has been Added.');
     }
 
-    public function destroy(Contest $contest, $category, $contestant)
+    public function destroy(RemoveScoreRequest $request, Contest $contest, $category, $contestant)
     {
         $category = $contest->categories()->findOrFail($category);
 
