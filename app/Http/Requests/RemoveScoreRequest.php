@@ -26,13 +26,17 @@ class RemoveScoreRequest extends FormRequest
      */
     public function rules()
     {
+        $this->errorBag = "{$this->column}_{$this->value}";
+
+        $columns = collect(['category_judge_id', 'category_contestant_id', 'criteria_id']);
+
         return [
-            'column' => ['required', 'in:category_judge_id,category_contestant_id,criteria_id'],
-            'value' => ['required', 'integer'],
-            'confirm_password' => [
+            'column' => ['bail', 'required', 'in:' . $columns->implode(',')],
+            'value' => ['bail', 'required', 'integer'],
+            'auth_password' => [
                 'bail',
                 'nullable',
-                Rule::requiredIf(Score::where($this->column, $this->value)->count()),
+                Rule::requiredIf($columns->contains($this->column) ? Score::where($this->column, $this->value)->count() : false),
                 'string',
             ],
         ];
@@ -41,7 +45,7 @@ class RemoveScoreRequest extends FormRequest
     public function attributes()
     {
         return [
-            'password' => 'Password',
+            'auth_password' => 'Password',
         ];
     }
 
@@ -56,8 +60,8 @@ class RemoveScoreRequest extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            if ($this->password && (! Hash::check($this->password, auth()->user()->password))) {
-                $validator->errors()->add('password', 'Invalid password.');
+            if ($this->auth_password && (! Hash::check($this->auth_password, auth()->user()->password))) {
+                $validator->errors()->add('auth_password', 'Invalid password.');
 
                 return;
             }
