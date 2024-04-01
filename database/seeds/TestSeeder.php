@@ -15,12 +15,25 @@ class TestSeeder extends Seeder
         Artisan::call('migrate:fresh --seed');
 
         $this->scenario('average', true, 'average');
-        $this->scenario('average');
+        // $this->scenario('average');
 
-        $this->scenario('ranking', true, 'average');
+        // $this->scenario('ranking', true, 'average');
 
-        $this->scenario('ranking', true, 'ranking');
-        $this->scenario('ranking');
+        // $this->scenario('ranking', true, 'ranking');
+        // $this->scenario('ranking');
+
+        return;
+
+        Category::first()->update(['status' => 'scoring']);
+
+        $query = Category::with(['contest'])
+            ->where('status', 'scoring')
+            ->has('judges')
+            ->whereDoesntHave('judges', function (Illuminate\Database\Eloquent\Builder $query) {
+                $query->where('completed', 0);
+            });
+
+        $query->dd();
     }
 
     public function scenario($categoryScoringSystem, $hasCriterias = false, $criteriaScoringSystem = null)
@@ -50,6 +63,7 @@ class TestSeeder extends Seeder
                 'contest_id' => $contest->id,
                 'has_criterias' => $hasCriterias,
                 'scoring_system' => $criteriaScoringSystem,
+                'status' => 'done',
             ])->toArray()
         )->each(function ($category, $index) use ($judges, $contestants) {
             $category->update(['order' => $index + 1]);
@@ -67,7 +81,7 @@ class TestSeeder extends Seeder
             }
 
             $category->judges()->get()->each(function ($judge, $index) use ($category) {
-                $category->judges()->updateExistingPivot($judge->id, ['order' => $index + 1]);
+                $category->judges()->updateExistingPivot($judge->id, ['order' => $index + 1, 'completed' => true]);
 
                 $category->contestants()->get()->each(function ($contestant, $index) use ($category, $judge) {
                     $category->contestants()->updateExistingPivot($contestant->id, ['order' => $index + 1]);
