@@ -2,9 +2,9 @@
 
 namespace App\Managers;
 
-use App\{Category, CategoryContestant, CategoryJudge, Contest, Contestant, Criteria, CriteriaScore, Judge, User};
+use App\{Category, Contest, Contestant, Criteria, Judge};
 use Illuminate\Http\File;
-use Illuminate\Support\Facades\{Hash, Storage};
+use Illuminate\Support\Facades\Storage;
 
 class ContestManager
 {
@@ -403,35 +403,34 @@ class ContestManager
 
     public function createContestFromScore($contest, $data)
     {
-        $data['logo'] = Storage::put('logos', $data['logo']);
+        $logo = $data['logo'];
 
         $newContest = Contest::create(
             collect($data)->except(['contestant_count', 'include_judges'])->all()
         );
 
-        $contestants = collect($this->getScoredContestants($contest)->toArray())->values()->all();
+        $contest = $this->getRankedContestants($contest);
 
-        $contestants = collect($contestants)->filter(function ($contestant, $index) use ($data) {
-            return $index < $data['contestant_count'];
-        })->values()->all();
+        $newContest->update(['logo' => Storage::put("{$newContest->id}/logo", $logo)]);
 
-        // sleep(1);
-
-        foreach ($contestants as $contestant) {
-            $newContest->contestants()->create([
-                'name' => $contestant['name'],
-                'description' => $contestant['description'],
-                'number' => $contestant['number'],
-                'picture' => Storage::putFile('profile-pictures', new File(Storage::path($contestant['picture']))),
-            ]);
-        }
+        $contest->ranked_contestants
+            ->where('ranking', '<=', $data['contestant_count'])
+            ->each(function ($contestant, $index) use ($newContest) {
+                $newContest->contestants()->create([
+                    'name' => $contestant->name,
+                    'alias' => $contestant->alias,
+                    'order' => $index + 1,
+                    'avatar' => Storage::putFile("{$newContest->id}/contestants", new File(Storage::path($contestant->avatar))),
+                ]);
+            });
 
         if (isset($data['include_judges'])) {
-            foreach ($contest->judges()->get() as $judge) {
+            $contest->judges->each(function ($judge, $index) use ($newContest) {
                 $newContest->judges()->create([
-                    'user_id' => $judge->user_id,
+                    'name' => $judge->name,
+                    'order' => $index + 1,
                 ]);
-            }
+            });
         }
 
         return $newContest;
