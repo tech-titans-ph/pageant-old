@@ -12,9 +12,24 @@
           <div class="flex-none ml-4 whitespace-no-wrap">
             <form method="post"
               action="{{ route('admin.contests.categories.judges.destroy', ['contest' => $contest->id, 'category' => $category->id, 'judge' => $judge->id]) }}"
-              class="inline-block btn">
+              class="inline-block btn @if ($judge->pivot->scores()->count()) remove-score-confirmation-form @endif">
               @csrf
               @method('DELETE')
+
+              <input type="hidden"
+                name="column"
+                value="category_judge_id" />
+              <input type="hidden"
+                name="value"
+                value="{{ $judge->pivot->id }}" />
+              <input type="hidden"
+                name="auth_password" />
+
+
+              @if ($errors->{"category_judge_id_{$judge->pivot->id}"}->any())
+                <div class="mb-1 text-sm italic text-red-500">{{ $errors->{"category_judge_id_{$judge->pivot->id}"}->first() }}</div>
+              @endif
+
               @button(['type' => 'submit', 'color' => 'danger']) Remove @endbutton
             </form>
           </div>
@@ -51,3 +66,5 @@
     @endforeach
   </ul>
 </tab-item>
+
+@include('admin.scores.remove-script')

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Contest;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CreateCategoryJudgeRequest;
+use App\Http\Requests\{CreateCategoryJudgeRequest, RemoveScoreRequest};
 use App\Managers\ContestManager;
 
 class CategoryJudgeController extends Controller
@@ -33,7 +33,7 @@ class CategoryJudgeController extends Controller
             ->with('success', 'Judge has been Added.');
     }
 
-    public function destroy(Contest $contest, $category, $judge)
+    public function destroy(RemoveScoreRequest $request, Contest $contest, $category, $judge)
     {
         $category = $contest->categories()->findOrFail($category);
 
