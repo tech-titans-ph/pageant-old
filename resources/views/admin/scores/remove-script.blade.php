@@ -19,7 +19,7 @@
             text: 'Are you sure you want to remove this and its related scores?',
           }).then((result) => {
             if (result.value) {
-              var password = form.querySelector('[name="password"]');
+              var password = form.querySelector('[name="auth_password"]');
 
               password.value = result.value;
 
