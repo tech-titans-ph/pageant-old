@@ -41,9 +41,22 @@
           </a>
           <form method="post"
             action="{{ route('admin.contests.categories.criterias.destroy', ['contest' => $contest->id, 'category' => $category->id, 'criteria' => $criteria->id]) }}"
-            class="flex-none inline-block">
+            class="flex-none inline-block @if ($criteria->scores()->count()) remove-score-confirmation-form @endif">
             @csrf
             @method('DELETE')
+
+            <input type="hidden"
+              name="column"
+              value="criteria_id" />
+            <input type="hidden"
+              name="value"
+              value="{{ $criteria->id }}" />
+            <input type="hidden"
+              name="auth_password" />
+
+            @if ($errors->{"criteria_id_{$criteria->id}"}->any())
+              <div class="mb-1 text-sm italic text-red-500">{{ $errors->{"criteria_id_{$criteria->id}"}->first() }}</div>
+            @endif
 
             @button(['type' => 'submit', 'color' => 'danger']) Remove @endbutton
           </form>
