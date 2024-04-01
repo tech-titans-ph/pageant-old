@@ -20,27 +20,20 @@ class ContestantController extends Controller
     {
         $contestant = $contest->contestants()->findOrFail($contestant);
 
-        abort_if($contest->categories()->whereIn('status', ['que', 'scoring'])->count(), 403, 'Could not print socres. Please make sure that all categories in this contest has finished scoring.');
+        $contest = $this->contestManager->getRankedContestants($contest);
 
-        $categoryContestants = $contestant->categoryContestants()->orderBy('category_id')->get()->map(function ($categoryContestant) {
-            $total = 0;
+        $contest->ranked_contestants = $contest->ranked_contestants
+            ->where('id', '=', $contestant->id);
 
-            foreach ($categoryContestant->categoryScores as $categoryScore) {
-                $total += $categoryScore->criteriaScores()->sum('score');
-            }
+        $contest->categories->transform(function ($category) use ($contestant) {
+            $category->ranked_contestants = $category->ranked_contestants->filter(function ($rankedContestant) use ($contestant) {
+                return $rankedContestant->id == $contestant->id;
+            });
 
-            $averageTotal = $total / $categoryContestant->category->categoryJudges()->count();
-            $averagePercentage = ($averageTotal / $categoryContestant->category->criterias()->sum('percentage')) * $categoryContestant->category->percentage;
-
-            $categoryContestant['averageTotal'] = $averageTotal;
-            $categoryContestant['averagePercentage'] = $averagePercentage;
-
-            return $categoryContestant;
+            return $category;
         });
 
-        $totalPercentage = $categoryContestants->sum('averagePercentage');
-
-        return view('admin.contestants.show', compact('contest', 'contestant', 'categoryContestants', 'totalPercentage'));
+        return view('admin.contestants.show', compact('contest'));
     }
 
     public function create(Contest $contest)
