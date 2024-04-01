@@ -20,18 +20,6 @@ class CategoryContestantController extends Controller
     {
         $category = $contest->categories()->findOrFail($category);
 
-        $category->load([
-            'contest',
-            'criterias' => function ($query) {
-                $query->orderBy('order');
-            },
-            'judges' => function ($query) {
-                $query->orderBy('category_judges.order');
-            },
-            'contestants',
-            'scores',
-        ]);
-
         $contestant = $contest->contestants()->findOrFail($contestant);
 
         $category = $this->contestManager->getRankedCategoryContestants($category);
