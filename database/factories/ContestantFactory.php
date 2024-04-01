@@ -17,7 +17,7 @@ $factory->define(Contestant::class, function (Faker $faker) {
     $uploadedAvatar = uploadedAvatar();
 
     $contestant->update([
-        'avatar' => $uploadedAvatar->store("{$contestant->contest->id}/contestants"),
+        'avatar' => $uploadedAvatar->store("{$contestant->contest()->first()->id}/contestants"),
     ]);
 });
 
