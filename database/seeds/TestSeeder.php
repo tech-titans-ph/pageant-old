@@ -3,6 +3,7 @@
 use App\{Category, CategoryContestant, CategoryJudge, Contest, Contestant, Criteria, Judge, Score, User};
 use Faker\Generator as Faker;
 use Illuminate\Database\Seeder;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\{Artisan, Storage};
 
 class TestSeeder extends Seeder
@@ -53,7 +54,10 @@ class TestSeeder extends Seeder
         });
 
         $contestants = $contest->contestants()->createMany(
-            factory(Contestant::class, 3)->make(['contest_id' => $contest->id])->toArray()
+            factory(Contestant::class, 3)->make([
+                'contest_id' => $contest->id,
+                'avatar' => UploadedFile::fake()->image('avatar.png')->store("{$contest->id}/contestants"),
+            ])->toArray()
         )->each(function ($contestant, $index) {
             $contestant->update(['order' => $index + 1]);
         });
