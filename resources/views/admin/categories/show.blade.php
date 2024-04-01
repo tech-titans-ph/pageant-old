@@ -156,9 +156,19 @@
 
             <form method="post"
               action="{{ route('admin.contests.categories.destroy', ['contest' => $contest->id, 'category' => $category->id]) }}"
-              class="inline-block">
+              class="inline-block @if (!$category->has_criterias && $category->scores()->count()) remove-score-confirmation-form @endif">
               @csrf
               @method('DELETE')
+
+              <input type="hidden"
+                name="column"
+                value="category_id" />
+              <input type="hidden"
+                name="value"
+                value="{{ $category->id }}" />
+              <input type="hidden"
+                name="password" />
+
               @button(['type' => 'Submit', 'color' => 'danger'])
               Remove
               @endbutton
@@ -175,3 +185,5 @@
 @if (!$category->scores()->count())
   @include('admin.categories.form-script')
 @endif
+
+@include('admin.scores.remove-script')

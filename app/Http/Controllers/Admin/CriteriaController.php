@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\{CreateCriteriaRequest, UpdateCriteriaRequest};
+use App\Http\Requests\{CreateCriteriaRequest, RemoveScoreRequest, UpdateCriteriaRequest};
 use App\Managers\ContestManager;
 use App\{Contest, Criteria};
 
@@ -66,7 +66,7 @@ class CriteriaController extends Controller
             ->with('success', 'Criteria has been Edited.');
     }
 
-    public function destroy(Contest $contest, $category, $criteria)
+    public function destroy(RemoveScoreRequest $request, Contest $contest, $category, $criteria)
     {
         $criteria = $contest->categories()->findOrFail($category)->criterias()->findOrFail($criteria);
 
