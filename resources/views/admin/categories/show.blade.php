@@ -156,7 +156,7 @@
 
             <form method="post"
               action="{{ route('admin.contests.categories.destroy', ['contest' => $contest->id, 'category' => $category->id]) }}"
-              class="inline-block @if (!$category->has_criterias && $category->scores()->count()) remove-score-confirmation-form @endif">
+              class="inline-block">
               @csrf
               @method('DELETE')
 
