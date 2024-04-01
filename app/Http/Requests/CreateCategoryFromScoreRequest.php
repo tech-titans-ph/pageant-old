@@ -44,7 +44,7 @@ class CreateCategoryFromScoreRequest extends FormRequest
                 'max:100',
             ],
             'contestant_count' => ['required', 'integer', 'min:2', 'max:' . $category->contestants()->count()],
-            'include_judges' => ['nullable'],
+            'include_judges' => ['boolean'],
         ];
     }
 
