@@ -370,24 +370,32 @@ class ContestManager
 
     public function createCategoryFromScore($category, $data)
     {
-        $newCategory = $category->contest()->first()->categories()->create(
+        $contest = $category->contest()->first();
+
+        if (! ($data['has_criterias'] ?? false)) {
+            unset($data['scoring_system']);
+        }
+
+        if (! (($contest->scoring_system == 'ranking' && ! ($data['has_criterias'] ?? false)) || $contest->scoring_system == 'average')) {
+            unset($data['max_points_percentage']);
+        }
+
+        $category = $this->getRankedCategoryContestants($category);
+
+        $newCategory = $contest->categories()->create(
             collect($data)->except(['contestant_count', 'include_judges'])->all()
         );
 
-        $categoryContestants = collect($this->getScoredCategoryContestants($category)->toArray())->values()->all();
-
-        $categoryContestants = collect($categoryContestants)->filter(function ($categoryContestant, $index) use ($data) {
-            return $index < $data['contestant_count'];
-        })->values()->all();
-
-        foreach ($categoryContestants as $categoryContestant) {
-            $newCategory->categoryContestants()->create(['contestant_id' => $categoryContestant['contestant_id']]);
-        }
+        $category->ranked_contestants
+            ->where('ranking', '<=', $data['contestant_count'])
+            ->each(function ($contestant) use ($newCategory) {
+                $newCategory->contestants()->attach($contestant->id, ['order' => $newCategory->contestants()->count()]);
+            });
 
         if (isset($data['include_judges'])) {
-            foreach ($category->contest()->first()->judges()->get() as $judge) {
-                $newCategory->categoryJudges()->create(['judge_id' => $judge->id]);
-            }
+            $category->judges()->each(function ($judge) use ($newCategory) {
+                $newCategory->judges()->attach($judge->id, ['order' => $newCategory->judges()->count()]);
+            });
         }
 
         return $newCategory;
