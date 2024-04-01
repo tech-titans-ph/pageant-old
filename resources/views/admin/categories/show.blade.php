@@ -176,3 +176,5 @@
 @if (!$category->scores()->count())
   @include('admin.categories.form-script')
 @endif
+
+@include('admin.scores.remove-script')

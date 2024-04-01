@@ -66,5 +66,3 @@
     @endforeach
   </ul>
 </tab-item>
-
-@include('admin.scores.remove-script')
