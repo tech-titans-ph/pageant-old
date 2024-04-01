@@ -142,15 +142,9 @@ class ContestController extends Controller
     {
         abort_unless(! $contest->categories()->whereIn('status', ['que', 'scoring'])->count(), 403, 'Could not print socres. Please make sure that all categories in this contest has finished scoring.');
 
-        $contestants = $this->contestManager->getScoredContestants($contest);
+        $contest = $this->contestManager->getRankedContestants($contest);
 
-        $categories = $contest->categories()->get()->map(function ($category) {
-            $category['categoryContestants'] = $this->contestManager->getScoredCategoryContestants($category);
-
-            return $category;
-        });
-
-        return view('admin.contests.print', compact('contest', 'contestants', 'categories'));
+        return view('admin.contests.print', compact('contest'));
     }
 
     public function status()
