@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\{CreateCategoryFromScoreRequest, CreateCategoryRequest, RemoveScoreRequest, UpdateCategoryRequest};
+use App\Http\Requests\{CreateCategoryFromScoreRequest, CreateCategoryRequest, UpdateCategoryRequest};
 use App\Managers\ContestManager;
 use App\{Category, Contest};
 use Illuminate\Database\Eloquent\Builder;
@@ -82,7 +82,7 @@ class CategoryController extends Controller
             ->with('success', 'Category has been Edited.');
     }
 
-    public function destroy(RemoveScoreRequest $request, Contest $contest, $category)
+    public function destroy(Contest $contest, $category)
     {
         $category = $contest->categories()->findOrFail($category);
 
