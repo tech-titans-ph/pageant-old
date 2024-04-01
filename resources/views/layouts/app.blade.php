@@ -25,13 +25,15 @@
 
 <body class="h-screen antialiased leading-none bg-gray-100">
   <div id="app">
-    <nav class="py-6 bg-blue-900 shadow">
-      <div class="container px-6 mx-auto md:px-0">
-        <div class="flex items-center justify-center">
+    <nav class="bg-green-600 shadow">
+      <div class="px-6 mx-auto md:px-0">
+        <div class="flex items-center justify-center px-4 lg:px-16">
           <div class="mr-6">
             <a href="{{ url('/') }}"
-              class="text-lg font-semibold text-gray-100 no-underline">
-              {{ config('app.name') }}
+              class="flex items-center text-lg font-semibold text-gray-100 no-underline">
+              <img src="{{ asset('images/' . env('LOGO_ONLY')) }}"
+                class="inline-block h-16 mr-2 rounded-full">
+              <div>{{ config('app.name') }}</div>
             </a>
           </div>
           <div class="flex-1 text-right">
