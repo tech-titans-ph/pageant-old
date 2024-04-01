@@ -19,4 +19,9 @@ class CategoryJudge extends Pivot
     {
         return $this->belongsTo(Judge::class);
     }
+
+    public function scores()
+    {
+        return $this->hasMany(Score::class, 'category_judge_id', 'id');
+    }
 }
