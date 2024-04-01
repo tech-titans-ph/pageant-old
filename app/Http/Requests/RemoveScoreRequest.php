@@ -27,9 +27,9 @@ class RemoveScoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'column' => ['required', 'in:category_id,category_judge_id,category_contestant_id,criteria_id'],
+            'column' => ['required', 'in:category_judge_id,category_contestant_id,criteria_id'],
             'value' => ['required', 'integer'],
-            'password' => [
+            'confirm_password' => [
                 'bail',
                 'nullable',
                 Rule::requiredIf(Score::where($this->column, $this->value)->count()),
