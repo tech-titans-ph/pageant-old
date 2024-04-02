@@ -78,6 +78,12 @@ Route::middleware('auth')->group(function () {
         });
 
         Route::resource('contests.categories.criterias', 'CriteriaController')->except(['index', 'show', 'create']);
+
+        Route::name('contests.categories.criterias.move.')->prefix('contests/{contest}/categories/{category}/criterias/{criteria}')->group(function () {
+            Route::patch('up', 'CriteriaController@moveUp')->name('up');
+            Route::patch('down', 'CriteriaController@moveDown')->name('down');
+        });
+
         Route::resource('contests.categories.judges', 'CategoryJudgeController')
             ->parameters(['judges' => 'judge'])
             ->only(['store', 'destroy']);

@@ -76,4 +76,48 @@ class CriteriaController extends Controller
             ->route('admin.contests.categories.show', ['contest' => $contest->id, 'category' => $category, 'activeTab' => 'Criterias'])
             ->with('success', 'Criteria has been Deleted.');
     }
+
+    public function moveUp(Contest $contest, $category, $criteria)
+    {
+        $category = $contest->categories()->findOrFail($category);
+
+        $criteria = $category->criterias()->findOrFail($criteria);
+
+        $previousCriteria = $category->criterias()
+            ->where('order', '<', $criteria->order)
+            ->latest('order')
+            ->first();
+
+        if ($previousCriteria) {
+            $order = $criteria->order;
+
+            $criteria->update(['order' => $previousCriteria->order]);
+
+            $previousCriteria->update(['order' => $order]);
+        }
+
+        return redirect(route('admin.contests.categories.show', ['contest' => $contest->id, 'category' => $category->id, 'activeTab' => 'Criterias']));
+    }
+
+    public function MoveDown(Contest $contest, $category, $criteria)
+    {
+        $category = $contest->categories()->findOrFail($category);
+
+        $criteria = $category->criterias()->findOrFail($criteria);
+
+        $nextCriteria = $category->criterias()
+            ->where('order', '>', $criteria->order)
+            ->oldest('order')
+            ->first();
+
+        if ($nextCriteria) {
+            $order = $criteria->order;
+
+            $criteria->update(['order' => $nextCriteria->order]);
+
+            $nextCriteria->update(['order' => $order]);
+        }
+
+        return redirect(route('admin.contests.categories.show', ['contest' => $contest->id, 'category' => $category->id, 'activeTab' => 'Criterias']));
+    }
 }

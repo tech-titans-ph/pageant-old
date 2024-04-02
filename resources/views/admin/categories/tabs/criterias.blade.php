@@ -33,33 +33,49 @@
 
     @forelse ($category->criterias as $criteria)
       <li class="p-4 border-t">
-        <div class="flex items-center">
+        <div class="flex items-center space-x-4">
           <a href="{{ route('admin.contests.categories.criterias.edit', ['contest' => $contest->id, 'category' => $category->id, 'criteria' => $criteria->id]) }}"
-            class="flex-grow pr-4">
+            class="flex-grow">
             <div class="font-bold">{{ $criteria->name }}</div>
             <div class="mt-2 italic">{{ $criteria->max_points_percentage }} {{ $category->scoring_system == 'average' ? '%' : 'points' }}</div>
           </a>
-          <form method="post"
-            action="{{ route('admin.contests.categories.criterias.destroy', ['contest' => $contest->id, 'category' => $category->id, 'criteria' => $criteria->id]) }}"
-            class="flex-none inline-block @if ($criteria->scores()->count()) remove-score-confirmation-form @endif">
-            @csrf
-            @method('DELETE')
+          <div class="flex items-center flex-none space-x-2">
+            <form method="post"
+              action="{{ route('admin.contests.categories.criterias.move.up', ['contest' => $contest->id, 'category' => $category->id, 'criteria' => $criteria->id]) }}"
+              class="inline-block btn">
+              @csrf
+              @method('PATCH')
 
-            <input type="hidden"
-              name="column"
-              value="criteria_id" />
-            <input type="hidden"
-              name="value"
-              value="{{ $criteria->id }}" />
-            <input type="hidden"
-              name="auth_password" />
+              @button(['type' => 'submit']) Move Up @endbutton
+            </form>
 
-            @if ($errors->{"criteria_id_{$criteria->id}"}->any())
-              <div class="mb-1 text-sm italic text-red-500">{{ $errors->{"criteria_id_{$criteria->id}"}->first() }}</div>
-            @endif
+            <form method="post"
+              action="{{ route('admin.contests.categories.criterias.move.down', ['contest' => $contest->id, 'category' => $category->id, 'criteria' => $criteria->id]) }}"
+              class="inline-block btn">
+              @csrf
+              @method('PATCH')
 
-            @button(['type' => 'submit', 'color' => 'danger']) Remove @endbutton
-          </form>
+              @button(['type' => 'submit']) Move Down @endbutton
+            </form>
+            <form method="post"
+              action="{{ route('admin.contests.categories.criterias.destroy', ['contest' => $contest->id, 'category' => $category->id, 'criteria' => $criteria->id]) }}"
+              class="inline-block @if ($criteria->scores()->count()) remove-score-confirmation-form @endif">
+              @csrf
+              @method('DELETE')
+              <input type="hidden"
+                name="column"
+                value="criteria_id" />
+              <input type="hidden"
+                name="value"
+                value="{{ $criteria->id }}" />
+              <input type="hidden"
+                name="auth_password" />
+              @if ($errors->{"criteria_id_{$criteria->id}"}->any())
+                <div class="mb-1 text-sm italic text-red-500">{{ $errors->{"criteria_id_{$criteria->id}"}->first() }}</div>
+              @endif
+              @button(['type' => 'submit', 'color' => 'danger']) Remove @endbutton
+            </form>
+          </div>
         </div>
       </li>
     @empty
