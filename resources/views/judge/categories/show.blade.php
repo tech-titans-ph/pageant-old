@@ -25,12 +25,13 @@
     <div class="md:rounded md:shadow-md mx-auto {{ !$judge->pivot->completed ? 'pb-12' : '' }}">
       @foreach ($contestants as $contestant)
         <a class="flex p-6 border-t"
-          href="{{ route('judge.categories.contestants.index', ['category' => $category->id, 'page' => $contestant->order]) }}">
+          href="{{ route('judge.categories.contestants.index', ['category' => $category->id, 'page' => $contestant->pivot->order]) }}">
           <img src="{{ $contestant->avatar_url }}"
             class="flex-none object-cover object-center w-16 h-16 mr-4 border rounded-full">
-          <div class="self-center flex-grow mr-4 font-bold">
-            <div class="mb-2">#{{ $contestant->order }}</div>
-            <div>{{ $contestant->name }}</div>
+          <div class="self-center flex-grow mr-4 space-y-2">
+            <div>#{{ $contestant->pivot->order }}</div>
+            <div class="font-bold">{{ $contestant->name }}</div>
+            <div class="italic">{{ $contestant->alias }}</div>
           </div>
           <div class="self-center flex-shrink text-3xl font-bold text-right text-green-700">
             {{ $contestant->points }}
