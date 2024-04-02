@@ -2,16 +2,14 @@
 
 namespace App;
 
-use App\Judge;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Silber\Bouncer\Database\HasRolesAndAbilities;
 
 class User extends Authenticatable
 {
-    use Notifiable, SoftDeletes, HasRolesAndAbilities;
+    use Notifiable;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -19,7 +17,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'password', 'username', 'name', 'role', 'picture', 'description', 'contest_id',
+        'password', 'username', 'name',
     ];
 
     /**
@@ -39,9 +37,4 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
-    public function judges()
-    {
-        return $this->hasMany(Judge::class);
-    }
 }

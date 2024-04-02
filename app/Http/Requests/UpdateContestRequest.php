@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateContestRequest extends FormRequest
 {
@@ -26,7 +27,17 @@ class UpdateContestRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:255'],
-            'logo' => ['nullable', 'file', 'image'],
+            'scoring_system' => [
+                'nullable',
+                Rule::requiredIf(! $this->route('contest')->categories()->whereHas('scores')->count()),
+                Rule::in(array_keys(config('options.scoring_systems'))),
+            ],
+            'logo' => [
+                'nullable',
+                'file',
+                'mimes:' . collect(config('options.image.mimes'))->implode(','),
+                'mimetypes:' . collect(config('options.image.mime_types'))->implode(','),
+            ],
         ];
     }
 
@@ -35,6 +46,7 @@ class UpdateContestRequest extends FormRequest
         return [
             'name' => 'Name',
             'description' => 'Description',
+            'scoring_system' => 'Scoring System',
             'logo' => 'Logo',
         ];
     }

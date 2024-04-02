@@ -8,19 +8,19 @@ class CreateCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->bigIncrements('id');
-
             $table->unsignedBigInteger('contest_id');
 
             $table->string('name');
-            $table->unsignedTinyInteger('percentage');
             $table->string('status')->default('que');
+            $table->unsignedTinyInteger('order')->default(0);
+            $table->boolean('has_criterias')->default(0);
+            $table->string('scoring_system')->nullable();
+            $table->unsignedSmallInteger('max_points_percentage')->nullable();
 
             $table->timestamps();
         });
@@ -28,8 +28,6 @@ class CreateCategoriesTable extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {

@@ -8,8 +8,6 @@ class CreateContestsTable extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
@@ -18,7 +16,8 @@ class CreateContestsTable extends Migration
 
             $table->string('name');
             $table->string('description');
-            $table->string('logo');
+            $table->string('scoring_system');
+            $table->text('logo')->nullable();
 
             $table->timestamps();
         });
@@ -26,8 +25,6 @@ class CreateContestsTable extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {

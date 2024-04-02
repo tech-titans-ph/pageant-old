@@ -5,12 +5,23 @@
 use App\Contest;
 use Faker\Generator as Faker;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 
 $factory->define(Contest::class, function (Faker $faker) {
     return [
-        'name' => $faker->unique()->company,
+        'name' => collect([$faker->title, $faker->state, $faker->year])->implode(' '),
         'description' => $faker->catchPhrase,
-        'logo' => Storage::put('logos', UploadedFile::fake()->image('logo.png')),
+        'scoring_system' => $faker->randomKey(config('options.scoring_systems')),
+        'logo' => uploadedLogo(),
     ];
+})->afterCreating(Contest::class, function ($contest, $faker) {
+    $uploadedLogo = uploadedLogo();
+
+    $contest->update([
+        'logo' => $uploadedLogo->store("{$contest->id}/logo"),
+    ]);
 });
+
+function uploadedLogo()
+{
+    return UploadedFile::fake()->image('logo.png');
+}

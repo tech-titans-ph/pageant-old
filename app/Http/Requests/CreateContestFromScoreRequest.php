@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CreateContestFromScoreRequest extends FormRequest
 {
@@ -28,9 +29,15 @@ class CreateContestFromScoreRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:255'],
-            'logo' => ['required', 'file', 'image'],
-            'contestant_count' => ['required', 'integer', 'min:1', 'max:' . $contest->contestants()->count()],
-            'include_judges' => ['nullable'],
+            'scoring_system' => ['required', Rule::in(array_keys(config('options.scoring_systems')))],
+            'logo' => [
+                'required',
+                'file',
+                'mimes:' . collect(config('options.image.mimes'))->implode(','),
+                'mimetypes:' . collect(config('options.image.mime_types'))->implode(','),
+            ],
+            'contestant_count' => ['required', 'integer', 'min:2', 'max:' . $contest->contestants()->count()],
+            'include_judges' => ['boolean'],
         ];
     }
 
@@ -39,6 +46,7 @@ class CreateContestFromScoreRequest extends FormRequest
         return [
             'name' => 'Name',
             'description' => 'Description',
+            'scoring_system' => 'Scoring System',
             'logo' => 'Logo',
             'contestant_count' => 'Number of Contestants',
         ];

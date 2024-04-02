@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Contest;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CreateCategoryContestantRequest;
+use App\Http\Requests\{CreateCategoryContestantRequest, RemoveScoreRequest};
 use App\Managers\ContestManager;
 
 class CategoryContestantController extends Controller
@@ -16,53 +16,91 @@ class CategoryContestantController extends Controller
         $this->contestManager = new ContestManager();
     }
 
-    public function show(Contest $contest, $category, $categoryContestant)
+    public function show(Contest $contest, $category, $contestant)
     {
         $category = $contest->categories()->findOrFail($category);
 
-        $categoryContestant = $category->categoryContestants()->findOrFail($categoryContestant);
+        $contestant = $contest->contestants()->findOrFail($contestant);
 
-        abort_unless('done' === $category->status, 403, 'Could not acess contestant score. Please make sure that this category has finished scoring.');
+        $category = $this->contestManager->getRankedCategoryContestants($category);
 
-        $total = 0;
+        $category->ranked_contestants = $category->ranked_contestants
+            ->where('id', '=', $contestant->id);
 
-        foreach ($categoryContestant->categoryScores as $categoryScore) {
-            $total += $categoryScore->criteriaScores()->sum('score');
-        }
-
-        $averageTotal = $total / $category->categoryJudges()->count();
-        $averagePercentage = ($averageTotal / $category->criterias()->sum('percentage')) * $category->percentage;
-
-        return view('admin.category-contestants.show', compact('contest', 'category', 'categoryContestant', 'averageTotal', 'averagePercentage'));
+        return view('admin.category-contestants.show', compact('contest', 'category'));
     }
 
     public function store(Contest $contest, $category, CreateCategoryContestantRequest $request)
     {
         $category = $contest->categories()->findOrFail($category);
 
-        if ('done' === $category->status) {
+        if ($category->status === 'done') {
             return redirect()
                 ->route('admin.contests.categories.show', ['contest' => $contest->id, 'category' => $category->id, 'activeTab' => 'Contestants'])
                 ->with('error', 'Could not add Contestant. Please make sure that this category is not yet finished scoring.');
         }
 
-        $category->categoryContestants()->create($request->validated());
+        $category->contestants()->attach($request->validated()['contestant_id'], ['order' => $category->contestants()->count() + 1]);
 
         return redirect()
             ->route('admin.contests.categories.show', ['contest' => $contest->id, 'category' => $category->id, 'activeTab' => 'Contestants'])
             ->with('success', 'Contestant has been Added.');
     }
 
-    public function destroy(Contest $contest, $category, $categoryContestant)
+    public function destroy(RemoveScoreRequest $request, Contest $contest, $category, $contestant)
     {
         $category = $contest->categories()->findOrFail($category);
 
-        $categoryContestant = $category->categoryContestants()->findOrFail($categoryContestant);
+        $contestant = $category->contestants()->where('contestant_id', $contestant)->firstOrFail();
 
-        $this->contestManager->removeCategoryContestant($categoryContestant);
+        $this->contestManager->removeCategoryContestant($category, $contestant);
 
         return redirect()
             ->route('admin.contests.categories.show', ['contest' => $contest->id, 'category' => $category->id, 'activeTab' => 'Contestants'])
             ->with('success', 'Contestant has been Removed.');
+    }
+
+    public function moveUp(Contest $contest, $category, $contestant)
+    {
+        $category = $contest->categories()->findOrFail($category);
+
+        $contestant = $category->contestants()->findOrFail($contestant);
+
+        $previousContestant = $category->contestants()
+            ->where('category_contestants.order', '<', $contestant->pivot->order)
+            ->latest('category_contestants.order')
+            ->first();
+
+        if ($previousContestant) {
+            $order = $contestant->pivot->order;
+
+            $category->contestants()->updateExistingPivot($contestant->id, ['order' => $previousContestant->pivot->order]);
+
+            $category->contestants()->updateExistingPivot($previousContestant->id, ['order' => $order]);
+        }
+
+        return redirect(route('admin.contests.categories.show', ['contest' => $contest->id, 'category' => $category->id, 'activeTab' => 'Contestants']));
+    }
+
+    public function MoveDown(Contest $contest, $category, $contestant)
+    {
+        $category = $contest->categories()->findOrFail($category);
+
+        $contestant = $category->contestants()->findOrFail($contestant);
+
+        $nextContestant = $category->contestants()
+            ->where('category_contestants.order', '>', $contestant->pivot->order)
+            ->oldest('category_contestants.order')
+            ->first();
+
+        if ($nextContestant) {
+            $order = $contestant->pivot->order;
+
+            $category->contestants()->updateExistingPivot($contestant->id, ['order' => $nextContestant->pivot->order]);
+
+            $category->contestants()->updateExistingPivot($nextContestant->id, ['order' => $order]);
+        }
+
+        return redirect(route('admin.contests.categories.show', ['contest' => $contest->id, 'category' => $category->id, 'activeTab' => 'Contestants']));
     }
 }

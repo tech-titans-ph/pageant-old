@@ -27,29 +27,14 @@ class CreateJudgeRequest extends FormRequest
     {
         $contest = $this->route('contest');
 
-        if (request()->has('user_id')) {
-            return [
-                'user_id' => [
-                    'required',
-                    Rule::unique('judges')->where('contest_id', $contest->id),
-                    Rule::exists('users', 'id')->where(function ($query) {
-                        $user = User::whereIs('judge')->where('id', request()->input('user_id'))->first();
-
-                        $query->where('id', $user->id ?? '');
-                    }),
-                ],
-            ];
-        } else {
-            return [
-                'name' => ['required', 'string', 'max:255', Rule::unique('users')],
-            ];
-        }
+        return [
+            'name' => ['required', 'string', 'max:255', Rule::unique('judges')->where('contest_id', $contest->id)],
+        ];
     }
 
     public function attributes()
     {
         return [
-            'user_id' => 'Selected Judge',
             'name' => 'Judge Name',
         ];
     }

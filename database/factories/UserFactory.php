@@ -27,15 +27,3 @@ $factory->define(User::class, function (Faker $faker) {
         'remember_token' => Str::random(10),
     ];
 });
-
-$factory->state(User::class, 'admin', []);
-
-$factory->afterCreatingState(User::class, 'admin', function ($user) {
-    $user->assign('admin');
-});
-
-$factory->state(User::class, 'judge', []);
-
-$factory->afterCreatingState(User::class, 'judge', function ($user) {
-    $user->assign('judge');
-});

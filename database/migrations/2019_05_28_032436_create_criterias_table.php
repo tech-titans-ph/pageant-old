@@ -8,18 +8,16 @@ class CreateCriteriasTable extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
         Schema::create('criterias', function (Blueprint $table) {
             $table->bigIncrements('id');
-
             $table->unsignedBigInteger('category_id');
 
             $table->string('name');
-            $table->unsignedTinyInteger('percentage');
+            $table->unsignedTinyInteger('order')->default(0);
+            $table->unsignedTinyInteger('max_points_percentage')->default(0);
 
             $table->timestamps();
         });
@@ -27,8 +25,6 @@ class CreateCriteriasTable extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {

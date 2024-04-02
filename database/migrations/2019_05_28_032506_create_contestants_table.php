@@ -8,20 +8,17 @@ class CreateContestantsTable extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
         Schema::create('contestants', function (Blueprint $table) {
             $table->bigIncrements('id');
-
             $table->unsignedBigInteger('contest_id');
 
             $table->string('name');
-            $table->string('description');
-            $table->unsignedTinyInteger('number');
-            $table->string('picture');
+            $table->string('alias');
+            $table->unsignedTinyInteger('order')->default(0);
+            $table->text('avatar');
 
             $table->timestamps();
         });
@@ -29,8 +26,6 @@ class CreateContestantsTable extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {

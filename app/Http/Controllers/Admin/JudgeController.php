@@ -2,16 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\CategoryJudge;
-use App\Contest;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CreateJudgeRequest;
-use App\Http\Requests\UpdateJudgeRequest;
+use App\Http\Requests\{CreateJudgeRequest, UpdateJudgeRequest};
 use App\Managers\ContestManager;
-use App\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
+use App\{ Contest,  Judge};
 
 class JudgeController extends Controller
 {
@@ -24,13 +18,11 @@ class JudgeController extends Controller
 
     public function index()
     {
-        $judges = User::whereIs('judge')
-            ->when(request('search-keyword'), function ($query) {
-                $searchKeyword = request('search-keyword');
+        $judges = Judge::when(request('search-keyword'), function ($query) {
+            $searchKeyword = request('search-keyword');
 
-                return $query->where('name', 'like', '%' . $searchKeyword . '%');
-            })
-            ->oldest('name')
+            return $query->where('name', 'like', '%' . $searchKeyword . '%');
+        })->oldest('name')
             ->get();
 
         return response()->json($judges);
@@ -68,7 +60,7 @@ class JudgeController extends Controller
     {
         $judge = $contest->judges()->findOrFail($judge);
 
-        if ($judge->categoryJudges()->first()) {
+        if ($judge->categories()->count()) {
             return redirect()
                 ->route('admin.contests.show', ['contest' => $contest->id, 'activeTab' => 'Judges'])
                 ->with('error', 'Could not Delete Judge. Please make sure that it is not yet added in any Category.');
@@ -86,5 +78,45 @@ class JudgeController extends Controller
         $this->contestManager->loginJudge($contest->judges()->findOrFail($judge));
 
         return redirect()->route('judge.categories.index');
+    }
+
+    public function moveUp(Contest $contest, $judge)
+    {
+        $judge = $contest->judges()->findOrFail($judge);
+
+        $previousJudge = $contest->judges()
+            ->where('order', '<', $judge->order)
+            ->latest('order')
+            ->first();
+
+        if ($previousJudge) {
+            $order = $judge->order;
+
+            $judge->update(['order' => $previousJudge->order]);
+
+            $previousJudge->update(['order' => $order]);
+        }
+
+        return redirect(route('admin.contests.show', ['contest' => $contest->id, 'activeTab' => 'Judges']));
+    }
+
+    public function MoveDown(Contest $contest, $judge)
+    {
+        $judge = $contest->judges()->findOrFail($judge);
+
+        $nextJudge = $contest->judges()
+            ->where('order', '>', $judge->order)
+            ->oldest('order')
+            ->first();
+
+        if ($nextJudge) {
+            $order = $judge->order;
+
+            $judge->update(['order' => $nextJudge->order]);
+
+            $nextJudge->update(['order' => $order]);
+        }
+
+        return redirect(route('admin.contests.show', ['contest' => $contest->id, 'activeTab' => 'Judges']));
     }
 }

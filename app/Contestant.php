@@ -2,8 +2,6 @@
 
 namespace App;
 
-use App\CategoryContestant;
-use App\Contest;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
@@ -16,13 +14,16 @@ class Contestant extends Model
         return $this->belongsTo(Contest::class);
     }
 
-    public function categoryContestants()
+    public function categories()
     {
-        return $this->hasMany(CategoryContestant::class);
+        return $this->belongsToMany(Category::class, 'category_contestants')
+            ->using(CategoryContestant::class)
+            ->withPivot(['id'])
+            ->withTimestamps();
     }
 
-    public function getPictureUrlAttribute()
+    public function getAvatarUrlAttribute()
     {
-        return Storage::url($this->picture);
+        return Storage::url($this->avatar);
     }
 }

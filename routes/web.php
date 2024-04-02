@@ -21,7 +21,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 Auth::routes(['register' => false]);
 
 Route::middleware('auth')->group(function () {
-    Route::namespace('Admin')->name('admin.')->prefix('admin')->middleware('role:admin')->group(function () {
+    Route::namespace('Admin')->name('admin.')->prefix('admin')->group(function () {
         Route::get('judges', 'JudgeController@index')
             ->name('judges.index');
 
@@ -57,18 +57,55 @@ Route::middleware('auth')->group(function () {
 
         Route::resource('contests', 'ContestController');
         Route::resource('contests.judges', 'JudgeController')->except(['index', 'show', 'create']);
-        Route::resource('contests.contestants', 'ContestantController')->except(['index']);
-        Route::resource('contests.categories', 'CategoryController')->except(['index', 'create', 'edit']);
-        Route::resource('contests.categories.criterias', 'CriteriaController')->except(['index', 'show', 'create']);
-        Route::resource('contests.categories.category-judges', 'CategoryJudgeController')
-            ->parameters(['category-judges' => 'categoryJudge'])
-            ->only(['store', 'destroy']);
-        Route::resource('contests.categories.category-contestants', 'CategoryContestantController')
-            ->parameters(['category-contestants' => 'categoryContestant'])
-            ->only(['show', 'store', 'destroy']);
-    });
 
-    Route::namespace('Judge')->name('judge.')->prefix('judge')->middleware('role:judge')->group(function () {
+        Route::name('contests.judges.move.')->prefix('contests/{contest}/judges/{judge}/move/')->group(function () {
+            Route::patch('up', 'JudgeController@moveUp')->name('up');
+            Route::patch('down', 'JudgeController@moveDown')->name('down');
+        });
+
+        Route::resource('contests.contestants', 'ContestantController')->except(['index']);
+
+        Route::name('contests.contestants.move.')->prefix('contests/{contest}/contestants/{contestant}/move/')->group(function () {
+            Route::patch('up', 'ContestantController@moveUp')->name('up');
+            Route::patch('down', 'ContestantController@moveDown')->name('down');
+        });
+
+        Route::resource('contests.categories', 'CategoryController')->except(['index', 'create', 'edit']);
+
+        Route::name('contests.categories.move.')->prefix('contests/{contest}/categories/{category}/move/')->group(function () {
+            Route::patch('up', 'CategoryController@moveUp')->name('up');
+            Route::patch('down', 'CategoryController@moveDown')->name('down');
+        });
+
+        Route::resource('contests.categories.criterias', 'CriteriaController')->except(['index', 'show', 'create']);
+
+        Route::name('contests.categories.criterias.move.')->prefix('contests/{contest}/categories/{category}/criterias/{criteria}')->group(function () {
+            Route::patch('up', 'CriteriaController@moveUp')->name('up');
+            Route::patch('down', 'CriteriaController@moveDown')->name('down');
+        });
+
+        Route::resource('contests.categories.judges', 'CategoryJudgeController')
+            ->parameters(['judges' => 'judge'])
+            ->only(['store', 'destroy']);
+
+        Route::name('contests.categories.judges.move.')->prefix('contests/{contest}/categories/{category}/judges/{judge}')->group(function () {
+            Route::patch('up', 'CategoryJudgeController@moveUp')->name('up');
+            Route::patch('down', 'CategoryJudgeController@moveDown')->name('down');
+        });
+
+        Route::resource('contests.categories.contestants', 'CategoryContestantController')
+            ->parameters(['contestants' => 'contestant'])
+            ->only(['show', 'store', 'destroy']);
+
+        Route::name('contests.categories.contestants.move.')->prefix('contests/{contest}/categories/{category}/contestants/{contestant}')->group(function () {
+            Route::patch('up', 'CategoryContestantController@moveUp')->name('up');
+            Route::patch('down', 'CategoryContestantController@moveDown')->name('down');
+        });
+    });
+});
+
+Route::middleware('auth:judge')->group(function () {
+    Route::namespace('Judge')->name('judge.')->prefix('judge')->group(function () {
         Route::name('categories.')->prefix('categories')->group(function () {
             Route::get('status', 'CategoryController@status')->name('status');
             Route::get('list-categories', 'CategoryController@listCategories')->name('list-categories');

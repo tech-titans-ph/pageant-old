@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers\Judge;
 
-use App\Category;
 use App\Http\Controllers\Controller;
-use App\Judge;
 use App\Managers\ContestManager;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
+use App\{Category, Judge};
 
 class CategoryController extends Controller
 {
+    protected $contestManager;
+
     public function __construct()
     {
         $this->contestManager = new ContestManager();
@@ -18,70 +17,71 @@ class CategoryController extends Controller
 
     public function index()
     {
-        $judge = Judge::find(session('judge'));
+        $judge = auth('judge')->user();
+
+        $judge->load(['contest']);
 
         return view('judge.categories.index', compact('judge'));
     }
 
     public function show(Category $category)
     {
-        $judge = Judge::find(session('judge'));
+        $judge = auth('judge')->user();
 
-        $categoryJudge = $category->categoryJudges()->where('judge_id', $judge->id)->firstOrFail();
+        $judge = $category->judges()->where('judge_id', $judge->id)->firstOrFail();
 
-        abort_if('que' === $category->status, 403, 'Could not access score results. Please make sure that this category is not dormant.');
+        abort_if($category->status === 'que', 403, 'Could not access score results. Please make sure that this category is not dormant.');
 
-        $categoryContestants = $category->categoryContestants()->get()->map(function ($categoryContestant) use ($categoryJudge) {
-            $categoryContestant['score'] = 0;
+        $category->load(['contest']);
 
-            $categoryScore = $categoryContestant->categoryScores()->where('category_judge_id', $categoryJudge->id)->first();
+        $contestants = $category->contestants()->get()->map(function ($contestant) use ($category, $judge) {
+            $contestant['points'] = $category->scores()
+                ->where('category_judge_id', $judge->pivot->id)
+                ->where('category_contestant_id', $contestant->pivot->id)
+                ->sum('points');
 
-            if ($categoryScore) {
-                $categoryContestant['score'] = $categoryScore->criteriaScores()->sum('score');
-            }
+            return $contestant;
+        })->sortByDesc('points');
 
-            return $categoryContestant;
-        })->sortByDesc('score');
-
-        return view('judge.categories.show', compact('judge', 'categoryJudge', 'category', 'categoryContestants'));
+        return view('judge.categories.show', compact('category', 'judge', 'contestants'));
     }
 
     public function edit(Category $category)
     {
-        $judge = Judge::find(session('judge'));
+        $judge = auth('judge')->user();
 
-        $categoryJudge = $category->categoryJudges()->where('judge_id', $judge->id)->firstOrfail();
+        $judge = $category->judges()->where('judge_id', $judge->id)->firstOrfail();
 
-        $categoryContestants = $category->categoryContestants()->get()->filter(function ($categoryContestant) use ($category, $categoryJudge) {
-            $categoryScore = $categoryContestant->categoryScores()->where('category_judge_id', $categoryJudge->id)->first();
+        $totalPoints = $category->has_criterias ? $category->criterias()->count() : 1;
 
-            if (! $categoryScore) {
-                return $categoryContestant;
-            }
+        $contestants = $category->contestants()->get()
+            ->filter(function ($contestant) use ($judge, $totalPoints) {
+                $query = $contestant->pivot->scores()
+                    ->where('category_judge_id', $judge->pivot->id);
 
-            foreach ($category->criterias as $criteria) {
-                if (! $categoryScore->criteriaScores()->where('criteria_id', $criteria->id)->first()) {
-                    return $categoryContestant;
-                }
-            }
-        });
+                $points = $query->count();
 
-        if ($categoryContestants->isNotEmpty()) {
+                $zeroPoints = (clone $query)->where('points', '<=', 0)->count();
+
+                return ($points < $totalPoints) || $zeroPoints;
+            });
+
+        if ($contestants->isNotEmpty()) {
             session()->flash('error', 'Could not lock scores. Please make sure that the following contestants have complete scores.');
         }
 
-        return view('judge.categories.edit', compact('category', 'judge', 'categoryJudge', 'categoryContestants'));
+        return view('judge.categories.edit', compact('category', 'judge', 'contestants'));
     }
 
     public function update(Category $category)
     {
-        $judge = Judge::find(session('judge'));
+        $judge = auth('judge')->user();
 
-        $categoryJudge = $category->categoryJudges()->where('judge_id', $judge->id)->firstOrfail();
+        $judge = $category->judges()->where('judge_id', $judge->id)->firstOrfail();
 
-        abort_if($categoryJudge->completed, 403, 'Could not lock scores. Please make sure that scores in this category is not yet locked.');
+        abort_if($judge->pivot->completed, 403, 'Could not lock scores. Please make sure that scores in this category is not yet locked.');
 
-        $this->contestManager->completeScore($categoryJudge);
+        $this->contestManager->completeScore($category, $judge);
 
         return redirect()
             ->route('judge.categories.edit', ['category' => $category->id])
@@ -90,40 +90,42 @@ class CategoryController extends Controller
 
     public function status()
     {
-        $judge = Judge::find(session('judge'));
+        $judge = auth('judge')->user();
 
-        $categoryJudge = $judge->categoryJudges()
-            ->with(['category'])
-            ->whereHas('category', function (Builder $query) {
-                $query->where('status', 'scoring');
-            })
-            ->doesntHave('categoryScores')
+        $category = $judge->categories()
+            ->where('status', 'scoring')
+            ->whereDoesntHave('scores')
             ->first();
 
-        return response()->json($categoryJudge);
+        return response()->json($category);
     }
 
     public function listCategories()
     {
-        $judge = Judge::find(session('judge'));
+        $judge = auth('judge')->user();
 
-        $categoryJudges = $judge->categoryJudges()->with(['category'])->get()->map(function ($categoryJudge) {
-            $categoryJudge['url'] = route('judge.categories.contestants.index', ['category' => $categoryJudge->category_id]);
+        $categories = $judge->categories()
+            ->with(['contest'])
+            ->orderBy('order')
+            ->get()->map(function ($category) {
+                $category['url'] = route('judge.categories.contestants.index', ['category' => $category->id]);
 
-            if ('que' === $categoryJudge->category->status) {
-                $categoryJudge['title'] = 'Dormant';
-                $categoryJudge['class'] = 'bg-gray-100 text-gray-700';
-            } elseif ('scoring' === $categoryJudge->category->status && ! $categoryJudge->completed) {
-                $categoryJudge['title'] = 'Active';
-                $categoryJudge['class'] = 'bg-blue-300 text-blue-700';
-            } else {
-                $categoryJudge['title'] = 'Completed';
-                $categoryJudge['class'] = 'bg-green-300 text-green-700';
-            }
+                $category['unit'] = $category->contest->scoring_system == 'average' ? '%' : 'points';
 
-            return $categoryJudge;
-        });
+                if ($category->status === 'que') {
+                    $category['title'] = 'Dormant';
+                    $category['class'] = 'bg-gray-100 text-gray-700';
+                } elseif ($category->status === 'scoring' && ! $category->completed) {
+                    $category['title'] = 'Active';
+                    $category['class'] = 'bg-blue-300 text-blue-700';
+                } else {
+                    $category['title'] = 'Completed';
+                    $category['class'] = 'bg-green-300 text-green-700';
+                }
 
-        return response()->json($categoryJudges);
+                return $category;
+            });
+
+        return response()->json($categories);
     }
 }

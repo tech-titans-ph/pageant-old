@@ -14,7 +14,7 @@ class SetScoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return auth()->check();
+        return auth('judge')->check();
     }
 
     /**
@@ -26,28 +26,34 @@ class SetScoreRequest extends FormRequest
     {
         $category = $this->route('category');
 
-        $percentage = 1;
+        $maxPointsPercentage = 1;
 
-        $criteria = $category->criterias()->find(request()->input('criteria_id') ?? 0);
+        if ($category->has_criterias) {
+            $group = $category->criterias()->find(request()->input('group_id') ?? 0);
+        } else {
+            $group = $category;
+        }
 
-        if ($criteria) {
-            $percentage = $criteria->percentage;
+        if ($group) {
+            $maxPointsPercentage = $group->max_points_percentage;
         }
 
         return [
-            'criteria_id' => [
+            'group_id' => [
                 'required',
-                Rule::exists('criterias', 'id')->where(function ($query) use ($category) {
-                    $query->where('category_id', $category->id);
+                Rule::exists($group->getTable(), 'id')->where(function ($query) use ($category) {
+                    $query->when($category->has_criterias, function ($query) use ($category) {
+                        return $query->where('category_id', $category->id);
+                    });
                 }),
             ],
-            'score' => [
-                Rule::requiredIf(function () use ($criteria) {
-                    return $criteria;
+            'points' => [
+                Rule::requiredIf(function () use ($group) {
+                    return $group;
                 }),
                 'integer',
                 'min:1',
-                'max:' . $percentage,
+                'max:' . $maxPointsPercentage,
             ],
         ];
     }

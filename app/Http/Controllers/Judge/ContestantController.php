@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers\Judge;
 
-use App\Category;
-use App\Contestant;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SetScoreRequest;
-use App\Judge;
 use App\Managers\ContestManager;
-use Illuminate\Http\Request;
+use App\{Category, Judge};
 
 class ContestantController extends Controller
 {
@@ -21,43 +18,48 @@ class ContestantController extends Controller
 
     public function index(Category $category)
     {
-        $judge = Judge::find(session('judge'));
+        $judge = auth('judge')->user();
 
-        $categoryJudge = $category->categoryJudges()->where('judge_id', $judge->id)->firstOrFail();
+        $judge = $category->judges()->where('judge_id', $judge->id)->first();
 
-        abort_if('que' === $category->status, 403, 'Could not set score. Please make sure that this category is not dormant.');
+        abort_if($category->status === 'que', 403, 'Could not set score. Please make sure that this category is not dormant.');
 
-        $categoryContestants = $category->categoryContestants()
-            ->select('category_contestants.*', 'contestants.name', 'contestants.description', 'contestants.number', 'contestants.picture')
-            ->leftJoin('contestants', 'contestants.id', '=', 'category_contestants.contestant_id')
-            ->orderBy('contestants.number')
+        $category->load([
+            'contest',
+            'criterias' => function ($query) {
+                $query->orderBy('order');
+            },
+            'scores',
+        ]);
+
+        $contestants = $category->contestants()
+            ->orderBy('category_contestants.order')
             ->paginate(1);
 
-        return view('judge.contestants.index', compact('judge', 'category', 'categoryJudge', 'categoryContestants'));
+        return view('judge.contestants.index', compact('judge', 'category', 'contestants'));
     }
 
     public function update(Category $category, $contestant, SetScoreRequest $request)
     {
-        $judge = Judge::find(session('judge'));
+        $judge = auth('judge')->user();
 
-        $categoryJudge = $category->categoryJudges()->where('judge_id', $judge->id)->firstOrFail();
+        $judge = $category->judges()->where('judge_id', $judge->id)->firstOrFail();
 
-        $categoryContestant = $category->categoryContestants()->where('contestant_id', $contestant)->firstOrFail();
+        $contestant = $category->contestants()->where('contestant_id', $contestant)->firstOrFail();
 
-        abort_unless('scoring' === $category->status, 403, 'Could not set score. Please make sure that this category has started scoring.');
+        abort_unless($category->status === 'scoring', 403, 'Could not set score. Please make sure that this category has started scoring.');
 
-        abort_if($categoryJudge->completed, 403, 'Could not set score. Please make sure that the judge in this category is not yet completed scoring.');
+        abort_if($judge->completed, 403, 'Could not set score. Please make sure that the judge in this category is not yet completed scoring.');
 
         $data = $request->validated();
 
-        $criteria = $category->criterias()->find($data['criteria_id']);
-
-        $criteriaScore = $this->contestManager->setScore($categoryContestant, $criteria, $data['score']);
-
-        $categoryScore = $criteriaScore->categoryScore;
+        $score = $this->contestManager->setScore($category, $contestant, $data);
 
         return response()->json([
-            'totalScore' => $categoryScore->criteriaScores()->sum('score'),
+            'totalScore' => $category->scores()
+                ->where('category_judge_id', $score->category_judge_id)
+                ->where('category_contestant_id', $score->category_contestant_id)
+                ->sum('points'),
         ]);
     }
 }

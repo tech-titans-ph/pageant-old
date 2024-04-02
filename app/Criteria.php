@@ -2,8 +2,7 @@
 
 namespace App;
 
-use App\Category;
-use App\Score;
+use App\{Category, Score};
 use Illuminate\Database\Eloquent\Model;
 
 class Criteria extends Model
@@ -13,5 +12,10 @@ class Criteria extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function scores()
+    {
+        return $this->hasMany(Score::class);
     }
 }

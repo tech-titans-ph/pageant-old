@@ -2,18 +2,26 @@
 
 // @var $factory \Illuminate\Database\Eloquent\Factory
 
-use App\Contest;
-use App\Contestant;
+use App\{Contest, Contestant};
 use Faker\Generator as Faker;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 
 $factory->define(Contestant::class, function (Faker $faker) {
     return [
         'contest_id' => factory(Contest::class),
-        'name' => $faker->name,
-        'description' => $faker->state,
-        'number' => 1,
-        'picture' => Storage::put('profile-pictures', UploadedFile::fake()->image('avatar.png')),
+        'name' => $faker->firstName . ' ' . $faker->lastName,
+        'alias' => $faker->city,
+        'avatar' => uploadedAvatar(),
     ];
+})->afterCreating(Contestant::class, function ($contestant, $faker) {
+    $uploadedAvatar = uploadedAvatar();
+
+    $contestant->update([
+        'avatar' => $uploadedAvatar->store("{$contestant->contest()->first()->id}/contestants"),
+    ]);
 });
+
+function uploadedAvatar()
+{
+    return UploadedFile::fake()->image('avatar.png');
+}

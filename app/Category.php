@@ -2,11 +2,6 @@
 
 namespace App;
 
-use App\CategoryContestant;
-use App\CategoryJudge;
-use App\CategoryScore;
-use App\Contest;
-use App\Criteria;
 use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model
@@ -18,23 +13,34 @@ class Category extends Model
         return $this->belongsTo(Contest::class);
     }
 
+    public function judges()
+    {
+        return $this->belongsToMany(Judge::class, 'category_judges')
+            ->using(CategoryJudge::class)
+            ->withPivot(['id', 'order', 'completed'])
+            ->withTimestamps();
+    }
+
+    public function contestants()
+    {
+        return $this->belongsToMany(Contestant::class, 'category_contestants')
+            ->using(CategoryContestant::class)
+            ->withPivot(['id', 'order'])
+            ->withTimestamps();
+    }
+
     public function criterias()
     {
         return $this->hasMany(Criteria::class);
     }
 
-    public function categoryScores()
+    public function scores()
     {
-        return $this->hasMany(CategoryScore::class);
+        return $this->hasMany(Score::class);
     }
 
-    public function categoryJudges()
+    public function getScoringSystemLabelAttribute()
     {
-        return $this->hasMany(CategoryJudge::class);
-    }
-
-    public function categoryContestants()
-    {
-        return $this->hasMany(CategoryContestant::class);
+        return config("options.scoring_systems.{$this->scoring_system}");
     }
 }

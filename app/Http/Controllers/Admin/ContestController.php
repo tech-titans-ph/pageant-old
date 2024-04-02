@@ -2,16 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Category;
-use App\Contest;
-use App\Contestant;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CreateContestFromScoreRequest;
-use App\Http\Requests\CreateContestRequest;
-use App\Http\Requests\UpdateContestRequest;
+use App\Http\Requests\{CreateContestFromScoreRequest, CreateContestRequest, UpdateContestRequest};
 use App\Managers\ContestManager;
+use App\{Category, Contest, Contestant};
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ContestController extends Controller
@@ -48,7 +43,7 @@ class ContestController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Http\Response
      */
@@ -64,35 +59,31 @@ class ContestController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Contest  $contest
-     *
      * @return \Illuminate\Http\Response
      */
     public function show(Contest $contest)
     {
-        $contest->load(['contestants' => function ($query) {
-            $query->orderBy('number');
-        }]);
+        $contest->load([
+            'judges' => function ($query) {
+                $query->orderBy('order');
+            },
+            'contestants' => function ($query) {
+                $query->orderBy('order');
+            },
+            'categories' => function ($query) {
+                $query->orderBy('order');
+            },
+        ]);
 
-        $status = [
-            'que' => 'Pending',
-            'scoring' => 'Scoring',
-            'done' => 'Completed',
-        ];
-
-        $scoredContestants = [];
-
-        if (! $contest->categories()->whereIn('status', ['que', 'scoring'])->count()) {
-            $scoredContestants = $this->contestManager->getScoredContestants($contest);
+        if ($contest->categories->count() && (! $contest->categories->whereIn('status', ['que', 'scoring'])->count())) {
+            $contest = $this->contestManager->getRankedContestants($contest);
         }
 
-        return view('admin.contests.show', compact('contest', 'status', 'scoredContestants'));
+        return view('admin.contests.show', compact('contest'));
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param  \App\Contest  $contest
      *
      * @return \Illuminate\Http\Response
      */
@@ -104,8 +95,7 @@ class ContestController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Contest  $contest
+     * @param \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Http\Response
      */
@@ -120,8 +110,6 @@ class ContestController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  \App\Contest  $contest
      *
      * @return \Illuminate\Http\Response
      */
@@ -156,26 +144,19 @@ class ContestController extends Controller
     {
         abort_unless(! $contest->categories()->whereIn('status', ['que', 'scoring'])->count(), 403, 'Could not print socres. Please make sure that all categories in this contest has finished scoring.');
 
-        $contestants = $this->contestManager->getScoredContestants($contest);
+        $contest = $this->contestManager->getRankedContestants($contest);
 
-        $categories = $contest->categories()->get()->map(function ($category) {
-            $category['categoryContestants'] = $this->contestManager->getScoredCategoryContestants($category);
-
-            return $category;
-        });
-
-        return view('admin.contests.print', compact('contest', 'contestants', 'categories'));
+        return view('admin.contests.print', compact('contest'));
     }
 
     public function status()
     {
         $category = Category::with(['contest'])
             ->where('status', 'scoring')
-            ->has('categoryJudges')
-            ->whereDoesntHave('categoryJudges', function (Builder $query) {
+            ->has('judges')
+            ->whereDoesntHave('judges', function (Builder $query) {
                 $query->where('completed', 0);
-            })
-            ->first();
+            })->first();
 
         return response()->json($category);
     }

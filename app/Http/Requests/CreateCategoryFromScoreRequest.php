@@ -30,9 +30,21 @@ class CreateCategoryFromScoreRequest extends FormRequest
 
         return [
             'name' => ['required', 'string', 'max:255', Rule::unique('categories')->where('contest_id', $contest->id)],
-            'percentage' => ['required', 'integer', 'min:1', 'max:100'],
-            'contestant_count' => ['required', 'integer', 'min:1', 'max:' . $category->categoryContestants()->count()],
-            'include_judges' => ['nullable'],
+            'has_criterias' => ['boolean'],
+            'scoring_system' => [
+                'nullable',
+                'required_with:has_criterias',
+                Rule::in($contest->scoring_system == 'ranking' ? array_keys(config('options.scoring_systems')) : 'average'),
+            ],
+            'max_points_percentage' => [
+                'nullable',
+                Rule::requiredIf(($contest->scoring_system == 'ranking' && ! $this->has_criterias) || $contest->scoring_system == 'average'),
+                'integer',
+                'min:2',
+                'max:100',
+            ],
+            'contestant_count' => ['required', 'integer', 'min:2', 'max:' . $category->contestants()->count()],
+            'include_judges' => ['boolean'],
         ];
     }
 
@@ -40,7 +52,9 @@ class CreateCategoryFromScoreRequest extends FormRequest
     {
         return [
             'name' => 'Name',
-            'percentage' => 'Percentage',
+            'has_criterias' => 'Has Criterias',
+            'scoring_system' => 'Scoring System',
+            'max_points_percentage' => 'Maximum Points or Percentage',
             'contestant_count' => 'Number of Contestants',
         ];
     }

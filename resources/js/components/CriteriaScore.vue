@@ -1,115 +1,97 @@
 <template>
-	<div class="border-t py-6 px-6">
-		<div class="flex">
-			<h1 class="text-lg font-bold flex-1 text-gray-700 mb-4">{{ name }}</h1>
-			<div class="flex-1 text-right text-gray-700 text-sm">
-				<span class="font-bold text-xl">{{ scoreValue }}</span>
-				/{{ percentage }}
-			</div>
-		</div>
-		<div class="flex items-center">
-			<button
-				type="button"
-				v-if="enabled"
-				@click="decreaseScore"
-				class="flex-none rounded-full bg-green-600 active:bg-green-400 text-white p-2 focus:outline-none focus:shadow-outline"
-			>
-				<slot name="decrease-icon"></slot>
-			</button>
-			<input
-				type="range"
-				min="0"
-				:max="percentage"
-				v-model="scoreValue"
-				@change="setScore"
-				class="flex-grow w-full appearance-none bg-gray-400 h-2 mx-3"
-				v-if="enabled"
-			/>
+    <div class="px-6 py-6 border-t">
+        <div class="flex">
+            <h1 class="flex-1 mb-4 text-lg font-bold text-gray-700">{{ name }}</h1>
+            <div class="flex-1 text-sm text-right text-gray-700">
+                <span class="text-xl font-bold">{{ scoreValue }}</span>
+                /{{ percentage }}
+            </div>
+        </div>
+        <div class="flex items-center">
+            <button type="button" v-if="enabled" @click="decreaseScore"
+                class="flex-none p-2 text-white bg-green-600 rounded-full active:bg-green-400 focus:outline-none focus:shadow-outline">
+                <slot name="decrease-icon"></slot>
+            </button>
+            <input type="range" min="0" :max="percentage" v-model="scoreValue" @change="setScore"
+                class="flex-grow w-full h-2 mx-3 bg-gray-400 appearance-none" v-if="enabled" />
 
-			<button
-				type="button"
-				v-if="enabled"
-				@click="increaseScore"
-				class="flex-none rounded-full bg-green-600 active:bg-green-400 text-white p-2 focus:outline-none focus:shadow-outline"
-			>
-				<slot name="increase-icon"></slot>
-			</button>
-		</div>
-		<div v-if="error" class="mt-2 text-sm italic text-red-500 text-center">{{ error }}</div>
-	</div>
+            <button type="button" v-if="enabled" @click="increaseScore"
+                class="flex-none p-2 text-white bg-green-600 rounded-full active:bg-green-400 focus:outline-none focus:shadow-outline">
+                <slot name="increase-icon"></slot>
+            </button>
+        </div>
+        <div v-if="error" class="mt-2 text-sm italic text-center text-red-500">{{ error }}</div>
+    </div>
 </template>
 
 <script>
 export default {
-	props: {
-		api: {
-			required: true
-		},
-		id: {
-			required: true
-		},
-		name: {
-			required: true
-		},
-		percentage: {
-			required: true
-		},
-		score: {
-			required: true
-		},
-		enabled: {
-			type: Boolean,
-			default: true
-		}
-	},
-	data() {
-		return {
-			scoreValue: this.score,
-			error: ""
-		};
-	},
-	methods: {
-		setScore: _.debounce(function() {
-			this.error = "";
+    props: {
+        api: {
+            required: true
+        },
+        id: {
+            required: true
+        },
+        name: {
+            required: true
+        },
+        percentage: {
+            required: true
+        },
+        score: {
+            required: true
+        },
+        enabled: {
+            type: Boolean,
+            default: true
+        }
+    },
+    data() {
+        return {
+            scoreValue: this.score,
+            error: ""
+        };
+    },
+    methods: {
+        setScore: _.debounce(function () {
+            this.error = "";
 
-			axios
-				.patch(this.api, {
-					criteria_id: this.id,
-					score: this.scoreValue
-				})
-				.then(response => {
-					this.$parent.totalScore = response.data.totalScore;
-				})
-				.catch(error => {
-					if (error.response.status == 422) {
-						var errors = error.response.data.errors;
+            axios.patch(this.api, {
+                group_id: this.id,
+                points: this.scoreValue
+            }).then(response => {
+                this.$parent.totalScore = response.data.totalScore;
+            }).catch(error => {
+                if (error.response.status == 422) {
+                    var errors = error.response.data.errors;
 
-						var key = Object.keys(errors)[0];
+                    var key = Object.keys(errors)[0];
 
-						this.error = errors[key][0];
-					} else {
-						console.log(error.response);
-					}
-				});
-		}, 250),
-		decreaseScore() {
-			if (Number(this.scoreValue) <= 0) {
-				return;
-			}
+                    this.error = errors[key][0];
+                } else {
+                    console.log(error.response);
+                }
+            });
+        }, 250),
+        decreaseScore() {
+            if (Number(this.scoreValue) <= 0) {
+                return;
+            }
 
-			this.scoreValue = Number(this.scoreValue) - 1;
+            this.scoreValue = Number(this.scoreValue) - 1;
 
-			this.setScore();
-		},
-		increaseScore() {
-			if (Number(this.scoreValue >= Number(this.percentage))) {
-				return;
-			}
+            this.setScore();
+        },
+        increaseScore() {
+            if (Number(this.scoreValue >= Number(this.percentage))) {
+                return;
+            }
 
-			this.scoreValue = Number(this.scoreValue) + 1;
+            this.scoreValue = Number(this.scoreValue) + 1;
 
-			this.setScore();
-		}
-	}
+            this.setScore();
+        }
+    }
 };
 </script>

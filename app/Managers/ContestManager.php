@@ -2,35 +2,35 @@
 
 namespace App\Managers;
 
-use App\Category;
-use App\CategoryContestant;
-use App\CategoryJudge;
-use App\Contest;
-use App\Contestant;
-use App\Criteria;
-use App\CriteriaScore;
-use App\Judge;
-use App\User;
+use App\{Category, Contest, Contestant, Criteria, Judge};
 use Illuminate\Http\File;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class ContestManager
 {
     public function create($data)
     {
-        $data['logo'] = Storage::put('logos', $data['logo']);
+        $logo = $data['logo'];
 
-        return Contest::create($data);
+        unset($data['logo']);
+
+        $contest = Contest::create($data);
+
+        $contest->update(['logo' => Storage::put("{$contest->id}/logo", $logo)]);
+
+        return $contest;
     }
 
     public function update(Contest $contest, $data)
     {
+        if (isset($data['scoring_system']) && $contest->categories()->whereHas('scores')->count()) {
+            unset($data['scoring_system']);
+        }
+
         if (isset($data['logo'])) {
             Storage::delete($contest->logo);
 
-            $data['logo'] = Storage::put('logos', $data['logo']);
+            $data['logo'] = Storage::put("{$contest->id}/logo", $data['logo']);
         }
 
         $contest->update($data);
@@ -40,76 +40,62 @@ class ContestManager
 
     public function delete(Contest $contest)
     {
-        $contest->delete();
-
         Storage::delete($contest->logo);
+
+        Storage::deleteDirectory($contest->id);
+
+        $contest->delete();
 
         return $this;
     }
 
     public function addJudge(Contest $contest, $data)
     {
-        if (isset($data['user_id'])) {
-            $user = User::find($data['user_id']);
-        } else {
-            $user = User::create([
-                'name' => $data['name'],
-                'username' => Str::slug($data['name']),
-                'password' => Hash::make('password'),
-            ]);
-
-            $user->assign('judge');
-        }
-
-        $judge = $contest->judges()->create([
-            'user_id' => $user->id,
-        ]);
+        $judge = $contest->judges()->create($data);
 
         $this->addCategoryJudge($judge);
+
+        $judge->update(['order' => $contest->judges()->count()]);
 
         return $judge;
     }
 
     public function editJudge(Judge $judge, $data)
     {
-        if (isset($data['user_id'])) {
-            $user = User::find($data['user_id']);
-        } else {
-            $user = User::create([
-                'name' => $data['name'],
-                'username' => Str::slug($data['name']),
-                'password' => Hash::make('password'),
-            ]);
-
-            $user->assign('judge');
-        }
-
-        $judge->update(['user_id' => $user->id]);
+        $judge->update($data);
 
         return $judge;
     }
 
     public function removeJudge(Judge $judge)
     {
+        $contest = $judge->contest()->first();
+
         $judge->delete();
+
+        $contest->judges()->orderBy('order')->get()->each(function ($judge, $index) {
+            $judge->update(['order' => $index + 1]);
+        });
 
         return $this;
     }
 
     public function loginJudge(Judge $judge)
     {
-        auth()->login($judge->user);
+        auth()->logout();
 
-        session(['judge' => $judge->id]);
+        auth('judge')->login($judge);
 
         return $this;
     }
 
     public function addContestant(Contest $contest, $data)
     {
-        $data['picture'] = Storage::put('profile-pictures', $data['picture']);
+        $data['avatar'] = Storage::put("{$contest->id}/contestants", $data['avatar']);
 
         $contestant = $contest->contestants()->create($data);
+
+        $contestant->update(['order' => $contest->contestants()->count()]);
 
         $this->addCategoryContestant($contestant);
 
@@ -118,9 +104,10 @@ class ContestManager
 
     public function editContestant(Contestant $contestant, $data)
     {
-        if (isset($data['picture'])) {
-            Storage::delete($contestant->picture);
-            $data['picture'] = Storage::put('profile-pictures', $data['picture']);
+        if (isset($data['avatar'])) {
+            Storage::delete($contestant->avatar);
+
+            $data['avatar'] = Storage::put("{$contestant->contest()->first()->id}/contestants", $data['avatar']);
         }
 
         $contestant->update($data);
@@ -130,23 +117,39 @@ class ContestManager
 
     public function removeContestant(Contestant $contestant)
     {
+        $contest = $contestant->contest()->first();
+
+        Storage::delete($contestant->avatar);
+
         $contestant->delete();
 
-        Storage::delete($contestant->picture);
+        $contest->contestants()->orderBy('order')->get()->each(function ($contestant, $index) {
+            $contestant->update(['order' => $index + 1]);
+        });
 
         return $this;
     }
 
     public function addCategory(Contest $contest, $data)
     {
+        if (! ($data['has_criterias'] ?? false)) {
+            unset($data['scoring_system']);
+        }
+
+        if (! (($contest->scoring_system == 'ranking' && ! ($data['has_criterias'] ?? false)) || $contest->scoring_system == 'average')) {
+            unset($data['max_points_percentage']);
+        }
+
         $category = $contest->categories()->create($data);
 
+        $category->update(['order' => $contest->categories()->count()]);
+
         $contest->judges()->get()->each(function ($judge) use ($category) {
-            $category->categoryJudges()->create(['judge_id' => $judge->id]);
+            $category->judges()->attach($judge->id, ['order' => $category->judges()->count() + 1]);
         });
 
         $contest->contestants()->get()->each(function ($contestant) use ($category) {
-            $category->categoryContestants()->create(['contestant_id' => $contestant->id]);
+            $category->contestants()->attach($contestant->id, ['order' => $category->contestants()->count() + 1]);
         });
 
         return $category;
@@ -154,7 +157,29 @@ class ContestManager
 
     public function editCategory(Category $category, $data)
     {
+        $contest = $category->contest()->first();
+
+        if (collect($data)->only(['has_criterias', 'scoring_system', 'max_points_percentage'])->filter()->count() && $category->scores()->count()) {
+            unset($data['has_criterias'], $data['scoring_system'], $data['max_points_percentage']);
+        } else {
+            if (! isset($data['has_criterias'])) {
+                $data['has_criterias'] = false;
+            }
+
+            if (! $data['has_criterias']) {
+                $data['scoring_system'] = null;
+            }
+
+            if (! (($contest->scoring_system == 'ranking' && ! ($data['has_criterias'] ?? false)) || $contest->scoring_system == 'average')) {
+                $data['max_points_percentage'] = null;
+            }
+        }
+
         $category->update($data);
+
+        if (! $category->has_criterias) {
+            $category->criterias()->delete();
+        }
 
         return $category;
     }
@@ -170,7 +195,9 @@ class ContestManager
     {
         $category->update(['status' => 'scoring']);
 
-        $category->categoryJudges()->update(['completed' => 0]);
+        $category->judges()->get()->each(function ($judge) use ($category) {
+            $category->judges()->updateExistingPivot($judge->id, ['completed' => 0]);
+        });
 
         return $category;
     }
@@ -186,6 +213,8 @@ class ContestManager
     {
         $criteria = $category->criterias()->create($data);
 
+        $criteria->update(['order' => $category->criterias()->count()]);
+
         return $criteria;
     }
 
@@ -198,9 +227,15 @@ class ContestManager
 
     public function removeCriteria(Criteria $criteria)
     {
-        CriteriaScore::where(['criteria_id' => $criteria->id])->delete();
+        $criteria->scores()->delete();
+
+        $category = $criteria->category()->first();
 
         $criteria->delete();
+
+        $category->criterias()->orderBy('order')->get()->each(function ($criteria, $index) {
+            $criteria->update(['order' => $index + 1]);
+        });
 
         return $this;
     }
@@ -208,20 +243,23 @@ class ContestManager
     public function addCategoryJudge(Judge $judge)
     {
         $judge->contest()->first()->categories()->get()->each(function ($category) use ($judge) {
-            $judge->categoryJudges()->create(['category_id' => $category->id]);
+            $category->judges()->attach($judge->id, ['order' => $category->judges()->count() + 1]);
         });
 
         return $this;
     }
 
-    public function removeCategoryJudge(CategoryJudge $categoryJudge)
+    public function removeCategoryJudge(Category $category, Judge $judge)
     {
-        $categoryJudge->categoryScores()->get()->each(function ($categoryScore) {
-            $categoryScore->criteriaScores()->delete();
-            $categoryScore->delete();
-        });
+        $category->scores()->where('category_judge_id', $judge->pivot->id)->delete();
 
-        $categoryJudge->delete();
+        $category->judges()->detach($judge->id);
+
+        $categoryJudgeTable = $judge->pivot->getTable();
+
+        $category->judges()->orderBy("{$categoryJudgeTable}.order")->each(function ($judge, $index) use ($category) {
+            $category->judges()->updateExistingPivot($judge->id, ['order' => $index + 1]);
+        });
 
         return $this;
     }
@@ -229,115 +267,135 @@ class ContestManager
     public function addCategoryContestant(Contestant $contestant)
     {
         $contestant->contest()->first()->categories()->get()->each(function ($category) use ($contestant) {
-            $contestant->categoryContestants()->create(['category_id' => $category->id]);
+            $category->contestants()->attach($contestant->id, ['order' => $category->contestants()->count() + 1]);
         });
 
         return $this;
     }
 
-    public function removeCategoryContestant(CategoryContestant $categoryContestant)
+    public function removeCategoryContestant(Category $category, Contestant $contestant)
     {
-        $categoryContestant->categoryScores()->get()->each(function ($categoryScore) {
-            $categoryScore->criteriaScores()->delete();
-            $categoryScore->delete();
-        });
+        $category->scores()->where('category_contestant_id', $contestant->pivot->id);
 
-        $categoryContestant->delete();
+        $category->contestants()->detach($contestant->id);
+
+        $categoryContestantTable = $contestant->pivot->getTable();
+
+        $category->contestants()->orderBy("{$categoryContestantTable}.order")->each(function ($contestant, $index) use ($category) {
+            $category->contestants()->updateExistingPivot($contestant->id, ['order' => $index + 1]);
+        });
 
         return $this;
     }
 
-    public function setScore(CategoryContestant $categoryContestant, Criteria $criteria, $score)
+    public function setScore(Category $category, Contestant $contestant, $data)
     {
-        $judge = Judge::findOrFail(session('judge'));
+        $judge = auth('judge')->user();
 
-        $category = $categoryContestant->category()->first();
+        $judge = $category->judges()->where('judge_id', $judge->id)->first();
 
-        $categoryJudge = $category->categoryJudges()->where(['judge_id' => $judge->id])->firstOrFail();
+        $condition = [
+            'category_id' => $category->id,
+            'category_judge_id' => $judge->pivot->id,
+            'category_contestant_id' => $contestant->pivot->id,
+        ];
 
-        $categoryScore = $category->categoryScores()->firstOrCreate([
-            'category_judge_id' => $categoryJudge->id,
-            'category_contestant_id' => $categoryContestant->id,
+        if ($category->has_criterias) {
+            $condition['criteria_id'] = $data['group_id'];
+        }
+
+        return $category->scores()->updateOrCreate($condition, ['points' => $data['points']]);
+    }
+
+    public function completeScore(Category $category, Judge $judge)
+    {
+        $category->judges()->updateExistingPivot($judge->id, ['completed' => 1]);
+
+        return $judge;
+    }
+
+    public function getRankedCategoryContestants(Category $category)
+    {
+        $category->load([
+            'contest',
+            'judges',
+            'criterias',
+            'scores',
         ]);
 
-        $criteriaScore = $categoryScore->criteriaScores()->updateOrCreate(
-            ['criteria_id' => $criteria->id],
-            ['score' => $score]
-        );
+        $category->ranked_contestants = $category->contestants()->get()->rankCategoryContestants($category, $category->contest);
 
-        return $criteriaScore;
+        return $category;
     }
 
-    public function completeScore(CategoryJudge $categoryJudge)
+    public function getRankedContestants(Contest $contest)
     {
-        $categoryJudge->update(['completed' => 1]);
+        $contest->load([
+            'judges' => function ($query) {
+                $query->whereHas('categories')->oldest('order');
+            },
+            'contestants' => function ($query) {
+                $query->whereHas('categories')->oldest('order');
+            },
+            'contestants.categories' => function ($query) {
+                $query->orderBy('categories.order', 'asc');
+            },
+            'categories' => function ($query) {
+                $query->oldest('order');
+            },
+            'categories.judges' => function ($query) {
+                $query->orderBy('category_judges.order', 'asc');
+            },
+            'categories.contestants' => function ($query) {
+                $query->orderBy('category_contestants.order', 'asc');
+            },
+            'categories.criterias' => function ($query) {
+                $query->oldest('order');
+            },
+            'categories.scores',
+        ])->first();
 
-        return $categoryJudge;
-    }
+        if ($contest->categories->count() && ! $contest->categories->whereIn('status', ['que', 'scoring'])->count()) {
+            $contest->categories->transform(function ($category) use ($contest) {
+                $category->ranked_contestants = $category->contestants->rankCategoryContestants($category, $contest);
 
-    public function getScoredCategoryContestants(Category $category)
-    {
-        return $category->categoryContestants()->get()->map(function ($categoryContestant) use ($category) {
-            $total = 0;
+                return $category;
+            });
 
-            foreach ($categoryContestant->categoryScores()->get() as $categoryScore) {
-                $total += $categoryScore->criteriaScores()->sum('score');
-            }
+            $contest->ranked_contestants = $contest->contestants->rankContestants($contest);
+        }
 
-            $averageTotal = $total / $category->categoryJudges()->count();
-            $averagePercentage = ($averageTotal / $category->criterias()->sum('percentage')) * $category->percentage;
-
-            $categoryContestant['averageTotal'] = $averageTotal;
-            $categoryContestant['averagePercentage'] = $averagePercentage;
-
-            return $categoryContestant;
-        })->sortByDesc('averageTotal');
-    }
-
-    public function getScoredContestants(Contest $contest)
-    {
-        return $contest->contestants()->get()->map(function ($contestant) {
-            $totalPercentage = 0;
-
-            foreach ($contestant->categoryContestants as $categoryContestant) {
-                $total = 0;
-
-                foreach ($categoryContestant->categoryScores as $categoryScore) {
-                    $total += $categoryScore->criteriaScores()->sum('score');
-                }
-
-                $averageTotal = $total / $categoryContestant->category->categoryJudges()->count();
-                $averagePercentage = ($averageTotal / $categoryContestant->category->criterias()->sum('percentage')) * $categoryContestant->category->percentage;
-
-                $totalPercentage += $averagePercentage;
-            }
-
-            $contestant['totalPercentage'] = $totalPercentage;
-
-            return $contestant;
-        })->sortByDesc('totalPercentage');
+        return $contest;
     }
 
     public function createCategoryFromScore($category, $data)
     {
-        $newCategory = $category->contest()->first()->categories()->create(
+        $contest = $category->contest()->first();
+
+        if (! ($data['has_criterias'] ?? false)) {
+            unset($data['scoring_system']);
+        }
+
+        if (! (($contest->scoring_system == 'ranking' && ! ($data['has_criterias'] ?? false)) || $contest->scoring_system == 'average')) {
+            unset($data['max_points_percentage']);
+        }
+
+        $category = $this->getRankedCategoryContestants($category);
+
+        $newCategory = $contest->categories()->create(
             collect($data)->except(['contestant_count', 'include_judges'])->all()
         );
 
-        $categoryContestants = collect($this->getScoredCategoryContestants($category)->toArray())->values()->all();
-
-        $categoryContestants = collect($categoryContestants)->filter(function ($categoryContestant, $index) use ($data) {
-            return $index < $data['contestant_count'];
-        })->values()->all();
-
-        foreach ($categoryContestants as $categoryContestant) {
-            $newCategory->categoryContestants()->create(['contestant_id' => $categoryContestant['contestant_id']]);
-        }
+        $category->ranked_contestants
+            ->where('ranking', '<=', $data['contestant_count'])
+            ->each(function ($contestant) use ($newCategory) {
+                $newCategory->contestants()->attach($contestant->id, ['order' => $newCategory->contestants()->count()]);
+            });
 
         if (isset($data['include_judges'])) {
-            foreach ($category->contest()->first()->judges()->get() as $judge) {
-                $newCategory->categoryJudges()->create(['judge_id' => $judge->id]);
-            }
+            $category->judges()->each(function ($judge) use ($newCategory) {
+                $newCategory->judges()->attach($judge->id, ['order' => $newCategory->judges()->count()]);
+            });
         }
 
         return $newCategory;
@@ -345,35 +403,34 @@ class ContestManager
 
     public function createContestFromScore($contest, $data)
     {
-        $data['logo'] = Storage::put('logos', $data['logo']);
+        $logo = $data['logo'];
 
         $newContest = Contest::create(
             collect($data)->except(['contestant_count', 'include_judges'])->all()
         );
 
-        $contestants = collect($this->getScoredContestants($contest)->toArray())->values()->all();
+        $contest = $this->getRankedContestants($contest);
 
-        $contestants = collect($contestants)->filter(function ($contestant, $index) use ($data) {
-            return $index < $data['contestant_count'];
-        })->values()->all();
+        $newContest->update(['logo' => Storage::put("{$newContest->id}/logo", $logo)]);
 
-        // sleep(1);
-
-        foreach ($contestants as $contestant) {
-            $newContest->contestants()->create([
-                'name' => $contestant['name'],
-                'description' => $contestant['description'],
-                'number' => $contestant['number'],
-                'picture' => Storage::putFile('profile-pictures', new File(Storage::path($contestant['picture']))),
-            ]);
-        }
+        $contest->ranked_contestants
+            ->where('ranking', '<=', $data['contestant_count'])
+            ->each(function ($contestant, $index) use ($newContest) {
+                $newContest->contestants()->create([
+                    'name' => $contestant->name,
+                    'alias' => $contestant->alias,
+                    'order' => $index + 1,
+                    'avatar' => Storage::putFile("{$newContest->id}/contestants", new File(Storage::path($contestant->avatar))),
+                ]);
+            });
 
         if (isset($data['include_judges'])) {
-            foreach ($contest->judges()->get() as $judge) {
+            $contest->judges->each(function ($judge, $index) use ($newContest) {
                 $newContest->judges()->create([
-                    'user_id' => $judge->user_id,
+                    'name' => $judge->name,
+                    'order' => $index + 1,
                 ]);
-            }
+            });
         }
 
         return $newContest;

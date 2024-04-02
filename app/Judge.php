@@ -2,27 +2,22 @@
 
 namespace App;
 
-use App\CategoryJudge;
-use App\Contest;
-use App\User;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Judge extends Model
+class Judge extends Authenticatable
 {
     protected $guarded = [];
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
 
     public function contest()
     {
         return $this->belongsTo(Contest::class);
     }
 
-    public function categoryJudges()
+    public function categories()
     {
-        return $this->hasMany(CategoryJudge::class);
+        return $this->belongsToMany(Category::class, 'category_judges')
+            ->using(CategoryJudge::class)
+            ->withPivot(['id'])
+            ->withTimestamps();
     }
 }
