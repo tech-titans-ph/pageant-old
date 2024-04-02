@@ -32,8 +32,12 @@
           @foreach ($contest->judges as $judgeKey => $judge)
             <tr>
               @if (!$judgeKey)
-                <td class="px-2 py-1 align-top border"
-                  rowspan="{{ $contest->judges->count() }}">Top n</td>
+                <td class="px-2 py-1 text-center align-top border whitespace-nowrap"
+                  rowspan="{{ $contest->judges->count() }}">
+                  <img src="{{ $contestant->avatar_url }}"
+                    class="object-cover object-center w-32 h-32 mx-auto mb-1 border rounded-full" />
+                  <div>Top {{ $contestant->ranking }}</div>
+                </td>
                 <td class="px-2 py-1 align-top border"
                   rowspan="{{ $contest->judges->count() }}">
                   <div># {{ $contestant->order }} - {{ $contestant->name }}</div>
@@ -65,7 +69,11 @@
 
         @if ($contest->scoring_system == 'ranking')
           <tr>
-            <td class="px-2 py-1 align-top border">Top {{ $contestant->ranking }}</td>
+            <td class="px-2 py-1 text-center align-top border whitespace-nowrap">
+              <img src="{{ $contestant->avatar_url }}"
+                class="object-cover object-center w-32 h-32 mx-auto mb-1 border rounded-full" />
+              <div>Top {{ $contestant->ranking }}</div>
+            </td>
             <td class="px-2 py-1 align-top border">
               <div># {{ $contestant->order }} - {{ $contestant->name }}</div>
               <div>{{ $contestant->alias }}</div>
