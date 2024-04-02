@@ -9,6 +9,10 @@ class RankingServiceProvider extends ServiceProvider
     public function boot()
     {
         Collection::macro('rankCategoryContestants', function ($category, $contest) {
+            $rank = 1;
+
+            $points = 0;
+
             return $this->transform(function ($contestant) use ($category, $contest) {
                 $judgeScores = $category->scores
                     ->where('category_contestant_id', '=', $contestant->pivot->id)
@@ -30,8 +34,18 @@ class RankingServiceProvider extends ServiceProvider
                 $contestant->average = $judgeScores->avg($category->scoring_system == 'average' && $contest->scoring_system == 'ranking' ? 'points_sum' : 'points_percentage');
 
                 return $contestant;
-            })->sortByDesc('average')->values()->transform(function ($contestant, $index) {
-                $contestant->ranking = $index + 1;
+            })->sortByDesc('average')->values()->transform(function ($contestant, $index) use (&$rank, &$points) {
+                if ($index) {
+                    if ($contestant->average != $points) {
+                        ++$rank;
+
+                        $points = $contestant->average;
+                    }
+                } else {
+                    $points = $contestant->average;
+                }
+
+                $contestant->ranking = $rank;
 
                 return $contestant;
             })->when($category->scoring_system == 'ranking', function (Collection $collection) use ($category) {
@@ -65,6 +79,8 @@ class RankingServiceProvider extends ServiceProvider
                             if ($index) {
                                 if ($rankedContestant['points_sum'] != $points) {
                                     ++$rank;
+
+                                    $points = $rankedContestant['points_sum'];
                                 }
                             } else {
                                 $points = $rankedContestant['points_sum'];
@@ -77,12 +93,26 @@ class RankingServiceProvider extends ServiceProvider
                         });
                 });
 
+                $rank = 1;
+
+                $points = 0;
+
                 return $collection->transform(function ($item) {
                     $item->rank_sum = $item->ranks->sum('rank');
 
                     return $item;
-                })->sortBy('rank_sum'/* [['rank_sum', 'asc'], ['average', 'desc']] */)->values()->transform(function ($item, $index) {
-                    $item->ranking = $index + 1;
+                })->sortBy('rank_sum'/* [['rank_sum', 'asc'], ['average', 'desc']] */)->values()->transform(function ($item, $index) use (&$rank, &$points) {
+                    if ($index) {
+                        if ($item->rank_sum != $points) {
+                            ++$rank;
+
+                            $points = $item->rank_sum;
+                        }
+                    } else {
+                        $points = $item->rank_sum;
+                    }
+
+                    $item->ranking = $rank;
 
                     return $item;
                 });
@@ -90,6 +120,10 @@ class RankingServiceProvider extends ServiceProvider
         });
 
         Collection::macro('rankContestants', function ($contest) {
+            $rank = 1;
+
+            $points = 0;
+
             return $this->transform(function ($contestant) {
                 $categoryScores = $contestant->categories->transform(function ($category) use ($contestant) {
                     $categoryJudgeScores = $category->judges->transform(function ($judge) use ($category, $contestant) {
@@ -124,8 +158,18 @@ class RankingServiceProvider extends ServiceProvider
                 $contestant->average_sum = $contestant->category_scores->sum('average');
 
                 return $contestant;
-            })->sortByDesc('average_sum')->values()->transform(function ($contestant, $index) {
-                $contestant->ranking = $index + 1;
+            })->sortByDesc('average_sum')->values()->transform(function ($contestant, $index) use (&$rank, &$points) {
+                if ($index) {
+                    if ($contestant->average_sum != $points) {
+                        ++$rank;
+
+                        $points = $contestant->average_sum;
+                    }
+                } else {
+                    $points = $contestant->average_sum;
+                }
+
+                $contestant->ranking = $rank;
 
                 return $contestant;
             })->when($contest->scoring_system == 'ranking', function (Collection $collection) use ($contest) {
@@ -180,6 +224,8 @@ class RankingServiceProvider extends ServiceProvider
                                     if ($index) {
                                         if ($rankedContestant['points_sum'] != $points) {
                                             ++$rank;
+
+                                            $points = $rankedContestant['points_sum'];
                                         }
                                     } else {
                                         $points = $rankedContestant['points_sum'];
@@ -226,12 +272,26 @@ class RankingServiceProvider extends ServiceProvider
                     });
                 });
 
+                $rank = 1;
+
+                $points = 0;
+
                 return $collection->transform(function ($item) {
                     $item->rank_sum = $item->ranks->sum('ranking');
 
                     return $item;
-                })->sortBy('rank_sum'/* [['rank_sum', 'asc'], ['average_sum', 'desc']] */)->values()->transform(function ($item, $index) {
-                    $item->ranking = $index + 1;
+                })->sortBy('rank_sum'/* [['rank_sum', 'asc'], ['average_sum', 'desc']] */)->values()->transform(function ($item, $index) use (&$rank, &$points) {
+                    if ($index) {
+                        if ($item->rank_sum != $points) {
+                            ++$rank;
+
+                            $points = $item->rank_sum;
+                        }
+                    } else {
+                        $points = $item->rank_sum;
+                    }
+
+                    $item->ranking = $rank;
 
                     return $item;
                 });
