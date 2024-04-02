@@ -225,4 +225,44 @@ class CategoryController extends Controller
             ->route('admin.contests.categories.show', ['contest' => $contest->id, 'category' => $category->id])
             ->with('success', 'Category has been created from Results.');
     }
+
+    public function moveUp(Contest $contest, $category)
+    {
+        $category = $contest->categories()->findOrFail($category);
+
+        $previousCategory = $contest->categories()
+            ->where('order', '<', $category->order)
+            ->latest('order')
+            ->first();
+
+        if ($previousCategory) {
+            $order = $category->order;
+
+            $category->update(['order' => $previousCategory->order]);
+
+            $previousCategory->update(['order' => $order]);
+        }
+
+        return redirect(route('admin.contests.show', ['contest' => $contest->id, 'activeTab' => 'Categories']));
+    }
+
+    public function MoveDown(Contest $contest, $category)
+    {
+        $category = $contest->categories()->findOrFail($category);
+
+        $nextCategory = $contest->categories()
+            ->where('order', '>', $category->order)
+            ->oldest('order')
+            ->first();
+
+        if ($nextCategory) {
+            $order = $category->order;
+
+            $category->update(['order' => $nextCategory->order]);
+
+            $nextCategory->update(['order' => $order]);
+        }
+
+        return redirect(route('admin.contests.show', ['contest' => $contest->id, 'activeTab' => 'Categories']));
+    }
 }

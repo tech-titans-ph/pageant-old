@@ -78,6 +78,27 @@
               </div>
             </div>
           </a>
+
+          <div class="flex-shrink mt-4 whitespace-nowrap lg:mt-0 lg:pr-4">
+            <form method="post"
+              action="{{ route('admin.contests.categories.move.up', ['contest' => $contest->id, 'category' => $category->id]) }}"
+              class="inline-block btn">
+              @csrf
+              @method('PATCH')
+
+              @button(['type' => 'submit']) Move Up @endbutton
+            </form>
+
+            <form method="post"
+              action="{{ route('admin.contests.categories.move.down', ['contest' => $contest->id, 'category' => $category->id]) }}"
+              class="inline-block btn">
+              @csrf
+              @method('PATCH')
+
+              @button(['type' => 'submit']) Move Down @endbutton
+            </form>
+          </div>
+
           <div class="flex-shrink mt-4 whitespace-no-wrap lg:mt-0">
             <div class="pb-1">
               @if ($category->status == 'que')
