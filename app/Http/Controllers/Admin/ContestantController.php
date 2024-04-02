@@ -85,4 +85,44 @@ class ContestantController extends Controller
             ->route('admin.contests.show', ['contests' => $contest->id, 'activeTab' => 'Contestants'])
             ->with('success', 'Contestant has been Deleted.');
     }
+
+    public function moveUp(Contest $contest, $contestant)
+    {
+        $contestant = $contest->contestants()->findOrFail($contestant);
+
+        $previousContestant = $contest->contestants()
+            ->where('order', '<', $contestant->order)
+            ->latest('order')
+            ->first();
+
+        if ($previousContestant) {
+            $order = $contestant->order;
+
+            $contestant->update(['order' => $previousContestant->order]);
+
+            $previousContestant->update(['order' => $order]);
+        }
+
+        return redirect(route('admin.contests.show', ['contest' => $contest->id, 'activeTab' => 'Contestants']));
+    }
+
+    public function moveDown(Contest $contest, $contestant)
+    {
+        $contestant = $contest->contestants()->findOrFail($contestant);
+
+        $nextContestant = $contest->contestants()
+            ->where('order', '>', $contestant->order)
+            ->oldest('order')
+            ->first();
+
+        if ($nextContestant) {
+            $order = $contestant->order;
+
+            $contestant->update(['order' => $nextContestant->order]);
+
+            $nextContestant->update(['order' => $order]);
+        }
+
+        return redirect(route('admin.contests.show', ['contest' => $contest->id, 'activeTab' => 'Contestants']));
+    }
 }

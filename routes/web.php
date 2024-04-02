@@ -64,6 +64,12 @@ Route::middleware('auth')->group(function () {
         });
 
         Route::resource('contests.contestants', 'ContestantController')->except(['index']);
+
+        Route::name('contests.contestants.move.')->prefix('contests/{contest}/contestants/{contestant}/move/')->group(function () {
+            Route::patch('up', 'ContestantController@moveUp')->name('up');
+            Route::patch('down', 'ContestantController@moveDown')->name('down');
+        });
+
         Route::resource('contests.categories', 'CategoryController')->except(['index', 'create', 'edit']);
         Route::resource('contests.categories.criterias', 'CriteriaController')->except(['index', 'show', 'create']);
         Route::resource('contests.categories.judges', 'CategoryJudgeController')

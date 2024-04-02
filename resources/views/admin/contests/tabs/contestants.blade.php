@@ -20,7 +20,25 @@
             </div>
           </div>
         </a>
-        <div class="flex-none w-full mt-4 md:w-auto lg:pl-4 lg:mt-0">
+        <div class="flex-none w-full mt-4 space-x-2 md:w-auto lg:pl-4 lg:mt-0">
+          <form method="post"
+            action="{{ route('admin.contests.contestants.move.up', ['contest' => $contest->id, 'contestant' => $contestant->id]) }}"
+            class="inline-block btn">
+            @csrf
+            @method('PATCH')
+
+            @button(['type' => 'submit']) Move Up @endbutton
+          </form>
+
+          <form method="post"
+            action="{{ route('admin.contests.contestants.move.down', ['contest' => $contest->id, 'contestant' => $contestant->id]) }}"
+            class="inline-block btn">
+            @csrf
+            @method('PATCH')
+
+            @button(['type' => 'submit']) Move Down @endbutton
+          </form>
+
           <form method="post"
             action="{{ route('admin.contests.contestants.destroy', ['contest' => $contest->id, 'contestant' => $contestant->id]) }}"
             class="inline-block">
