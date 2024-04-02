@@ -79,4 +79,44 @@ class JudgeController extends Controller
 
         return redirect()->route('judge.categories.index');
     }
+
+    public function moveUp(Contest $contest, $judge)
+    {
+        $judge = $contest->judges()->findOrFail($judge);
+
+        $previousJudge = $contest->judges()
+            ->where('order', '<', $judge->order)
+            ->latest('order')
+            ->first();
+
+        if ($previousJudge) {
+            $order = $judge->order;
+
+            $judge->update(['order' => $previousJudge->order]);
+
+            $previousJudge->update(['order' => $order]);
+        }
+
+        return redirect(route('admin.contests.show', ['contest' => $contest->id, 'activeTab' => 'Judges']));
+    }
+
+    public function MoveDown(Contest $contest, $judge)
+    {
+        $judge = $contest->judges()->findOrFail($judge);
+
+        $nextJudge = $contest->judges()
+            ->where('order', '>', $judge->order)
+            ->oldest('order')
+            ->first();
+
+        if ($nextJudge) {
+            $order = $judge->order;
+
+            $judge->update(['order' => $nextJudge->order]);
+
+            $nextJudge->update(['order' => $order]);
+        }
+
+        return redirect(route('admin.contests.show', ['contest' => $contest->id, 'activeTab' => 'Judges']));
+    }
 }

@@ -32,11 +32,29 @@
             class="flex-grow font-bold lg:pr-2">
             {{ $judge->name }}
           </a>
-          <div class="flex justify-between flex-none w-full mt-4 whitespace-no-wrap lg:w-auto lg:mt-0">
-            @buttonLink(['href' => route('admin.contests.judges.login', ['contest' => $contest->id, 'judge' => $judge->id]), 'class' => 'mr-2'])
+          <div class="flex justify-between flex-none w-full mt-4 space-x-2 whitespace-no-wrap lg:w-auto lg:mt-0">
+            @buttonLink(['href' => route('admin.contests.judges.login', ['contest' => $contest->id, 'judge' => $judge->id])])
               Login
             @endbuttonLink
-            
+
+            <form method="post"
+              action="{{ route('admin.contests.judges.move.up', ['contest' => $contest->id, 'judge' => $judge->id]) }}"
+              class="inline-block btn">
+              @csrf
+              @method('PATCH')
+
+              @button(['type' => 'submit']) Move Up @endbutton
+            </form>
+
+            <form method="post"
+              action="{{ route('admin.contests.judges.move.down', ['contest' => $contest->id, 'judge' => $judge->id]) }}"
+              class="inline-block btn">
+              @csrf
+              @method('PATCH')
+
+              @button(['type' => 'submit']) Move Down @endbutton
+            </form>
+
             <form method="post"
               action="{{ route('admin.contests.judges.destroy', ['contest' => $contest->id, 'judge' => $judge->id]) }}"
               class="inline-block btn">
