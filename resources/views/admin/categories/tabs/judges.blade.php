@@ -18,7 +18,6 @@
 
               @button(['type' => 'submit']) Move Up @endbutton
             </form>
-
             <form method="post"
               action="{{ route('admin.contests.categories.judges.move.down', ['contest' => $contest->id, 'category' => $category->id, 'judge' => $judge->id]) }}"
               class="inline-block btn">
