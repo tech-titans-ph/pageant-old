@@ -2,7 +2,7 @@
 
 @section('navbar-right')
   <a href="{{ route('logout') }}"
-    class="flex items-center justify-center block h-full px-4 no-underline hover:bg-gray-200"
+    class="flex items-center justify-center h-full px-4 no-underline hover:bg-gray-200"
     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
     Logout
   </a>
