@@ -383,19 +383,22 @@ class ContestManager
         $category = $this->getRankedCategoryContestants($category);
 
         $newCategory = $contest->categories()->create(
-            collect($data)->except(['contestant_count', 'include_judges'])->all()
+            collect($data)->except(['contestant_count', 'include_judges'])->put('order', $contest->categories()->count() + 1)->all()
         );
 
         $category->ranked_contestants
-            ->where('ranking', '<=', $data['contestant_count'])
-            ->each(function ($contestant) use ($newCategory) {
-                $newCategory->contestants()->attach($contestant->id, ['order' => $newCategory->contestants()->count()]);
+            ->slice(0, $data['contestant_count'])->values()
+            ->each(function ($contestant, $index) use ($newCategory) {
+                $newCategory->contestants()->attach($contestant->id, ['order' => $index + 1]);
             });
 
         if (isset($data['include_judges'])) {
-            $category->judges()->each(function ($judge) use ($newCategory) {
-                $newCategory->judges()->attach($judge->id, ['order' => $newCategory->judges()->count()]);
-            });
+            $category->judges()
+                ->orderBy('category_judges.order')
+                ->get()
+                ->each(function ($judge, $index) use ($newCategory) {
+                    $newCategory->judges()->attach($judge->id, ['order' => $index + 1]);
+                });
         }
 
         return $newCategory;
@@ -414,7 +417,7 @@ class ContestManager
         $newContest->update(['logo' => Storage::put("{$newContest->id}/logo", $logo)]);
 
         $contest->ranked_contestants
-            ->where('ranking', '<=', $data['contestant_count'])
+            ->slice(0, $data['contestant_count'])->values()
             ->each(function ($contestant, $index) use ($newContest) {
                 $newContest->contestants()->create([
                     'name' => $contestant->name,
