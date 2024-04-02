@@ -52,9 +52,9 @@
             $judgeScore = $contestant->judge_scores[$judge->pivot->id] ?? null;
           @endphp
 
-          <tr>
+          <tr style="{{ $judgeKey ? 'page-break-before: avoid' : 'page-break-inside: avoid' }};">
             @if (!$judgeKey)
-              <td class="px-2 py-1 text-center align-top border whitespace-nowrap"
+              <td class="w-40 px-2 py-1 text-center align-top border whitespace-nowrap"
                 rowspan="{{ $category->judges->count() }}">
                 <img src="{{ $contestant->avatar_url }}"
                   class="object-cover object-center w-32 h-32 mx-auto mb-1 border rounded-full" />
@@ -104,7 +104,7 @@
         @endforeach
 
         @if (($category->has_criterias && $category->scoring_system == 'average') || (!$category->has_criterias && $contest->scoring_system == 'average'))
-          <tr>
+          <tr style="page-break-before: avoid;">
             <th class="px-2 py-1 text-right border"
               colspan="{{ 4 + ($category->criterias->count() ?: -1) - ($contest->scoring_system == 'ranking' ? 1 : 0) }}">
               Average:
@@ -114,7 +114,7 @@
             </th>
           </tr>
         @else
-          <tr>
+          <tr style="page-break-before: avoid;">
             <th class="px-2 py-1 text-right border"
               colspan="3">
               Ranking:
@@ -132,9 +132,11 @@
           </tr>
         @endif
 
-        <tr>
-          <td>&nbsp;</td>
-        </tr>
+        @if (!$loop->last)
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+        @endif
       @endforeach
     </tbody>
   </table>

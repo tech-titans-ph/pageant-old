@@ -30,9 +30,9 @@
       @foreach ($contest->ranked_contestants as $contestant)
         @if ($contest->scoring_system == 'average')
           @foreach ($contest->judges as $judgeKey => $judge)
-            <tr>
+            <tr style="{{ $judgeKey ? 'page-break-before: avoid' : 'page-break-inside: avoid' }};">
               @if (!$judgeKey)
-                <td class="px-2 py-1 text-center align-top border whitespace-nowrap"
+                <td class="w-40 px-2 py-1 text-center align-top border whitespace-nowrap"
                   rowspan="{{ $contest->judges->count() }}">
                   <img src="{{ $contestant->avatar_url }}"
                     class="object-cover object-center w-32 h-32 mx-auto mb-1 border rounded-full" />
@@ -69,7 +69,7 @@
 
         @if ($contest->scoring_system == 'ranking')
           <tr>
-            <td class="px-2 py-1 text-center align-top border whitespace-nowrap">
+            <td class="w-40 px-2 py-1 text-center align-top border whitespace-nowrap">
               <img src="{{ $contestant->avatar_url }}"
                 class="object-cover object-center w-32 h-32 mx-auto mb-1 border rounded-full" />
               <div>Top {{ $contestant->ranking }}</div>
@@ -109,20 +109,25 @@
             @endif
           </tr>
 
-          <tr>
-            <td>&nbsp;</td>
-          </tr>
+          @if (!$loop->last)
+            <tr>
+              <td>&nbsp;</td>
+            </tr>
+          @endif
         @endif
       @endforeach
 
     </tbody>
   </table>
 
-  <h2 class="mt-8">Breakdown</h2>
+  <h2 class="mt-8"
+    style="page-break-before: always;">Breakdown</h2>
 
   <div class="mt-4 space-y-8">
     @foreach ($contest->categories as $category)
-      @include('admin.scores.category')
+      <div style="page-break-before: {{ $loop->first ? 'auto' : 'always' }};">
+        @include('admin.scores.category')
+      </div>
     @endforeach
   </div>
 </div>
