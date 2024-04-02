@@ -23,13 +23,17 @@
 
 <body class="h-screen font-sans antialiased leading-none bg-gray-100">
   <div id="app">
-    <nav class="py-6 bg-blue-900 shadow">
+    <nav class="bg-blue-900 shadow">
       <div class="container px-6 mx-auto md:px-0">
         <div class="flex items-center justify-center">
           <div class="mr-6">
             <a href="{{ url('/') }}"
-              class="text-lg font-semibold text-gray-100 no-underline">
-              {{ config('app.name') }}
+              class="flex items-center text-lg font-semibold text-gray-100 no-underline">
+              <div class="flex items-center justify-end h-24 max-h-24">
+                <img src="{{ asset('images/logo-dark.png') }}"
+                  class="object-contain h-40 ">
+              </div>
+              <div>{{ config('app.name') }}</div>
             </a>
           </div>
           <div class="flex-1 text-right">
