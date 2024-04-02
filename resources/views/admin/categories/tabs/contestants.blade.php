@@ -9,14 +9,31 @@
           </div>
           <div class="self-center flex-grow px-4">
             <div class="font-bold">
-              # {{ $contestant->order . ' - ' . $contestant->name }}
+              # {{ $contestant->pivot->order . ' - ' . $contestant->name }}
             </div>
             <div class="mt-2 italic">
               {{ $contestant->alias }}
             </div>
             <div class="inline-block px-2 py-1 mt-2 font-normal text-blue-100 bg-blue-500 rounded">Added</div>
           </div>
-          <div class="flex-shrink whitespace-no-wrap">
+          <div class="flex items-center flex-shrink space-x-2 whitespace-no-wrap">
+            <form method="post"
+              action="{{ route('admin.contests.categories.contestants.move.up', ['contest' => $contest->id, 'category' => $category->id, 'contestant' => $contestant->id]) }}"
+              class="inline-block btn">
+              @csrf
+              @method('PATCH')
+
+              @button(['type' => 'submit']) Move Up @endbutton
+            </form>
+
+            <form method="post"
+              action="{{ route('admin.contests.categories.contestants.move.down', ['contest' => $contest->id, 'category' => $category->id, 'contestant' => $contestant->id]) }}"
+              class="inline-block btn">
+              @csrf
+              @method('PATCH')
+
+              @button(['type' => 'submit']) Move Down @endbutton
+            </form>
             <form method="post"
               action="{{ route('admin.contests.categories.contestants.destroy', ['contest' => $contest->id, 'category' => $category->id, 'contestant' => $contestant->id]) }}"
               class="inline-block btn @if ($contestant->pivot->scores()->count()) remove-score-confirmation-form @endif">
