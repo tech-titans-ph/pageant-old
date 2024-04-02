@@ -87,6 +87,12 @@ Route::middleware('auth')->group(function () {
         Route::resource('contests.categories.judges', 'CategoryJudgeController')
             ->parameters(['judges' => 'judge'])
             ->only(['store', 'destroy']);
+
+        Route::name('contests.categories.judges.move.')->prefix('contests/{contest}/categories/{category}/judges/{judge}')->group(function () {
+            Route::patch('up', 'CategoryJudgeController@moveUp')->name('up');
+            Route::patch('down', 'CategoryJudgeController@moveDown')->name('down');
+        });
+
         Route::resource('contests.categories.contestants', 'CategoryContestantController')
             ->parameters(['contestants' => 'contestant'])
             ->only(['show', 'store', 'destroy']);

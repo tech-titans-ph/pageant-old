@@ -2,14 +2,31 @@
   <ul>
     @forelse ($category->judges as $key => $judge)
       <li class="p-4 {{ $key ? 'border-t' : '' }}">
-        <div class="flex items-center">
+        <div class="flex items-center space-x-4">
           <div class="flex-grow">
             <div class="font-bold">{{ $judge->name }}</div>
             <div class="mt-2">
               <span class="px-2 rounded font-normal {{ $judge->pivot->completed ? 'bg-green-300 text-green-900' : 'bg-blue-500 text-blue-100' }}">{{ $judge->completed ? 'Completed Scoring' : 'Added' }}</span>
             </div>
           </div>
-          <div class="flex-none ml-4 whitespace-no-wrap">
+          <div class="flex items-center flex-none space-x-2 whitespace-no-wrap">
+            <form method="post"
+              action="{{ route('admin.contests.categories.judges.move.up', ['contest' => $contest->id, 'category' => $category->id, 'judge' => $judge->id]) }}"
+              class="inline-block btn">
+              @csrf
+              @method('PATCH')
+
+              @button(['type' => 'submit']) Move Up @endbutton
+            </form>
+
+            <form method="post"
+              action="{{ route('admin.contests.categories.judges.move.down', ['contest' => $contest->id, 'category' => $category->id, 'judge' => $judge->id]) }}"
+              class="inline-block btn">
+              @csrf
+              @method('PATCH')
+
+              @button(['type' => 'submit']) Move Down @endbutton
+            </form>
             <form method="post"
               action="{{ route('admin.contests.categories.judges.destroy', ['contest' => $contest->id, 'category' => $category->id, 'judge' => $judge->id]) }}"
               class="inline-block btn @if ($judge->pivot->scores()->count()) remove-score-confirmation-form @endif">
