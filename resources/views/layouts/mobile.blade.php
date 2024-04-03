@@ -16,7 +16,7 @@
   <title>{{ config('app.name') }}</title>
 
   <link rel="icon"
-    href="{{ asset('images/' . env('LOGO_ONLY')) }}" />
+    href="{{ asset('images/' . env('LOGO_TEXT_BELOW')) }}" />
 
   <!-- Styles -->
   <link href="{{ mix('css/app.css') }}"
@@ -24,8 +24,9 @@
 </head>
 
 <body class="antialiased leading-none">
-  <div id="app">
-    <div class="fixed flex items-center justify-between w-full h-12 bg-white shadow">
+  <div id="app"
+    class="flex flex-col h-screen">
+    <div class="flex items-center justify-between flex-none w-full h-24 bg-white border-b shadow">
       <div class="flex-none">
         <a href="{{ route('judge.categories.index') }}"
           class="flex items-center justify-center w-12 h-12 no-underline hover:bg-gray-200">
@@ -33,16 +34,20 @@
         </a>
       </div>
       <div class="flex items-center justify-center flex-grow font-normal text-center">
-        <img src="{{ asset('images/' . env('LOGO_ONLY')) }}"
-          class="inline-block h-8 mr-2 rounded-full">
-        <div class="font-bold">
+        <div class="flex items-center justify-end h-24">
+          <img src="{{ asset('images/' . env('LOGO_TEXT_BELOW')) }}"
+            class="h-40">
+        </div>
+        <div class="-ml-8 font-bold">
           {{ config('app.name') }}
         </div>
       </div>
       @yield('navbar-right')
     </div>
 
-    @yield('content')
+    <div class="flex-grow overflow-y-auto">
+      @yield('content')
+    </div>
   </div>
 
   <!-- Scripts -->

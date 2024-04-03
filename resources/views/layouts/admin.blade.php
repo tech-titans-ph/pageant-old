@@ -15,7 +15,7 @@
   <title>{{ $title ?? config('app.name') }}</title>
 
   <link rel="icon"
-    href="{{ asset('images/' . env('LOGO_ONLY')) }}" />
+    href="{{ asset('images/' . env('LOGO_TEXT_BELOW')) }}" />
 
   <link href="{{ mix('css/app.css') }}"
     rel="stylesheet">
@@ -30,8 +30,10 @@
           <div class="mr-6">
             <a href="{{ url('/') }}"
               class="flex items-center text-lg font-semibold text-gray-100 no-underline">
-              <img src="{{ asset('images/' . env('LOGO_ONLY')) }}"
-                class="inline-block h-16 mr-2 rounded-full">
+              <div class="flex items-center justify-end h-24">
+                <img src="{{ asset('images/' . env('LOGO_TEXT_BELOW_DARK')) }}"
+                  class="h-40">
+              </div>
               <div>{{ config('app.name') }}</div>
             </a>
           </div>
