@@ -34,7 +34,7 @@
         class="px-2 mb-4 md:w-1/3 lg:w-1/4">
         @card()
           <img src="{{ $contest->logo_url }}"
-            class="object-cover object-center w-full h-64 mx-auto bg-white border rounded">
+            class="object-contain object-center w-full h-64 mx-auto bg-white border rounded">
           <div class="mt-4 space-y-2 text-center">
             <div class="text-lg font-bold">{{ $contest->name }}</div>
             <div class="italic font-medium">{{ $contest->description }}</div>
