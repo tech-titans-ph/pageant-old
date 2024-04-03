@@ -15,7 +15,7 @@
 @endsection
 
 @section('content')
-  <div class="pt-12 mx-auto">
+  <div class="mx-auto">
     <div class="p-4 leading-normal text-center border-b">
       <h2 class="text-lg font-bold">{{ $judge->contest->name }}</h2>
       <p class="text-sm italic font-thin">Judge: {{ $judge->name }}</p>

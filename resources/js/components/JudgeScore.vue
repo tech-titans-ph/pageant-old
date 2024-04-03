@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="pt-12 pb-12 mx-auto">
+        <div class="pb-12 mx-auto">
             <div class="p-4 leading-normal text-center border-b">
                 <h2 class="text-lg font-bold">{{ contestName }}</h2>
                 <p class="font-semibold text-md">{{ categoryName }}</p>

@@ -1,7 +1,7 @@
 @extends('layouts.mobile')
 
 @section('content')
-  <div class="pt-24 mx-auto">
+  <div class="pt-12 mx-auto">
     @if (session('success'))
       <div class="p-6 mx-6 font-bold text-center text-green-700 bg-green-200 border-t-8 border-green-700 rounded-lg">
         {{ session('success') }}
