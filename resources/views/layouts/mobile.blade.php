@@ -16,7 +16,8 @@
   <title>{{ config('app.name') }}</title>
 
   <link rel="icon"
-    href="{{ asset('images/' . env('LOGO_TEXT_BELOW')) }}" />
+    href="{{ asset('images/favicon.png') }}"
+    type="image/png" />
 
   <!-- Styles -->
   <link href="{{ mix('css/app.css') }}"
