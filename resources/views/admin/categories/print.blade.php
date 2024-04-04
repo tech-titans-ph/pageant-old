@@ -11,6 +11,11 @@
     content="{{ csrf_token() }}">
 
   <title>{{ config('app.name') }}</title>
+
+  <link rel="icon"
+    href="{{ asset('images/favicon.png') }}"
+    type="image/png" />
+
   <link rel="stylesheet"
     href="{{ mix('css/app.css') }}">
 </head>
