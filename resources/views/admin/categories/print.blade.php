@@ -38,6 +38,8 @@
 
       @include('admin.scores.category')
     </div>
+    
+    @include('admin.print-footer', ['model' => $category])
   </div>
   <script src="{{ mix('js/app.js') }}"></script>
   <script>
