@@ -14,11 +14,12 @@
                     </div>
                     <div class="flex items-center justify-between w-auto p-4 md:w-1/2 md:static">
                         <a :href="previousUrl"
-                            class="flex items-center justify-center flex-none block w-12 h-12 mr-1 no-underline border rounded-full hover:bg-gray-200">
-                            <svg class="feather feather-chevron-left sc-dnqmqq jxshSx"
-                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" aria-hidden="true">
+                            :class="[previousUrl == 'javascript:void(0);' ? ' hover:bg-white cursor-not-allowed border-none' : '']"
+                            class="flex items-center justify-center flex-none w-12 h-12 mr-1 no-underline border rounded-full hover:bg-gray-200">
+                            <svg v-show="previousUrl != 'javascript:void(0);'"
+                                class="feather feather-chevron-left sc-dnqmqq jxshSx" xmlns="http://www.w3.org/2000/svg"
+                                width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <polyline points="15 18 9 12 15 6" />
                             </svg>
                         </a>
@@ -32,8 +33,10 @@
                             </div>
                         </div>
                         <a :href="nextUrl"
-                            class="flex items-center justify-center flex-none block w-12 h-12 ml-1 no-underline border rounded-full hover:bg-gray-200">
-                            <svg class="feather feather-chevron-right sc-dnqmqq jxshSx"
+                            :class="[nextUrl == 'javascript:void(0);' ? 'hover:bg-white cursor-not-allowed border-none' : '']"
+                            class="flex items-center justify-center flex-none w-12 h-12 ml-1 no-underline border rounded-full hover:bg-gray-200">
+                            <svg v-show="nextUrl != 'javascript:void(0);'"
+                                class="feather feather-chevron-right sc-dnqmqq jxshSx"
                                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round" aria-hidden="true" data-reactid="276">
