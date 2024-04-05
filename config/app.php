@@ -218,4 +218,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
     ],
+
+    'company' => env('APP_COMPANY'),
+    'witness' => env('APP_WITNESS'),
 ];

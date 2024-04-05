@@ -11,6 +11,11 @@
     content="{{ csrf_token() }}">
 
   <title>{{ config('app.name') }}</title>
+
+  <link rel="icon"
+    href="{{ asset('images/favicon.png') }}"
+    type="image/png" />
+
   <link rel="stylesheet"
     href="{{ mix('css/app.css') }}">
 </head>
@@ -33,6 +38,8 @@
 
       @include('admin.scores.category')
     </div>
+    
+    @include('admin.print-footer', ['model' => $category])
   </div>
   <script src="{{ mix('js/app.js') }}"></script>
   <script>

@@ -19,12 +19,15 @@
     <judge-score contest-name="{{ $category->contest->name }}"
       category-name="{{ $category->name }}"
       judge-name="{{ $judge->name }}"
-      contestant-number="{{ $contestant->order }}"
+      contestant-number="{{ $contestant->pivot->order }}"
       contestant-name="{{ $contestant->name }}"
       contestant-description="{{ $contestant->alias }}"
       contestant-picture="{{ $contestant->avatar_url }}"
-      previous-url="{{ $contestants->previousPageUrl() ?? $contestants->url($contestants->lastPage()) }}"
-      next-url="{{ $contestants->currentPage() === $contestants->lastPage() ? route('judge.categories.show', ['category' => $category->id]) : $contestants->nextPageUrl() }}"
+      {{-- previous-url="{{ $contestants->previousPageUrl() ?? $contestants->url($contestants->lastPage()) }}" --}}
+      previous-url="{{ $contestants->previousPageUrl() ?? 'javascript:void(0);' }}"
+      {{-- next-url="{{ $contestants->currentPage() === $contestants->lastPage() ? route('judge.categories.show', ['category' => $category->id]) : $contestants->nextPageUrl() }}" --}}
+      next-url="{{ $contestants->currentPage() === $contestants->lastPage() ? 'javascript:void(0);' : $contestants->nextPageUrl() }}"
+      submit-url="{{ $contestants->currentPage() === $contestants->lastPage() ? route('judge.categories.show', ['category' => $category->id]) : $contestants->nextPageUrl() }}"
       :enabled="{{ $judge->pivot->completed ? 'false' : 'true' }}"
       percentage="{{ $category->has_criterias ? $category->criterias->sum('max_points_percentage') : $category->max_points_percentage }}"
       score="{{ $totalScore }}">
