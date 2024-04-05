@@ -53,7 +53,7 @@
                 </div>
             </div>
             <div class="px-2" v-if="enabled">
-                <a :href="nextUrl"
+                <a :href="submitUrl"
                     class="flex items-center px-1 py-1 text-white bg-green-600 rounded-full shadow items-around">
                     <span class="pl-4">Submit</span>
                     <svg class="ml-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -98,6 +98,9 @@ export default {
         },
         nextUrl: {
             required: true
+        },
+        submitUrl: {
+            required: true,
         },
         enabled: {
             type: Boolean,
