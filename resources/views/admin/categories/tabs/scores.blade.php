@@ -1,7 +1,8 @@
 <tab-item title="Scores">
   <ul>
     <li class="flex justify-between p-4">
-      @if (!$contest->categories()->whereIn('status', ['que', 'scoring'])->count())
+      {{-- @if (!$contest->categories()->whereIn('status', ['que', 'scoring'])->count()) --}}
+      @if ($category->status == 'done')
         @buttonLink([
             'href' => route('admin.contests.categories.print', ['contest' => $contest->id, 'category' => $category->id]),
             'attributes' => 'target="_blank"'
