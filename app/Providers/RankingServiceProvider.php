@@ -63,15 +63,15 @@ class RankingServiceProvider extends ServiceProvider
 
                     $points = 0;
 
-                    $group->transform(function ($contestant, $categoryContestantId) use ($groupId) {
+                    $group->transform(function ($score, $categoryContestantId) use ($groupId) {
                         return [
                             'category_contestant_id' => $categoryContestantId,
                             'group_id' => $groupId,
-                            'points_sum' => $contestant->sum('points'),
+                            'points_sum' => $score->sum('points'),
                         ];
                     })->sortByDesc('points_sum')
                         ->values()
-                        ->each(function ($rankedContestant, $index) use ($collection, &$rank, &$points) {
+                        ->each(function ($rankedContestant, $index) use (&$collection, &$rank, &$points) {
                             $contestant = $collection->filter(function ($collectionContestant) use ($rankedContestant) {
                                 return $collectionContestant->pivot->id == $rankedContestant['category_contestant_id'];
                             })->first();
@@ -198,86 +198,91 @@ class RankingServiceProvider extends ServiceProvider
                         $category->scores->groupBy([
                             $category->has_criterias ? 'criteria_id' : 'category_id',
                             'category_contestant_id',
-                        ])->each(function ($group, $groupId) use ($collection, $category) {
+                        ])->each(function ($group, $groupId) use ($category, $collection) {
                             $rank = 1;
 
                             $points = 0;
 
-                            $group->transform(function ($score, $categoryContestantId) use ($groupId, $category) {
+                            $categoryContestants = $group->transform(function ($score, $categoryContestantId) use ($groupId, $category) {
                                 $contestant = $category->contestants->filter(function ($categoryContestant) use ($categoryContestantId) {
                                     return $categoryContestant->pivot->id == $categoryContestantId;
                                 })->first();
 
-                                return [
+                                return (object) [
                                     'contestant_id' => $contestant->id,
                                     'category_id' => $category->id,
                                     'group_id' => $groupId,
                                     'points_sum' => $score->sum('points'),
+                                    'ranks' => collect(),
+                                    'rank_sum' => 0,
+                                    'ranking' => 0,
                                 ];
                             })->sortByDesc('points_sum')
                                 ->values()
-                                ->each(function ($rankedContestant, $index) use ($collection, &$rank, &$points, $category) {
-                                    $contestant = $collection->filter(function ($collectionContestant) use ($rankedContestant) {
-                                        return $collectionContestant->id == $rankedContestant['contestant_id'];
-                                    })->first();
-
+                                ->each(function ($categoryContestant, $index) use (&$rank, &$points) {
                                     if ($index) {
-                                        if ($rankedContestant['points_sum'] != $points) {
+                                        if ($categoryContestant->points_sum != $points) {
                                             ++$rank;
 
-                                            $points = $rankedContestant['points_sum'];
+                                            $points = $categoryContestant->points_sum;
                                         }
                                     } else {
-                                        $points = $rankedContestant['points_sum'];
+                                        $points = $categoryContestant->points_sum;
                                     }
 
-                                    $contestant->ranks->push([
-                                        'category_id' => $category->id,
-                                        'group_id' => $rankedContestant['group_id'],
+                                    $categoryContestant->ranks->push([
+                                        'group_id' => $categoryContestant->group_id,
                                         'rank' => $rank,
                                     ]);
                                 });
+
+                            $rank = 1;
+
+                            $points = 0;
+
+                            $categoryContestants->transform(function ($categoryContestant) {
+                                $categoryContestant->rank_sum = $categoryContestant->ranks->sum('rank');
+
+                                return $categoryContestant;
+                            })->sortBy('rank_sum')->values()->transform(function ($item, $index) use (&$rank, &$points, $collection) {
+                                $contestant = $collection->filter(function ($contestant) use ($item) {
+                                    return $contestant->id == $item->contestant_id;
+                                })->first();
+
+                                if ($index) {
+                                    if ($item->rank_sum != $points) {
+                                        ++$rank;
+
+                                        $points = $item->rank_sum;
+                                    }
+                                } else {
+                                    $points = $item->rank_sum;
+                                }
+
+                                $item->ranking = $rank;
+
+                                $contestant->ranks->push([
+                                    'category_id' => $item->category_id,
+                                    'group_id' => $item->group_id,
+                                    'rank' => $rank,
+                                ]);
+
+                                return $item;
+                            });
                         });
                     }
-                });
-
-                $collection->transform(function ($item) {
-                    $categoryRanks = $item->ranks->groupBy('category_id')->transform(function ($categoryRanks, $categoryId) {
-                        return [
-                            'category_id' => $categoryId,
-                            'rank_sum' => $categoryRanks->sum('rank'),
-                        ];
-                    })->values();
-
-                    $item->ranks = $categoryRanks;
-
-                    return $item;
-                });
-
-                $contest->categories->each(function ($category) use ($collection) {
-                    $collection->sortBy(function ($item) use ($category) {
-                        return collect($item->ranks)->firstWhere('category_id', '=', $category->id)['rank_sum'];
-                    })->values()->each(function ($item, $index) use ($category) {
-                        $ranks = $item->ranks;
-
-                        $rank = $ranks->firstWhere('category_id', '=', $category->id);
-
-                        $rank['ranking'] = $index + 1;
-
-                        $ranks = $ranks
-                            ->where('category_id', '!=', $category->id)
-                            ->merge([$rank]);
-
-                        $item->ranks = $ranks;
-                    });
                 });
 
                 $rank = 1;
 
                 $points = 0;
 
+                $rank = 1;
+
+                $points = 0;
+
                 return $collection->transform(function ($item) {
-                    $item->rank_sum = $item->ranks->sum('ranking');
+                    $item->rank_sum = $item->ranks->sum('rank');
 
                     return $item;
                 })->sortBy('rank_sum'/* [['rank_sum', 'asc'], ['average_sum', 'desc']] */)->values()->transform(function ($item, $index) use (&$rank, &$points) {
