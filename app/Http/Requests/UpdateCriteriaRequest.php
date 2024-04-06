@@ -33,7 +33,7 @@ class UpdateCriteriaRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255', Rule::unique('criterias')->ignore($criteria)->where('category_id', $category->id)],
             'max_points_percentage' => ['required', 'integer', 'min:2', 'max:100'],
-            'step' => ['nullable', 'required', 'min:0.01', 'lt:max_points_percentage'],
+            'step' => ['nullable', 'required', 'min:0.01', 'max:1'],
         ];
     }
 

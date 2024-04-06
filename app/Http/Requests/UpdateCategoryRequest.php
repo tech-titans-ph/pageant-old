@@ -57,7 +57,7 @@ class UpdateCategoryRequest extends FormRequest
                     'required_with:max_points_percentage',
                     'numeric',
                     'min:0.01',
-                    'lt:max_points_percentage',
+                    'max:1',
                 ],
             ]);
         }
