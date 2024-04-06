@@ -30,15 +30,16 @@
       @foreach ($contest->ranked_contestants as $contestant)
         @if ($contest->scoring_system == 'average')
           @foreach ($contest->judges as $judgeKey => $judge)
-            <tr style="{{ $judgeKey ? 'page-break-before: avoid' : 'page-break-inside: avoid' }};">
+            <tr style="{{ $judgeKey ? 'page-break-before: avoid' : 'page-break-inside: avoid' }};"
+              class="{{ $loop->parent->first ? 'bg-green-100' : '' }}">
               @if (!$judgeKey)
-                <td class="w-40 px-2 py-1 text-center align-top border whitespace-nowrap"
+                <td class="w-40 px-2 py-1 text-center align-top border whitespace-nowrap {{ $loop->parent->first ? 'font-bold text-lg' : '' }}"
                   rowspan="{{ $contest->judges->count() }}">
                   <img src="{{ $contestant->avatar_url }}"
                     class="object-cover object-center w-32 h-32 mx-auto mb-1 border rounded-full" />
                   <div>Top {{ $contestant->ranking }}</div>
                 </td>
-                <td class="px-2 py-1 align-top border"
+                <td class="px-2 py-1 align-top border {{ $loop->parent->first ? 'font-bold text-lg' : '' }}"
                   rowspan="{{ $contest->judges->count() }}">
                   <div># {{ $contestant->order }} - {{ $contestant->name }}</div>
                   <div>{{ $contestant->alias }}</div>
@@ -68,13 +69,13 @@
         @endif
 
         @if ($contest->scoring_system == 'ranking')
-          <tr>
-            <td class="w-40 px-2 py-1 text-center align-top border whitespace-nowrap">
+          <tr class="{{ $loop->first ? 'bg-green-100' : '' }}">
+            <td class="w-40 px-2 py-1 text-center align-top border whitespace-nowrap {{ $loop->first ? 'font-bold text-lg' : '' }}">
               <img src="{{ $contestant->avatar_url }}"
                 class="object-cover object-center w-32 h-32 mx-auto mb-1 border rounded-full" />
               <div>Top {{ $contestant->ranking }}</div>
             </td>
-            <td class="px-2 py-1 align-top border">
+            <td class="px-2 py-1 align-top border {{ $loop->first ? 'font-bold text-lg' : '' }}">
               <div># {{ $contestant->order }} - {{ $contestant->name }}</div>
               <div>{{ $contestant->alias }}</div>
             </td>
