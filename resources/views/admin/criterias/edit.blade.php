@@ -40,6 +40,14 @@
             placeholder="Enter maximum points or percentage of criteria...">
           @endformField
 
+          @formField(['label' => 'Step', 'error' => 'step'])
+          <input type="text"
+            name="step"
+            class="block w-full form-input"
+            value="{{ old('step', $criteria->step) }}"
+            placeholder="Enter step..." />
+          @endformField
+
           @button(['type' => 'Submit']) Edit @endbutton
         </form>
       @endcard

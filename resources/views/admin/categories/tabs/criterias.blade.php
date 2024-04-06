@@ -2,12 +2,10 @@
   <ul>
     <li class="p-4">
       <form method="post"
-        action="{{ route('admin.contests.categories.criterias.store', ['contest' => $contest->id, 'category' => $category->id]) }}"
-        class="flex items-start">
+        action="{{ route('admin.contests.categories.criterias.store', ['contest' => $contest->id, 'category' => $category->id]) }}">
         @csrf
-
-        <div class="flex flex-grow mr-4">
-          @formField(['error' => 'name', 'class' => 'w-1/2'])
+        <div class="grid flex-1 grid-cols-1 gap-4 mr-4 lg:grid-cols-3">
+          @formField(['label' => 'Name', 'error' => 'name'])
           <input-picker api="{{ route('admin.criterias.index') }}"
             hidden-name="id"
             display-name="name"
@@ -18,16 +16,25 @@
             placeholder="Enter name of criteria..."></input-picker>
           @endformField
 
-          @formField(['error' => 'max_points_percentage', 'class' => 'w-1/2 ml-4'])
+          @formField(['label' => 'Maximum Points / Percentage', 'error' => 'max_points_percentage'])
           <input type="text"
             name="max_points_percentage"
             class="block w-full form-input"
             value="{{ old('max_points_percentage') }}"
             placeholder="Enter maximum points or percentage of criteria..." />
           @endformField
-        </div>
 
-        @button(['type' => 'submit', 'class' => 'flex-none']) Add Criteria @endbutton
+          @formField(['label' => 'Step', 'error' => 'step'])
+          <input type="text"
+            name="step"
+            class="block w-full form-input"
+            value="{{ old('step', 1) }}"
+            placeholder="Enter step..." />
+          @endformField
+        </div>
+        <div class="flex flex-col justify-end lg:flex-row">
+          @button(['type' => 'submit']) Add Criteria @endbutton
+        </div>
       </form>
     </li>
 
@@ -35,9 +42,10 @@
       <li class="p-4 border-t">
         <div class="flex items-center space-x-4">
           <a href="{{ route('admin.contests.categories.criterias.edit', ['contest' => $contest->id, 'category' => $category->id, 'criteria' => $criteria->id]) }}"
-            class="flex-grow">
+            class="flex-grow space-y-2">
             <div class="font-bold">{{ $criteria->name }}</div>
-            <div class="mt-2 italic">{{ $criteria->max_points_percentage }} {{ $category->scoring_system == 'average' ? '%' : 'points' }}</div>
+            <div class="italic">{{ $criteria->max_points_percentage }} {{ $category->scoring_system == 'average' ? '%' : 'points' }}</div>
+            <div>{{ $criteria->step }} Step</div>
           </a>
           <div class="flex items-center flex-none space-x-2">
             <form method="post"
