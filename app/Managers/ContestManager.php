@@ -137,7 +137,7 @@ class ContestManager
         }
 
         if (! (($contest->scoring_system == 'ranking' && ! ($data['has_criterias'] ?? false)) || $contest->scoring_system == 'average')) {
-            unset($data['max_points_percentage']);
+            unset($data['max_points_percentage'], $data['step']);
         }
 
         $category = $contest->categories()->create($data);
@@ -159,8 +159,8 @@ class ContestManager
     {
         $contest = $category->contest()->first();
 
-        if (collect($data)->only(['has_criterias', 'scoring_system', 'max_points_percentage'])->filter()->count() && $category->scores()->count()) {
-            unset($data['has_criterias'], $data['scoring_system'], $data['max_points_percentage']);
+        if (collect($data)->only(['has_criterias', 'scoring_system', 'max_points_percentage', 'step'])->filter()->count() && $category->scores()->count()) {
+            unset($data['has_criterias'], $data['scoring_system'], $data['max_points_percentage'], $data['step']);
         } else {
             if (! isset($data['has_criterias'])) {
                 $data['has_criterias'] = false;
@@ -172,6 +172,8 @@ class ContestManager
 
             if (! (($contest->scoring_system == 'ranking' && ! ($data['has_criterias'] ?? false)) || $contest->scoring_system == 'average')) {
                 $data['max_points_percentage'] = null;
+
+                $data['step'] = null;
             }
         }
 
