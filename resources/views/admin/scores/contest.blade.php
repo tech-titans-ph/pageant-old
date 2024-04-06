@@ -82,7 +82,7 @@
 
             @foreach ($contest->categories as $category)
               <td class="px-2 py-1 text-center align-middle border">
-                {{ $contestant->ranks->firstWhere('category_id', '=', $category->id)['ranking'] }}
+                {{ $contestant->ranks->firstWhere('category_id', '=', $category->id)['rank'] }}
               </td>
             @endforeach
           </tr>
