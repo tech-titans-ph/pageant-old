@@ -83,6 +83,7 @@
                 @endif
                 @if ($category->max_points_percentage)
                   <div>{{ $category->max_points_percentage }} {{ $category->has_criterias && ($contest->scoring_system == 'ranking' || $category->scoring_system == 'ranking') ? 'points' : '%' }}</div>
+                  <div>{{ $category->step }} Step</div>
                 @endif
               @else
                 @formField(['error' => 'has_criterias', 'class' => 'has-criterias-wrapper'])
@@ -97,7 +98,7 @@
                 </label>
               @endformField()
 
-              @formField(['error' => 'scoring_system', 'class'=> 'scoring-system-wrapper ' . (old('has_criterias', $category->has_criterias) ? '' : 'hidden')])
+              @formField(['label' => 'Scoring System', 'error' => 'scoring_system', 'class'=> 'scoring-system-wrapper ' . (old('has_criterias', $category->has_criterias) ? '' : 'hidden')])
               {!! Form::select('scoring_system', $contest->scoring_system == 'ranking' ? config('options.scoring_systems') : ['average' => 'Average'], old('scoring_system', $category->scoring_system), [
                   'id' => 'scoring_system',
                   'class' => 'block w-full form-select',
@@ -106,6 +107,7 @@
               @endformField
 
               @formField([
+              'label' => 'Maximum Ponts / Percentage',
               'error' => 'max_points_percentage',
               'class' => 'max-points-percentage-wrapper ' . ((($contest->scoring_system == 'ranking' && !old('has_criterias', $category->has_criterias)) || $contest->scoring_system == 'average') ? '' : 'hidden')
               ])
@@ -115,6 +117,19 @@
                 class="block w-full form-input"
                 value="{{ old('max_points_percentage', $category->max_points_percentage) }}"
                 placeholder="Enter maximum points or percentage of category..." />
+              @endformField
+
+              @formField([
+              'label' => 'Step',
+              'error' => 'step',
+              'class' => 'step-wrapper ' . ((($contest->scoring_system == 'ranking' && !old('has_criterias', $category->has_criterias)) || $contest->scoring_system == 'average') ? '' : 'hidden')
+              ])
+              <input type="text"
+                id="step"
+                name="step"
+                class="block w-full form-input"
+                value="{{ old('step', $category->step) }}"
+                placeholder="Enter step..." />
               @endformField
               @endif
               <div>

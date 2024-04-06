@@ -6,7 +6,7 @@
         @csrf
 
         <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          @formField(['error' => 'name'])
+          @formField(['label' => 'Name', 'error' => 'name'])
           <input-picker api="{{ route('admin.categories.index') }}"
             hidden-name="id"
             display-name="name"
@@ -29,7 +29,7 @@
           </label>
           @endformField()
 
-          @formField(['error' => 'scoring_system', 'class'=> 'scoring-system-wrapper ' . (old('has_criterias') ? '' : 'hidden')])
+          @formField(['label' => 'Scoring System', 'error' => 'scoring_system', 'class'=> 'scoring-system-wrapper ' . (old('has_criterias') ? '' : 'hidden')])
           {!! Form::select('scoring_system', $contest->scoring_system == 'ranking' ? config('options.scoring_systems') : ['average' => 'Average'], old('scoring_system'), [
               'id' => 'scoring_system',
               'class' => 'block w-full form-select',
@@ -38,6 +38,7 @@
           @endformField
 
           @formField([
+          'label' => 'Maximum Points / Percentage',
           'error' => 'max_points_percentage',
           'class' => 'max-points-percentage-wrapper ' . ((($contest->scoring_system == 'ranking' && !old('has_criterias')) || $contest->scoring_system == 'average') ? '' : 'hidden')
           ])
@@ -47,6 +48,19 @@
             class="block w-full form-input"
             value="{{ old('max_points_percentage') }}"
             placeholder="Enter maximum points or percentage of category...">
+          @endformField
+
+          @formField([
+          'label' => 'Step',
+          'error' => 'step',
+          'class' => 'step-wrapper ' . ((($contest->scoring_system == 'ranking' && !old('has_criterias')) || $contest->scoring_system == 'average') ? '' : 'hidden')
+          ])
+          <input type="text"
+            id="step"
+            name="step"
+            class="block w-full form-input"
+            value="{{ old('step', 1) }}"
+            placeholder="Enter step..." />
           @endformField
         </div>
         <div class="mt-4">
