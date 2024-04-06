@@ -7,9 +7,13 @@
 
       let maxPointsPercentage = document.querySelector('#max_points_percentage');
 
+      let step = document.querySelector('#step');
+
       let scoringSystemWrapper = document.querySelector('.scoring-system-wrapper');
 
       let maxPointsPercentageWrapper = document.querySelector('.max-points-percentage-wrapper');
+
+      let stepWrapper = document.querySelector('.step-wrapper');
 
       let contestScoringSystem = "{{ $contest->scoring_system }}";
 
@@ -32,10 +36,16 @@
       function toggleMaxPointsPercentageWrapper() {
         maxPointsPercentageWrapper.classList.add('hidden');
 
+        stepWrapper.classList.add('hidden');
+
         if ((contestScoringSystem == 'ranking' && !hasCriterias.checked) || contestScoringSystem == 'average') {
           maxPointsPercentageWrapper.classList.remove('hidden');
+
+          stepWrapper.classList.remove('hidden')
         } else {
           maxPointsPercentage.value = '';
+
+          step.value = '';
         }
       }
     });
