@@ -23,9 +23,7 @@
       contestant-name="{{ $contestant->name }}"
       contestant-description="{{ $contestant->alias }}"
       contestant-picture="{{ $contestant->avatar_url }}"
-      {{-- previous-url="{{ $contestants->previousPageUrl() ?? $contestants->url($contestants->lastPage()) }}" --}}
       previous-url="{{ $contestants->previousPageUrl() ?? 'javascript:void(0);' }}"
-      {{-- next-url="{{ $contestants->currentPage() === $contestants->lastPage() ? route('judge.categories.show', ['category' => $category->id]) : $contestants->nextPageUrl() }}" --}}
       next-url="{{ $contestants->currentPage() === $contestants->lastPage() ? 'javascript:void(0);' : $contestants->nextPageUrl() }}"
       submit-url="{{ $contestants->currentPage() === $contestants->lastPage() ? route('judge.categories.show', ['category' => $category->id]) : $contestants->nextPageUrl() }}"
       :enabled="{{ $judge->pivot->completed ? 'false' : 'true' }}"
@@ -45,6 +43,7 @@
           id="{{ $criteria->id }}"
           name="{{ $criteria->name }}"
           percentage="{{ $criteria->max_points_percentage }}"
+          step="{{ $criteria->step }}"
           score="{{ $score }}"
           :enabled="{{ $judge->pivot->completed ? 'false' : 'true' }}">
           <template v-slot:decrease-icon>@svg('minus-solid', 'h-4 w-4 fill-current')</template>
@@ -64,6 +63,7 @@
           id="{{ $category->id }}"
           name="{{ $category->name }}"
           percentage="{{ $category->max_points_percentage }}"
+          step="{{ $category->step }}"
           score="{{ $score }}"
           :enabled="{{ $judge->pivot->completed ? 'false' : 'true' }}">
           <template v-slot:decrease-icon>@svg('minus-solid', 'h-4 w-4 fill-current')</template>
