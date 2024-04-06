@@ -31,6 +31,7 @@ class CreateCriteriaRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255', Rule::unique('criterias')->where('category_id', $category->id)],
             'max_points_percentage' => ['required', 'integer', 'min:2', 'max:100'],
+            'step' => ['nullable', 'required', 'min:0.01', 'lt:max_points_percentage'],
         ];
     }
 
@@ -39,6 +40,7 @@ class CreateCriteriaRequest extends FormRequest
         return [
             'name' => 'Name',
             'max_points_percentage' => 'Maximum Points or Percentage',
+            'step' => 'Step',
         ];
     }
 }
