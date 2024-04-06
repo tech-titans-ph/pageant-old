@@ -46,6 +46,13 @@ class CreateCategoryRequest extends FormRequest
                 'min:2',
                 'max:100',
             ],
+            'step' => [
+                'nullable',
+                'required_with:max_points_percentage',
+                'numeric',
+                'min:0.01',
+                'lt:max_points_percentage',
+            ],
         ];
     }
 
