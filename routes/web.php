@@ -101,6 +101,12 @@ Route::middleware('auth')->group(function () {
             Route::patch('up', 'CategoryContestantController@moveUp')->name('up');
             Route::patch('down', 'CategoryContestantController@moveDown')->name('down');
         });
+
+        Route::name('contests.bestins.')->prefix('contests/{contest}/best-ins')->group(function () {
+            Route::resource('', 'BestinController')
+                ->parameters(['' => 'bestin'])
+                ->only(['index', 'store', 'destroy']);
+        });
     });
 });
 
