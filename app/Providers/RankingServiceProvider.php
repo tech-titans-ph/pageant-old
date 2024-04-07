@@ -8,6 +8,71 @@ class RankingServiceProvider extends ServiceProvider
 {
     public function boot()
     {
+        Collection::macro('rankCriteriaContestants', function ($criteria, $category, $contest) {
+            $rank = 1;
+
+            $points = 0;
+
+            return $this->transform(function ($contestant) use ($criteria, $category) {
+                $judgeScores = $criteria->scores
+                    ->where('category_contestant_id', '=', $contestant->pivot->id)
+                    ->groupBy('category_judge_id')
+                    ->transform(function ($judgeScores) use ($criteria, $category) {
+                        $judgeScores = $judgeScores->where('criteria_id', '=', $criteria->id);
+
+                        $pointsSum = $judgeScores->sum('points');
+
+                        return [
+                            'scores' => $judgeScores,
+                            'points_sum' => $pointsSum,
+                            'points_percentage' => $pointsSum / $category->criterias->sum('max_points_percentage') * $category->max_points_percentage,
+                        ];
+                    });
+
+                $contestant->judge_scores = $judgeScores;
+
+                $contestant->points_sum = $judgeScores->sum('points_sum');
+
+                $contestant->average = $judgeScores->avg('points_sum');
+
+                return $contestant;
+            })->sortByDesc('average')->values()->transform(function ($contestant, $index) use (&$rank, &$points) {
+                if ($index) {
+                    if ($contestant->average != $points) {
+                        ++$rank;
+
+                        $points = $contestant->average;
+                    }
+                } else {
+                    $points = $contestant->average;
+                }
+
+                $contestant->ranking = $rank;
+
+                return $contestant;
+            })->when($category->scoring_system == 'ranking', function (Collection $collection) {
+                $rank = 1;
+
+                $points = 0;
+
+                return $collection->sortByDesc('points_sum')->values()->transform(function ($item, $index) use (&$rank, &$points) {
+                    if ($index) {
+                        if ($item->points_sum != $points) {
+                            ++$rank;
+
+                            $points = $item->average;
+                        }
+                    } else {
+                        $points = $item->points_sum;
+                    }
+
+                    $item->ranking = $rank;
+
+                    return $item;
+                });
+            });
+        });
+
         Collection::macro('rankCategoryContestants', function ($category, $contest) {
             $rank = 1;
 

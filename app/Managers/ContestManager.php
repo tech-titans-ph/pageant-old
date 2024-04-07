@@ -316,6 +316,19 @@ class ContestManager
         return $judge;
     }
 
+    public function getRankedCriteriaContestants(Criteria $criteria)
+    {
+        $criteria->load(['category.contest', 'category.judges']);
+
+        $category = $criteria->category;
+
+        $contest = $category->contest;
+
+        $criteria->ranked_contestants = $category->contestants()->get()->rankCriteriaContestants($criteria, $category, $contest);
+
+        return $criteria;
+    }
+
     public function getRankedCategoryContestants(Category $category)
     {
         $category->load([
