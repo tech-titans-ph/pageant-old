@@ -41,15 +41,15 @@ class SetScoreRequest extends FormRequest
             $maxPointsPercentage = $group->max_points_percentage;
         }
 
-        $numberSegments = explode('.', $group->step);
+        $numberSegments = explode('.', (float) $group->step);
 
-        $decimal = (int) $numberSegments[1];
+        $decimal = (int) ($numberSegments[1] ?? 0);
 
-        $this->length = strlen($decimal);
+        $this->length = $decimal ? strlen($decimal) : 0;
 
         $regex = $this->length ? Str::replaceFirst(':decimal', $this->length, 'regex:/^\d+(\.\d{0,:decimal})?$/') : null;
 
-        $min = '0.' . str_pad(1, $this->length, '0', STR_PAD_LEFT);
+        $min = $this->length ? ('0.' . str_pad(1, $this->length, '0', STR_PAD_LEFT)) : 1;
 
         return [
             'group_id' => [
