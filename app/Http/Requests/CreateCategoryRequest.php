@@ -50,6 +50,7 @@ class CreateCategoryRequest extends FormRequest
                 'nullable',
                 'required_with:max_points_percentage',
                 'numeric',
+                'regex:/^\d+(\.\d{0,2})?$/',
                 'min:0.01',
                 'max:1',
             ],
@@ -64,6 +65,13 @@ class CreateCategoryRequest extends FormRequest
             'scoring_system' => 'Scoring System',
             'max_points_percentage' => 'Maximum Points or Percentage',
             'step' => 'Step',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'step.regex' => 'Step must not exceed 2 decimal places.',
         ];
     }
 }

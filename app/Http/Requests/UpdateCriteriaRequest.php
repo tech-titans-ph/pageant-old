@@ -33,7 +33,7 @@ class UpdateCriteriaRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255', Rule::unique('criterias')->ignore($criteria)->where('category_id', $category->id)],
             'max_points_percentage' => ['required', 'integer', 'min:2', 'max:100'],
-            'step' => ['nullable', 'required', 'numeric', 'min:0.01', 'max:1'],
+            'step' => ['nullable', 'required', 'numeric', 'regex:/^\d+(\.\d{0,2})?$/', 'min:0.01', 'max:1'],
         ];
     }
 
@@ -43,6 +43,13 @@ class UpdateCriteriaRequest extends FormRequest
             'name' => 'Name',
             'max_points_percentage' => 'Maximum Points or Percentage',
             'step' => 'Step',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'step.regex' => 'Step must not exceed 2 decimal places.',
         ];
     }
 }
