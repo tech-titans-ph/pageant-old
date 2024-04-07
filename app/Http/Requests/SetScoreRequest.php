@@ -3,10 +3,13 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class SetScoreRequest extends FormRequest
 {
+    protected $length;
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -38,6 +41,16 @@ class SetScoreRequest extends FormRequest
             $maxPointsPercentage = $group->max_points_percentage;
         }
 
+        $numberSegments = explode('.', $group->step);
+
+        $decimal = (int) $numberSegments[1];
+
+        $this->length = strlen($decimal);
+
+        $regex = $this->length ? Str::replaceFirst(':decimal', $this->length, 'regex:/^\d+(\.\d{0,:decimal})?$/') : null;
+
+        $min = '0.' . str_pad(1, $this->length, '0', STR_PAD_LEFT);
+
         return [
             'group_id' => [
                 'required',
@@ -51,10 +64,26 @@ class SetScoreRequest extends FormRequest
                 Rule::requiredIf(function () use ($group) {
                     return $group;
                 }),
-                'integer',
-                'min:1',
+                'numeric',
+                $regex,
+                'min:' . $min,
                 'max:' . $maxPointsPercentage,
             ],
+        ];
+    }
+
+    public function attributes()
+    {
+        return [
+            'group_id' => $this->route('category')->has_criterias ? 'Criteria' : 'Category',
+            'points' => 'Points',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'points.regex' => "Points must not exceed {$this->length} decimal places.",
         ];
     }
 }
