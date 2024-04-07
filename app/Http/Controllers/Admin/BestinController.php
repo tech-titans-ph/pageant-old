@@ -18,6 +18,20 @@ class BestinController extends Controller
 
     public function index(Contest $contest)
     {
+        $contest->load(['bestins']);
+
+        $contest->bestins->transform(function ($bestin) {
+            if ($bestin->type == 'category') {
+                $bestin->category = $this->contestManager->getRankedCategoryContestants($bestin->group()->first());
+            }
+
+            if ($bestin->type == 'criteria') {
+                $bestin->criteria = $this->contestManager->getRankedCriteriaContestants($bestin->group()->first());
+            }
+
+            return $bestin;
+        });
+
         return view('admin.bestins.print', compact('contest'));
     }
 
