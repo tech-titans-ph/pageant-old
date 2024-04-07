@@ -9,4 +9,6 @@
     @include('admin.contests.tabs.scores')
     @include('admin.contests.tabs.create-contest-from-results')
   @endif
+
+  @include('admin.contests.tabs.best-ins')
 </tabs>
