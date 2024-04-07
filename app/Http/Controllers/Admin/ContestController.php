@@ -73,6 +73,10 @@ class ContestController extends Controller
             'categories' => function ($query) {
                 $query->orderBy('order');
             },
+            'categories.criterias' => function ($query) {
+                $query->orderBy('order');
+            },
+            'bestins',
         ]);
 
         if ($contest->categories->count() && (! $contest->categories->whereIn('status', ['que', 'scoring'])->count())) {
