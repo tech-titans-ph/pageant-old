@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\{Category, Criteria};
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,6 +24,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Relation::morphMap([
+            'category' => Category::class,
+            'criteria' => Criteria::class,
+        ]);
+
         Blade::component('components.alert', 'alert');
         Blade::component('components.breadcrumb', 'breadcrumb');
         Blade::component('components.button-link', 'buttonLink');
