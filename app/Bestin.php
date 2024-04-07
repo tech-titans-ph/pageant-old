@@ -15,6 +15,6 @@ class Bestin extends Model
 
     public function group()
     {
-        $this->morphTo(__FUNCTION__, 'type', 'type_id', 'id');
+        return $this->morphTo(__FUNCTION__, 'type', 'type_id', 'id');
     }
 }
