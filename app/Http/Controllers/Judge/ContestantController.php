@@ -56,7 +56,7 @@ class ContestantController extends Controller
         $score = $this->contestManager->setScore($category, $contestant, $data);
 
         return response()->json([
-            'totalScore' => $category->scores()
+            'totalScore' => (float) $category->scores()
                 ->where('category_judge_id', $score->category_judge_id)
                 ->where('category_contestant_id', $score->category_contestant_id)
                 ->sum('points'),
