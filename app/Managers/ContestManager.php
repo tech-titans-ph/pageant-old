@@ -2,7 +2,7 @@
 
 namespace App\Managers;
 
-use App\{Category, Contest, Contestant, Criteria, Judge};
+use App\{Bestin, Category, Contest, Contestant, Criteria, Judge};
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\Storage;
 
@@ -439,5 +439,17 @@ class ContestManager
         }
 
         return $newContest;
+    }
+
+    public function addBestin($contest, $data)
+    {
+        return $contest->bestins()->create($data);
+    }
+
+    public function deleteBestin(Bestin $bestin)
+    {
+        $bestin->delete();
+
+        return $this;
     }
 }
