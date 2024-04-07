@@ -95,8 +95,6 @@ export default {
 
             var decimal = (Number(this.step) + '').split('.')[1]?.length;
 
-            console.log({ score: this.scoreValue - 0, step: this.step - 0, wholeNumber, remainder, nearest, decimal });
-
             this.scoreValue = (nearest - Number(this.step)).toFixed(Number(this.step) == 1 ? 0 : decimal);
 
             this.setScore();
