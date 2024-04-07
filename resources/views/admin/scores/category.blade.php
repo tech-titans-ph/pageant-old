@@ -123,7 +123,7 @@
 
             @forelse($category->criterias as $criteria)
               <th class="px-2 py-1 text-center border">
-                {{ $contestant->ranks->firstWhere('group_id', '=', $criteria->id)['rank'] }}
+                {{ $contestant->ranks->firstWhere('group_id', '=', $criteria->id)['rank'] ?? '' }}
               </th>
             @empty
               <th class="px-2 py-1 text-center border">
