@@ -2,7 +2,7 @@
     <div class="px-6 py-6 border-t">
         <div class="flex space-x-4">
             <h1 class="flex-1 flex-shrink-0 mb-4 text-lg font-bold text-gray-700 whitespace-no-wrap">{{ name }}</h1>
-            <div class="flex flex-col items-center">
+            <div class="flex flex-col items-center" v-if="enabled">
                 <input type="text" class="block w-20 mb-1 text-lg font-bold text-center form-input" v-model="scoreValue"
                     @change="setScore" />
                 <label>Input manual score</label>
