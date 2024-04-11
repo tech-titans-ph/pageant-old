@@ -18,6 +18,9 @@
     href="{{ asset('images/favicon.png') }}"
     type="image/png" />
 
+  <link rel="manifest"
+    href="{{ asset('site.webmanifest') }}" />
+
   <link href="{{ mix('css/app.css') }}"
     rel="stylesheet">
 </head>
