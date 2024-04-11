@@ -1,16 +1,16 @@
 <template>
-    <div class="px-6 py-6 border-t">
+    <div class="px-6 py-6 space-y-4 border-t">
         <div class="flex space-x-4">
-            <h1 class="flex-1 flex-shrink-0 mb-4 text-lg font-bold text-gray-700 whitespace-no-wrap">{{ name }}</h1>
-            <div class="flex flex-col items-center" v-if="enabled">
-                <input type="text" class="block w-20 mb-1 text-lg font-bold text-center form-input" v-model="scoreValue"
-                    @change="setScore" />
-                <label>Input manual score</label>
-            </div>
-            <div class="flex-1 flex-shrink-0 text-sm text-right text-gray-700">
+            <h1 class="flex-1 mb-4 text-lg font-bold text-gray-700 whitespace-no-wrap">{{ name }}</h1>
+            <div class="flex-grow-0 flex-shrink-0 text-sm text-right text-gray-700">
                 <span class="text-xl font-bold">{{ scoreValue }}</span>
                 /{{ percentage }}
             </div>
+        </div>
+        <div class="flex flex-col items-center" v-if="enabled">
+            <input type="number" class="block w-20 mb-1 text-lg font-bold text-center form-input" v-model="scoreValue"
+                @change="setScore" />
+            <label>Input manual score</label>
         </div>
         <div class="flex items-center">
             <button type="button" v-if="enabled" @click="decreaseScore"
