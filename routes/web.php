@@ -110,7 +110,7 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-Route::middleware('auth:judge')->group(function () {
+Route::middleware(['auth:judge', 'throttle:999,1'])->group(function () {
     Route::namespace('Judge')->name('judge.')->prefix('judge')->group(function () {
         Route::name('categories.')->prefix('categories')->group(function () {
             Route::get('status', 'CategoryController@status')->name('status');
