@@ -45,7 +45,7 @@
   @enderror
 
   <div class="flex">
-    <div class="w-4/4">
+    <div class="w-full 3xl:w-3/4">
       @card
         <div class="relative">
           <form class="mb-6"

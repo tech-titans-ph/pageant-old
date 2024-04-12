@@ -21,7 +21,7 @@
     </div>
   @endif
   <div class="flex">
-    <div class="w-full lg:w-3/4">
+    <div class="w-full 3xl:w-3/4">
       @card()
         <div class="flex flex-wrap mb-4 lg:flex-no-wrap">
           <img src="{{ $contest->logo_url }}"
