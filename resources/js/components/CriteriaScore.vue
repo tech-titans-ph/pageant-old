@@ -8,7 +8,7 @@
             </div>
         </div>
         <div class="flex flex-col items-center" v-if="enabled">
-            <input type="number" class="block w-20 mb-1 text-lg font-bold text-center form-input" v-model="scoreValue"
+            <input type="number" class="block mb-1 text-lg font-bold text-center w-28 form-input" v-model="scoreValue"
                 @change="setScore" />
             <label>Input manual score</label>
         </div>
@@ -53,7 +53,7 @@ export default {
         enabled: {
             type: Boolean,
             default: true
-        }
+        },
     },
     data() {
         return {
