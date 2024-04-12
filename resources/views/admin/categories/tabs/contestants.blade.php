@@ -9,7 +9,7 @@
           </div>
           <div class="self-center flex-grow px-4">
             <div class="font-bold">
-              # {{ $contestant->pivot->order . ' - ' . $contestant->name }}
+              # {{ $contestant->order . ' - ' . $contestant->name }}
             </div>
             <div class="mt-2 italic">
               {{ $contestant->alias }}

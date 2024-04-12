@@ -37,7 +37,7 @@
               </td>
               <td class="px-2 py-1 align-top border whitespace-nowrap {{ $loop->parent->first ? 'font-bold text-lg' : '' }}"
                 rowspan="{{ $category->judges->count() }}">
-                <div>#{{ $contestant->pivot->order }} - {{ $contestant->name }}</div>
+                <div>#{{ $contestant->order }} - {{ $contestant->name }}</div>
                 <div>{{ $contestant->alias }}</div>
               </td>
             @endif

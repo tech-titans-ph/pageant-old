@@ -21,11 +21,11 @@
       <div class="mt-6 border-b">
         @foreach ($contestants as $contestant)
           <a class="flex p-6 border-t"
-            href="{{ route('judge.categories.contestants.index', ['category' => $category->id, 'page' => $contestant->pivot->order]) }}">
+            href="{{ route('judge.categories.contestants.index', ['category' => $category->id, 'page' => $contestant->order]) }}">
             <img src="{{ $contestant->avatar_url }}"
               class="flex-none object-contain object-center w-16 h-16 mr-4 border rounded-full">
             <div class="self-center flex-grow mr-4 font-bold">
-              <div class="mb-2">#{{ $contestant->pivot->order }}</div>
+              <div class="mb-2">#{{ $contestant->order }}</div>
               <div>{{ $contestant->name }}</div>
             </div>
           </a>

@@ -19,7 +19,7 @@
     <judge-score contest-name="{{ $category->contest->name }}"
       category-name="{{ $category->name }}"
       judge-name="{{ $judge->name }}"
-      contestant-number="{{ $contestant->pivot->order }}"
+      contestant-number="{{ $contestant->order }}"
       contestant-name="{{ $contestant->name }}"
       contestant-description="{{ $contestant->alias }}"
       contestant-picture="{{ $contestant->avatar_url }}"
