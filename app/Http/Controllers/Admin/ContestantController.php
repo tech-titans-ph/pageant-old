@@ -103,7 +103,7 @@ class ContestantController extends Controller
             $previousContestant->update(['order' => $order]);
         }
 
-        return redirect(route('admin.contests.show', ['contest' => $contest->id, 'activeTab' => 'Contestants']));
+        return back();
     }
 
     public function moveDown(Contest $contest, $contestant)
@@ -123,6 +123,6 @@ class ContestantController extends Controller
             $nextContestant->update(['order' => $order]);
         }
 
-        return redirect(route('admin.contests.show', ['contest' => $contest->id, 'activeTab' => 'Contestants']));
+        return back();
     }
 }

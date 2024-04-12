@@ -97,7 +97,7 @@ class JudgeController extends Controller
             $previousJudge->update(['order' => $order]);
         }
 
-        return redirect(route('admin.contests.show', ['contest' => $contest->id, 'activeTab' => 'Judges']));
+        return back();
     }
 
     public function moveDown(Contest $contest, $judge)
@@ -117,6 +117,6 @@ class JudgeController extends Controller
             $nextJudge->update(['order' => $order]);
         }
 
-        return redirect(route('admin.contests.show', ['contest' => $contest->id, 'activeTab' => 'Judges']));
+        return back();
     }
 }
