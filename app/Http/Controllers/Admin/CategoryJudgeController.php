@@ -26,7 +26,7 @@ class CategoryJudgeController extends Controller
                 ->with('error', 'Could not add Judge. Please make sure that this Category is not yet finished scoring.');
         }
 
-        $category->judges()->attach($request->validated()['judge_id'], ['order' => $category->judges()->count() + 1]);
+        $category->judges()->attach($request->validated()['judge_id']);
 
         return redirect()
             ->route('admin.contests.categories.show', ['contest' => $contest->id, 'category' => $category->id, 'activeTab' => 'Judges'])

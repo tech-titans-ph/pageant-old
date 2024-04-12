@@ -40,7 +40,7 @@ class CategoryContestantController extends Controller
                 ->with('error', 'Could not add Contestant. Please make sure that this category is not yet finished scoring.');
         }
 
-        $category->contestants()->attach($request->validated()['contestant_id'], ['order' => $category->contestants()->count() + 1]);
+        $category->contestants()->attach($request->validated()['contestant_id']);
 
         return redirect()
             ->route('admin.contests.categories.show', ['contest' => $contest->id, 'category' => $category->id, 'activeTab' => 'Contestants'])
