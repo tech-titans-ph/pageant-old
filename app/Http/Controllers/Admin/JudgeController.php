@@ -100,7 +100,7 @@ class JudgeController extends Controller
         return redirect(route('admin.contests.show', ['contest' => $contest->id, 'activeTab' => 'Judges']));
     }
 
-    public function MoveDown(Contest $contest, $judge)
+    public function moveDown(Contest $contest, $judge)
     {
         $judge = $contest->judges()->findOrFail($judge);
 
