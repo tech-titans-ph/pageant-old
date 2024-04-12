@@ -88,19 +88,9 @@ Route::middleware('auth')->group(function () {
             ->parameters(['judges' => 'judge'])
             ->only(['store', 'destroy']);
 
-        Route::name('contests.categories.judges.move.')->prefix('contests/{contest}/categories/{category}/judges/{judge}')->group(function () {
-            Route::patch('up', 'CategoryJudgeController@moveUp')->name('up');
-            Route::patch('down', 'CategoryJudgeController@moveDown')->name('down');
-        });
-
         Route::resource('contests.categories.contestants', 'CategoryContestantController')
             ->parameters(['contestants' => 'contestant'])
             ->only(['show', 'store', 'destroy']);
-
-        Route::name('contests.categories.contestants.move.')->prefix('contests/{contest}/categories/{category}/contestants/{contestant}')->group(function () {
-            Route::patch('up', 'CategoryContestantController@moveUp')->name('up');
-            Route::patch('down', 'CategoryContestantController@moveDown')->name('down');
-        });
 
         Route::name('contests.bestins.')->prefix('contests/{contest}/best-ins')->group(function () {
             Route::resource('', 'BestinController')
