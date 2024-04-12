@@ -403,16 +403,16 @@ class ContestManager
 
         $category->ranked_contestants
             ->slice(0, $data['contestant_count'])->values()
-            ->each(function ($contestant, $index) use ($newCategory) {
-                $newCategory->contestants()->attach($contestant->id, ['order' => $index + 1]);
+            ->each(function ($contestant) use ($newCategory) {
+                $newCategory->contestants()->attach($contestant->id);
             });
 
         if (isset($data['include_judges'])) {
             $category->judges()
                 ->orderBy('order')
                 ->get()
-                ->each(function ($judge, $index) use ($newCategory) {
-                    $newCategory->judges()->attach($judge->id, ['order' => $index + 1]);
+                ->each(function ($judge) use ($newCategory) {
+                    $newCategory->judges()->attach($judge->id);
                 });
         }
 
@@ -433,20 +433,20 @@ class ContestManager
 
         $contest->ranked_contestants
             ->slice(0, $data['contestant_count'])->values()
-            ->each(function ($contestant, $index) use ($newContest) {
+            ->each(function ($contestant) use ($newContest) {
                 $newContest->contestants()->create([
                     'name' => $contestant->name,
                     'alias' => $contestant->alias,
-                    'order' => $index + 1,
+                    'order' => $contestant->order,
                     'avatar' => Storage::putFile("{$newContest->id}/contestants", new File(Storage::path($contestant->avatar))),
                 ]);
             });
 
         if (isset($data['include_judges'])) {
-            $contest->judges->each(function ($judge, $index) use ($newContest) {
+            $contest->judges->each(function ($judge) use ($newContest) {
                 $newContest->judges()->create([
                     'name' => $judge->name,
-                    'order' => $index + 1,
+                    'order' => $judge->order,
                 ]);
             });
         }
