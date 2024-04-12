@@ -56,7 +56,7 @@
                     $judgeScore = $categoryScore->judge_scores->firstWhere('judge_id', '=', $judge->id);
                   @endphp
 
-                  {{ round($judgeScore['points_percentage'], 4) }}
+                  {{ round($judgeScore['points_percentage'] ?? 0, 4) }}
                 </td>
               @endforeach
 
