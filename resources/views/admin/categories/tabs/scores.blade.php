@@ -35,7 +35,7 @@
             </a>
           </div>
 
-          @if ($category->scoring_system == 'average')
+          @if ($category->scoring_system == 'average' || $contest->scoring_system == 'average')
             <div class="self-center text-6xl font-bold text-green-700 whitespace-no-wrap">
               {{ round($contestant->average, 4) }}
             </div>
