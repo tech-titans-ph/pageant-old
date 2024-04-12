@@ -13,17 +13,19 @@ class TestSeeder extends Seeder
      */
     public function run(Faker $faker)
     {
-        /* $this->deleteContest(2);
+
+        /* $this->deleteContest(10);
+
         return; */
 
-        // Artisan::call('migrate:fresh --seed');
+        Artisan::call('migrate:fresh --seed');
 
-        // $this->scenario('average', true, 'average');
+        $this->scenario('average', true, 'average');
         // $this->scenario('average');
 
         // $this->scenario('ranking', true, 'average');
 
-        $this->scenario('ranking', true, 'ranking');
+        // $this->scenario('ranking', true, 'ranking');
         // $this->scenario('ranking');
 
         return;
@@ -51,13 +53,13 @@ class TestSeeder extends Seeder
         ]);
 
         $judges = $contest->judges()->createMany(
-            factory(Judge::class, 3)->make(['contest_id' => $contest->id])->toArray()
+            factory(Judge::class, 4)->make(['contest_id' => $contest->id])->toArray()
         )->each(function ($judge, $index) {
             $judge->update(['order' => $index + 1]);
         });
 
         $contestants = $contest->contestants()->createMany(
-            factory(Contestant::class, 3)->make([
+            factory(Contestant::class, 12)->make([
                 'contest_id' => $contest->id,
                 'avatar' => UploadedFile::fake()->image('avatar.png')->store("{$contest->id}/contestants"),
             ])->toArray()
@@ -66,11 +68,11 @@ class TestSeeder extends Seeder
         });
 
         $contest->categories()->createMany(
-            factory(Category::class, 3)->make([
+            factory(Category::class, 4)->make([
                 'contest_id' => $contest->id,
                 'has_criterias' => $hasCriterias,
                 'scoring_system' => $criteriaScoringSystem,
-                'status' => 'done',
+                'status' => 'que',
             ])->toArray()
         )->each(function ($category, $index) use ($judges, $contestants) {
             $category->update(['order' => $index + 1]);
@@ -81,19 +83,15 @@ class TestSeeder extends Seeder
 
             if ($category->has_criterias) {
                 $category->criterias()->createMany(
-                    factory(Criteria::class, 3)->make(['category_id' => $category->id])->toArray()
+                    factory(Criteria::class, 2)->make(['category_id' => $category->id])->toArray()
                 )->each(function ($criteria, $index) {
                     $criteria->update(['order' => $index + 1]);
                 });
             }
 
             $category->judges()->get()->each(function ($judge, $index) use ($category) {
-                $category->judges()->updateExistingPivot($judge->id, ['order' => $index + 1, 'completed' => true]);
-
                 $category->contestants()->get()->each(function ($contestant, $index) use ($category, $judge) {
-                    $category->contestants()->updateExistingPivot($contestant->id, ['order' => $index + 1]);
-
-                    if ($category->has_criterias) {
+                    /* if ($category->has_criterias) {
                         $category->criterias()->get()->each(function ($criteria) use ($category, $judge, $contestant) {
                             Score::create([
                                 'category_id' => $category->id,
@@ -111,7 +109,7 @@ class TestSeeder extends Seeder
                             'category_contestant_id' => $contestant->pivot->id,
                             'points' => random_int(10, $category->max_points_percentage),
                         ]);
-                    }
+                    } */
                 });
             });
         });
