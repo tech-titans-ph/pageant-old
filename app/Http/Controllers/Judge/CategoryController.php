@@ -55,7 +55,7 @@ class CategoryController extends Controller
         $totalPoints = $category->has_criterias ? $category->criterias()->count() : 1;
 
         $contestants = $category->contestants()
-            ->orderBy('category_contestants.order')->get()
+            ->orderBy('order')->get()
             ->filter(function ($contestant) use ($judge, $totalPoints) {
                 $query = $contestant->pivot->scores()
                     ->where('category_judge_id', $judge->pivot->id);

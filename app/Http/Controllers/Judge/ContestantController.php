@@ -33,7 +33,7 @@ class ContestantController extends Controller
         ]);
 
         $contestants = $category->contestants()
-            ->orderBy('category_contestants.order')
+            ->orderBy('order')
             ->paginate(1);
 
         return view('judge.contestants.index', compact('judge', 'category', 'contestants'));
