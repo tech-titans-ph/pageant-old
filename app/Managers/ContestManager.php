@@ -257,12 +257,6 @@ class ContestManager
 
         $category->judges()->detach($judge->id);
 
-        $categoryJudgeTable = $judge->pivot->getTable();
-
-        $category->judges()->orderBy("{$categoryJudgeTable}.order")->each(function ($judge, $index) use ($category) {
-            $category->judges()->updateExistingPivot($judge->id, ['order' => $index + 1]);
-        });
-
         return $this;
     }
 
@@ -280,12 +274,6 @@ class ContestManager
         $category->scores()->where('category_contestant_id', $contestant->pivot->id);
 
         $category->contestants()->detach($contestant->id);
-
-        $categoryContestantTable = $contestant->pivot->getTable();
-
-        $category->contestants()->orderBy("{$categoryContestantTable}.order")->each(function ($contestant, $index) use ($category) {
-            $category->contestants()->updateExistingPivot($contestant->id, ['order' => $index + 1]);
-        });
 
         return $this;
     }
