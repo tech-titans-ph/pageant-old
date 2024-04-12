@@ -18,7 +18,7 @@
           </div>
           <div class="flex items-center flex-shrink space-x-2 whitespace-no-wrap">
             <form method="post"
-              action="{{ route('admin.contests.categories.contestants.move.up', ['contest' => $contest->id, 'category' => $category->id, 'contestant' => $contestant->id]) }}"
+              action="{{ route('admin.contests.contestants.move.up', ['contest' => $contest->id, 'category' => $category->id, 'contestant' => $contestant->id]) }}"
               class="inline-block btn">
               @csrf
               @method('PATCH')
@@ -27,7 +27,7 @@
             </form>
 
             <form method="post"
-              action="{{ route('admin.contests.categories.contestants.move.down', ['contest' => $contest->id, 'category' => $category->id, 'contestant' => $contestant->id]) }}"
+              action="{{ route('admin.contests.contestants.move.down', ['contest' => $contest->id, 'category' => $category->id, 'contestant' => $contestant->id]) }}"
               class="inline-block btn">
               @csrf
               @method('PATCH')

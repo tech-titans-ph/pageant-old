@@ -11,7 +11,7 @@
           </div>
           <div class="flex items-center flex-none space-x-2 whitespace-no-wrap">
             <form method="post"
-              action="{{ route('admin.contests.categories.judges.move.up', ['contest' => $contest->id, 'category' => $category->id, 'judge' => $judge->id]) }}"
+              action="{{ route('admin.contests.judges.move.up', ['contest' => $contest->id, 'category' => $category->id, 'judge' => $judge->id]) }}"
               class="inline-block btn">
               @csrf
               @method('PATCH')
@@ -19,7 +19,7 @@
               @button(['type' => 'submit']) Move Up @endbutton
             </form>
             <form method="post"
-              action="{{ route('admin.contests.categories.judges.move.down', ['contest' => $contest->id, 'category' => $category->id, 'judge' => $judge->id]) }}"
+              action="{{ route('admin.contests.judges.move.down', ['contest' => $contest->id, 'category' => $category->id, 'judge' => $judge->id]) }}"
               class="inline-block btn">
               @csrf
               @method('PATCH')
