@@ -359,10 +359,10 @@ class ContestManager
                 $query->oldest('order');
             },
             'categories.judges' => function ($query) {
-                $query->orderBy('category_judges.order', 'asc');
+                $query->orderBy('order', 'asc');
             },
             'categories.contestants' => function ($query) {
-                $query->orderBy('category_contestants.order', 'asc');
+                $query->orderBy('order', 'asc');
             },
             'categories.criterias' => function ($query) {
                 $query->oldest('order');
@@ -409,7 +409,7 @@ class ContestManager
 
         if (isset($data['include_judges'])) {
             $category->judges()
-                ->orderBy('category_judges.order')
+                ->orderBy('order')
                 ->get()
                 ->each(function ($judge, $index) use ($newCategory) {
                     $newCategory->judges()->attach($judge->id, ['order' => $index + 1]);

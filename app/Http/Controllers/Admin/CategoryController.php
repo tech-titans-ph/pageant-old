@@ -36,10 +36,10 @@ class CategoryController extends Controller
 
         $category->load([
             'judges' => function ($query) {
-                $query->orderBy('category_judges.order');
+                $query->orderBy('order');
             },
             'contestants' => function ($query) {
-                $query->orderBy('category_contestants.order');
+                $query->orderBy('order');
             },
             'criterias' => function ($query) {
                 $query->orderBy('order');
