@@ -28,7 +28,7 @@ class CreateContestantRequest extends FormRequest
 
         return [
             'name' => ['required', 'string', 'max:255', Rule::unique('contestants')->where('contest_id', $contest->id)],
-            'alias' => ['required', 'string', 'max:255'],
+            'alias' => ['nullable', 'string', 'max:255'],
             'avatar' => [
                 'required',
                 'file',

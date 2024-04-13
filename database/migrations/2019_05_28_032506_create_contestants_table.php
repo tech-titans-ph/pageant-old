@@ -16,7 +16,7 @@ class CreateContestantsTable extends Migration
             $table->unsignedBigInteger('contest_id');
 
             $table->string('name');
-            $table->string('alias');
+            $table->string('alias')->nullable();
             $table->unsignedTinyInteger('order')->default(0);
             $table->text('avatar');
 

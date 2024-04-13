@@ -28,7 +28,7 @@ class UpdateContestantRequest extends FormRequest
 
         return [
             'name' => ['required', 'string', 'max:255', Rule::unique('contestants')->ignore($this->route('contestant'))->where('contest_id', $contest->id)],
-            'alias' => ['required', 'string', 'max:255'],
+            'alias' => ['nullable', 'string', 'max:255'],
             'avatar' => [
                 'nullable',
                 'file',
