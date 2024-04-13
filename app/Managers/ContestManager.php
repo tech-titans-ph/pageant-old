@@ -145,11 +145,11 @@ class ContestManager
         $category->update(['order' => $contest->categories()->count()]);
 
         $contest->judges()->get()->each(function ($judge) use ($category) {
-            $category->judges()->attach($judge->id, ['order' => $category->judges()->count() + 1]);
+            $category->judges()->attach($judge->id);
         });
 
         $contest->contestants()->get()->each(function ($contestant) use ($category) {
-            $category->contestants()->attach($contestant->id, ['order' => $category->contestants()->count() + 1]);
+            $category->contestants()->attach($contestant->id);
         });
 
         return $category;
@@ -245,7 +245,7 @@ class ContestManager
     public function addCategoryJudge(Judge $judge)
     {
         $judge->contest()->first()->categories()->get()->each(function ($category) use ($judge) {
-            $category->judges()->attach($judge->id, ['order' => $category->judges()->count() + 1]);
+            $category->judges()->attach($judge->id);
         });
 
         return $this;
@@ -263,7 +263,7 @@ class ContestManager
     public function addCategoryContestant(Contestant $contestant)
     {
         $contestant->contest()->first()->categories()->get()->each(function ($category) use ($contestant) {
-            $category->contestants()->attach($contestant->id, ['order' => $category->contestants()->count() + 1]);
+            $category->contestants()->attach($contestant->id);
         });
 
         return $this;
