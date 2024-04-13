@@ -48,7 +48,7 @@ class CreateCategoryRequest extends FormRequest
             ],
             'step' => [
                 'nullable',
-                'required_with:max_points_percentage',
+                'required_without:has_criterias',
                 'numeric',
                 'regex:/^\d+(\.\d{0,2})?$/',
                 'min:0.01',
