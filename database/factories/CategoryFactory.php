@@ -23,5 +23,10 @@ $factory->define(Category::class, function (Faker $faker) {
                 ? null
                 : random_int(10, 100);
         },
+        'step' => function (array $attributes) {
+            return $attributes['has_criterias']
+                ? fake()->randomElement([0.2, 0.25, 0.5, 1])
+                : null;
+        },
     ];
 });

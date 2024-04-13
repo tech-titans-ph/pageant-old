@@ -24,5 +24,6 @@ $factory->define(Criteria::class, function (Faker $faker) {
             'Presentation',
         ]),
         'max_points_percentage' => random_int(10, 100),
+        'step' => fake()->randomElement([0.2, 0.25, 0.5, 1]),
     ];
 });
