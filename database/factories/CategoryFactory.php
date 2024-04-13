@@ -23,9 +23,9 @@ $factory->define(Category::class, function (Faker $faker) {
                 ? null
                 : random_int(10, 100);
         },
-        'step' => function (array $attributes) {
+        'step' => function (array $attributes) use ($faker) {
             return $attributes['has_criterias']
-                ? fake()->randomElement([0.2, 0.25, 0.5, 1])
+                ? $faker->randomElement([0.2, 0.25, 0.5, 1])
                 : null;
         },
     ];
