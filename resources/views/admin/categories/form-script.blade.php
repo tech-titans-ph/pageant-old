@@ -40,12 +40,14 @@
 
         if ((contestScoringSystem == 'ranking' && !hasCriterias.checked) || contestScoringSystem == 'average') {
           maxPointsPercentageWrapper.classList.remove('hidden');
-
-          stepWrapper.classList.remove('hidden')
         } else {
           maxPointsPercentage.value = '';
+        }
 
+        if (hasCriterias.checked) {
           step.value = '';
+        } else {
+          stepWrapper.classList.remove('hidden')
         }
       }
     });

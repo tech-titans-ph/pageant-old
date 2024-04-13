@@ -53,7 +53,7 @@
           @formField([
           'label' => 'Step',
           'error' => 'step',
-          'class' => 'step-wrapper ' . ((($contest->scoring_system == 'ranking' && !old('has_criterias')) || $contest->scoring_system == 'average') ? '' : 'hidden')
+          'class' => 'step-wrapper ' . (old('has_criterias') ? 'hidden' : '')
           ])
           <input type="text"
             id="step"
