@@ -20,7 +20,7 @@
     href="{{ mix('css/app.css') }}">
 </head>
 
-<body class="p-4 text-sm text-gray-700">
+<body class="p-4 text-xs text-gray-900">
   <div id="app">
     <div class="flex items-center justify-center mb-4">
       <div class="flex items-center space-x-4">
