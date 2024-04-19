@@ -9,7 +9,7 @@
         </div>
         <div class="flex flex-col items-center" v-if="enabled">
             <input type="number" class="block mb-1 text-lg font-bold text-center w-28 form-input" v-model="scoreValue"
-                @change="setScore" />
+                @input="setScore" />
             <label>Input manual score</label>
         </div>
         <div class="flex items-center">
