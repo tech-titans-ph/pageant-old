@@ -5,61 +5,61 @@
 
   <table class="w-full mt-4">
     <thead>
-      <th class="px-2 py-1 border"
-        colspan="{{ $contest->scoring_system == 'average' ? 2 : 3 }}">Contestants</th>
+      <tr>
+        <th class="px-2 py-1 border"
+          colspan="{{ $contest->scoring_system == 'average' ? 1 : 3 }}"
+          rowspan="2">Contestants</th>
+        @foreach ($contest->categories as $category)
+          <th class="px-2 py-1 border"
+            colspan="{{ $category->judges->count() }}">
+            <div>{{ $category->name }}</div>
+            @if ($category->max_points_percentage)
+              <div>{{ $category->max_points_percentage }} {{ $contest->scoring_system == 'average' ? '%' : 'points' }}</div>
+            @endif
+          </th>
+        @endforeach
 
-      @if ($contest->scoring_system == 'average')
-        <th class="px-2 py-1 border">Judges</th>
-      @endif
-
-      @foreach ($contest->categories as $category)
-        <th class="px-2 py-1 border">
-          <div>{{ $category->name }}</div>
-
-          @if ($category->max_points_percentage)
-            <div>{{ $category->max_points_percentage }} {{ $contest->scoring_system == 'average' ? '%' : 'points' }}</div>
-          @endif
-        </th>
-      @endforeach
-
-      @if ($contest->scoring_system == 'average')
-        <th class="px-2 py-1 text-center border">Total</th>
-      @endif
+        @if ($contest->scoring_system == 'average')
+          <th class="px-2 py-1 text-center border"
+            rowspan="2">TOTAL</th>
+        @endif
+      </tr>
+      <tr>
+        @foreach ($contest->categories as $category)
+          @foreach ($category->judges as $judge)
+            <th class="px-2 py-1 border">
+              {!! str_replace(' ', '<br />', $judge->name) !!}
+            </th>
+          @endforeach
+        @endforeach
+      </tr>
     </thead>
     <tbody>
-      @foreach ($contest->ranked_contestants as $contestant)
+      @foreach ($contest->ranked_contestants as $contestantIndex => $contestant)
         @if ($contest->scoring_system == 'average')
-          @foreach ($contest->judges as $judgeKey => $judge)
-            <tr style="{{ $judgeKey ? 'page-break-before: avoid' : 'page-break-inside: avoid' }};"
-              class="{{ $loop->parent->first ? 'bg-green-100' : '' }}">
-              @if (!$judgeKey)
-                @if (Str::endsWith(Route::currentRouteName(), '.print'))
-                  <td class="px-2 py-1 text-center align-top border whitespace-nowrap {{ $loop->parent->first ? 'font-bold text-sm' : '' }}"
-                    colspan="2"
-                    rowspan="{{ $contest->judges->count() }}">
-                    <div>Top {{ $contestant->ranking }}</div>
-                    <div># {{ $contestant->order }} - {{ $contestant->name }}</div>
-                    <div>{{ $contestant->alias }}</div>
-                  </td>
-                @else
-                  <td class="w-40 px-2 py-1 text-center align-top border whitespace-nowrap {{ $loop->parent->first ? 'font-bold text-sm' : '' }}"
-                    rowspan="{{ $contest->judges->count() }}">
-                    <img src="{{ $contestant->avatar_url }}"
-                      class="object-cover object-center w-24 h-24 mx-auto mb-1 border rounded-full" />
-                    <div>Top {{ $contestant->ranking }}</div>
-                  </td>
-                  <td class="px-2 py-1 align-top border {{ $loop->parent->first ? 'font-bold text-sm' : '' }}"
-                    rowspan="{{ $contest->judges->count() }}">
-                    <div># {{ $contestant->order }} - {{ $contestant->name }}</div>
-                    <div>{{ $contestant->alias }}</div>
-                  </td>
-                @endif
-              @endif
+          <tr style="{{ $contestantIndex ? 'page-break-before: avoid' : 'page-break-inside: avoid' }};"
+            class="{{ $loop->first ? 'bg-green-100' : '' }}">
+            @if (Str::endsWith(Route::currentRouteName(), '.print'))
+              <td class="px-2 py-1 text-center align-top border {{ $loop->first ? 'font-bold text-sm' : '' }}">
+                <div>Top {{ $contestant->ranking }}</div>
+                <div># {{ $contestant->order }} - {{ $contestant->name }}</div>
+                <div>{{ $contestant->alias }}</div>
+              </td>
+            @else
+              <td class="w-40 px-2 py-1 text-center align-top border whitespace-nowrap {{ $loop->first ? 'font-bold text-sm' : '' }}">
+                <img src="{{ $contestant->avatar_url }}"
+                  class="object-cover object-center w-24 h-24 mx-auto mb-1 border rounded-full" />
+                <div>Top {{ $contestant->ranking }}</div>
+              </td>
+              <td class="px-2 py-1 align-top border {{ $loop->first ? 'font-bold text-sm' : '' }}">
+                <div># {{ $contestant->order }} - {{ $contestant->name }}</div>
+                <div>{{ $contestant->alias }}</div>
+              </td>
+            @endif
 
-              <td class="px-2 py-1 align-top border">{{ $judge->name }}</td>
-
-              @foreach ($contest->categories as $category)
-                <td class="px-2 py-1 text-center align-top border">
+            @foreach ($contest->categories as $category)
+              @foreach ($category->judges as $judge)
+                <td class="px-2 py-1 text-center align-middle border">
                   @php
                     $categoryScore = $contestant->category_scores->firstWhere('id', '=', $category->id);
 
@@ -69,13 +69,13 @@
                   {{ round($judgeScore['points_percentage'] ?? 0, 4) }}
                 </td>
               @endforeach
+            @endforeach
 
-              @if (!$judgeKey && $contest->scoring_system == 'average')
-                <td class="px-2 py-1 align-top border"
-                  rowspan="{{ $contest->judges->count() }}">&nbsp;</td>
-              @endif
-            </tr>
-          @endforeach
+            @if ($contest->scoring_system == 'average')
+              <th class="px-2 py-1 align-bottom border"
+                rowspan="2">{{ round($contestant->average_sum, 4) }}</th>
+            @endif
+          </tr>
         @endif
 
         @if ($contest->scoring_system == 'ranking')
@@ -109,13 +109,12 @@
         @endif
 
         @if ($contest->scoring_system == 'average')
-          <tr>
-            <th class="px-2 py-1 text-right align-top border"
-              colspan="3">Average :</th>
-
+          <tr style="page-break-before: avoid;">
+            <th class="px-2 py-1 text-right align-top border">Average:</th>
 
             @foreach ($contest->categories as $category)
-              <th class="px-2 py-1 text-center align-top border">
+              <th class="px-2 py-1 text-center align-top border"
+                colspan="{{ $category->judges()->count() }}">
                 @php
                   $categoryScore = $contestant->category_scores->firstWhere('id', '=', $category->id);
                 @endphp
@@ -123,10 +122,6 @@
                 {{ round($categoryScore->average, 4) }}
               </th>
             @endforeach
-
-            @if ($contest->scoring_system == 'average')
-              <th class="px-2 py-1 text-center align-top border ">{{ round($contestant->average_sum, 4) }}</th>
-            @endif
           </tr>
 
           @if (!$loop->last)
