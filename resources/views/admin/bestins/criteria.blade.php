@@ -42,3 +42,5 @@
     @endforeach
   </tbody>
 </table>
+
+@include('admin.print-footer', ['model' => $category])
