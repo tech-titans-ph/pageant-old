@@ -3,15 +3,30 @@
     <li class="flex justify-between p-4">
       {{-- @if (!$contest->categories()->whereIn('status', ['que', 'scoring'])->count()) --}}
       @if ($category->status == 'done')
-        @buttonLink([
-            'href' => route('admin.contests.categories.print', ['contest' => $contest->id, 'category' => $category->id]),
-            'attributes' => 'target="_blank"'
-        ])
-          Print Scores
-        @endbuttonLink
-        @buttonLink(['href' => route('admin.contests.show', ['contest' => $contest->id, 'activeTab' => 'Scores'])])
-          Summary of Scores
-        @endbuttonLink
+        <div class="flex items-center space-x-4">
+          @buttonLink([
+              'href' => route('admin.contests.categories.print', ['contest' => $contest->id, 'category' => $category->id]),
+              'attributes' => 'target="_blank"'
+          ])
+            Print Scores
+          @endbuttonLink
+          <form action="{{ route('admin.contests.categories.print.top', ['contest' => $contest->id, 'category' => $category->id]) }}"
+            method="get"
+            target="_blank">
+            @button(['type' => 'submit']) Print Top Contestants @endbutton
+            <input type="number"
+              name="top"
+              class="form-input"
+              min="1"
+              step="1"
+              placeholder="Number of contestants..." />
+          </form>
+        </div>
+        <div>
+          @buttonLink(['href' => route('admin.contests.show', ['contest' => $contest->id, 'activeTab' => 'Scores'])])
+            Summary of Scores
+          @endbuttonLink
+        </div>
       @endif
     </li>
 

@@ -4,6 +4,17 @@
       @buttonLink(['href' => route('admin.contests.print', ['contest' => $contest->id]), 'attributes' => 'target="_blank"'])
         Print Scores
       @endbuttonLink
+      <form action="{{ route('admin.contests.print.top', ['contest' => $contest->id, ]) }}"
+        method="get"
+        target="_blank">
+        @button(['type' => 'submit']) Print Top Contestants @endbutton
+        <input type="number"
+          name="top"
+          class="form-input"
+          min="1"
+          step="1"
+          placeholder="Number of contestants..." />
+      </form>
     </li>
 
     @forelse($contest->ranked_contestants as $contestant)

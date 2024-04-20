@@ -198,6 +198,21 @@ class CategoryController extends Controller
         return view('admin.categories.print', compact('contest', 'category'));
     }
 
+    public function printTop(Contest $contest, $category)
+    {
+        $category = $contest->categories()->findOrFail($category);
+
+        abort_unless($category->status === 'done', 403, 'Could not print scores. Please make sure that this category has finished scoring.');
+
+        $category = $this->contestManager->getRankedCategoryContestants($category);
+
+        // dd($category->toArray());
+
+        $contest = $category->contest;
+
+        return view('admin.categories.print.top', compact('contest', 'category'));
+    }
+
     public function live(Contest $contest, $category)
     {
         $category = $contest->categories()->findOrFail($category);

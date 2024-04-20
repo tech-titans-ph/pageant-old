@@ -153,6 +153,15 @@ class ContestController extends Controller
         return view('admin.contests.print', compact('contest'));
     }
 
+    public function printTop(Contest $contest)
+    {
+        abort_unless(! $contest->categories()->whereIn('status', ['que', 'scoring'])->count(), 403, 'Could not print socres. Please make sure that all categories in this contest has finished scoring.');
+
+        $contest = $this->contestManager->getRankedContestants($contest);
+
+        return view('admin.contests.print.top', compact('contest'));
+    }
+
     public function status()
     {
         $category = Category::with(['contest'])

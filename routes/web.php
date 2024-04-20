@@ -22,25 +22,21 @@ Auth::routes(['register' => false]);
 
 Route::middleware('auth')->group(function () {
     Route::namespace('Admin')->name('admin.')->prefix('admin')->group(function () {
-        Route::get('judges', 'JudgeController@index')
-            ->name('judges.index');
+        Route::get('judges', 'JudgeController@index')->name('judges.index');
 
-        Route::get('categories', 'CategoryController@index')
-            ->name('categories.index');
+        Route::get('categories', 'CategoryController@index')->name('categories.index');
 
-        Route::get('criterias', 'CriteriaController@index')
-            ->name('criterias.index');
+        Route::get('criterias', 'CriteriaController@index')->name('criterias.index');
 
         Route::name('contests.')->prefix('contests')->group(function () {
-            Route::get('status', 'ContestController@status')
-                ->name('status');
+            Route::get('status', 'ContestController@status')->name('status');
 
             Route::prefix('{contest}')->group(function () {
-                Route::post('store-from-score', 'ContestController@storeFromScore')
-                    ->name('store-from-score');
+                Route::post('store-from-score', 'ContestController@storeFromScore')->name('store-from-score');
 
-                Route::get('print', 'ContestController@print')
-                    ->name('print');
+                Route::get('print', 'ContestController@print')->name('print');
+
+                Route::get('print-top', 'ContestController@printTop')->name('print.top');
             });
         });
 
@@ -48,12 +44,12 @@ Route::middleware('auth')->group(function () {
             Route::patch('start', 'CategoryController@start')->name('start');
             Route::patch('finish', 'CategoryController@finish')->name('finish');
             Route::get('print', 'CategoryController@print')->name('print');
+            Route::get('print-top', 'CategoryController@printTop')->name('print.top');
             Route::get('live', 'CategoryController@live')->name('live');
             Route::post('store-from-score', 'CategoryController@storeFromScore')->name('store-from-score');
         });
 
-        Route::get('contests/{contest}/judges/{judge}/login', 'JudgeController@login')
-            ->name('contests.judges.login');
+        Route::get('contests/{contest}/judges/{judge}/login', 'JudgeController@login')->name('contests.judges.login');
 
         Route::resource('contests', 'ContestController');
         Route::resource('contests.judges', 'JudgeController')->except(['index', 'show', 'create']);
