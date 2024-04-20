@@ -34,10 +34,10 @@
         <div class="flex items-center justify-center px-4 lg:px-16">
           <div class="mr-6">
             <a href="{{ url('/') }}"
-              class="flex items-center text-lg font-semibold text-gray-100 no-underline">
-              <div class="flex items-center justify-end h-24">
+              class="flex items-center py-1 text-lg font-semibold text-gray-100 no-underline">
+              <div class="flex items-center justify-end">
                 <img src="{{ asset('images/' . env('LOGO_TEXT_BELOW_DARK')) }}"
-                  class="h-40">
+                  class="h-20">
               </div>
               <div>{{ config('app.name') }}</div>
             </a>
