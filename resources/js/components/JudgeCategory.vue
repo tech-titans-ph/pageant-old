@@ -1,5 +1,5 @@
 <template>
-    <div v-if="!loading" class="divide-y">
+    <div v-if="!loading" class="border-b divide-y">
         <template v-if="categories.length">
             <a v-for="category in categories" :key="category.id"
                 :href="category.status === 'que' ? 'javascript:void(0);' : category.url"
