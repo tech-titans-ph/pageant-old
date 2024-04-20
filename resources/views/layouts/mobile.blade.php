@@ -30,25 +30,25 @@
 <body class="antialiased leading-none">
   <div id="app"
     class="flex flex-col h-screen">
-    <div class="flex items-center justify-between flex-none w-full h-24 bg-white border-b shadow">
-      <div class="flex-none">
+    <div class="flex items-center justify-between flex-none w-full bg-white border-b shadow">
+      <div class="w-1/6 h-full">
         <a href="{{ route('judge.categories.index') }}"
-          class="flex items-center justify-center w-12 h-12 no-underline hover:bg-gray-200">
-          @svg('home-solid', 'w-6 h-6 fill-current')
+          class="flex items-center h-full px-6 text-black no-underline flex-shrink-1 hover:bg-gray-200">
+          @svg('home-solid', 'w-12 h-12 fill-current')
         </a>
       </div>
-      <div class="flex items-center justify-center flex-grow font-normal text-center">
-        <div class="flex items-center justify-end h-24">
-          <img src="{{ asset('images/' . env('LOGO_TEXT_BELOW')) }}"
-            class="h-40">
-        </div>
-        <div class="-ml-8 font-bold">
-          {{ config('app.name') }}
-        </div>
+      <div class="flex-grow font-bold leading-normal text-center">
+        <h2 class="text-lg ">{{ $judge->contest->name }}</h2>
+        <p class="text-sm italic">Welcome, {{ $judge->name }}</p>
+        <p>{{ $category->name ?? null }}</p>
       </div>
-      @yield('navbar-right')
+      <div class="flex items-center justify-end w-1/6 h-full">
+        <judge-logout app-name="{{ config('app.name') }}"
+          logo-url="{{ asset('images/' . env('LOGO_TEXT_BELOW')) }}"
+          logout-url="{{ route('logout') }}"
+          csrf-token="{{ csrf_token() }}" />
+      </div>
     </div>
-
     <div class="flex-grow overflow-y-auto">
       @yield('content')
     </div>
@@ -56,10 +56,6 @@
 
   <!-- Scripts -->
   <script src="{{ mix('js/app.js') }}"></script>
-  {{-- <script>
-        // Failed to execute 'requestFullscreen' on 'Element': API can only be initiated by a user gesture.
-		document.body.requestFullscreen();
-	</script> --}}
 </body>
 
 </html>
