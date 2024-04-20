@@ -28,7 +28,7 @@ class CreateContestFromScoreRequest extends FormRequest
 
         return [
             'name' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:255'],
             'scoring_system' => ['required', Rule::in(array_keys(config('options.scoring_systems')))],
             'logo' => [
                 'required',
