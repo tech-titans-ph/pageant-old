@@ -95,7 +95,7 @@ Route::middleware('auth')->group(function () {
         Route::name('contests.bestins.')->prefix('contests/{contest}/best-ins')->group(function () {
             Route::resource('', 'BestinController')
                 ->parameters(['' => 'bestin'])
-                ->only(['index', 'store', 'destroy']);
+                ->only(['show', 'store', 'destroy']);
         });
     });
 });
