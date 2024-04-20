@@ -2,14 +2,14 @@
 
 <div>
   <div>
-    <div class="font-semibold">{{ $category->name }}</div>
+    <div class="text-xs font-bold">{{ $category->name }}</div>
 
     @if ($category->max_points_percentage)
-      <div>{{ $category->max_points_percentage }} {{ $contest->scoring_system == 'average' ? '%' : 'points' }}</div>
+      <div class="text-xs font-bold">{{ $category->max_points_percentage }} {{ $contest->scoring_system == 'average' ? '%' : 'points' }}</div>
     @endif
   </div>
-
-  <table class="w-full mt-4">
+  <br />
+  <table class="w-full">
     <thead>
       <tr>
         <th class="px-2 py-1 border border-black"
