@@ -25,6 +25,7 @@
         "vue-template-compiler": "^2.6.4"
     },
     "dependencies": {
-        "@tailwindcss/custom-forms": "^0.1.4"
+        "@tailwindcss/custom-forms": "^0.1.4",
+        "v-click-outside": "^3.2.0"
     }
 }
