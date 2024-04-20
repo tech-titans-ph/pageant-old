@@ -42,21 +42,17 @@
 </head>
 
 <body class="px-6 py-4 text-gray-900 print:p-0 text-2xs">
-  <div id="app">
-    <div class="flex items-center justify-center mb-4">
-      <div class="flex items-center space-x-4">
-        <div class="text=center">
-          <img src="{{ $contest->logo_url }}"
-            class="object-contain object-center w-24 h-24 border rounded">
-        </div>
-        <h1 class="text-base font-bold text-center">{{ $contest->name }}</h1>
+  <div class="flex items-center justify-center mb-4">
+    <div class="flex items-center space-x-4">
+      <div class="text=center">
+        <img src="{{ $contest->logo_url }}"
+          class="object-contain object-center w-24 h-24 border rounded">
       </div>
+      <h1 class="text-base font-bold text-center">{{ $contest->name }}</h1>
     </div>
-
-    @yield('content')
   </div>
 
-  @include('admin.print-footer', ['model' => $contest])
+  @yield('content')
 
   <script>
     window.print();
