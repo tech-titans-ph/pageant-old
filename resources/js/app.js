@@ -8,6 +8,10 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
+var clickOutside = require('v-click-outside');
+
+Vue.use(clickOutside);
+
 window.swal = require('sweetalert2');
 
 /**
@@ -37,8 +41,9 @@ Vue.component('criteria-score', require('./components/CriteriaScore.vue').defaul
 Vue.component('alert-judge', require('./components/AlertJudge.vue').default);
 Vue.component('alert-admin', require('./components/AlertAdmin.vue').default);
 Vue.component('live-score', require('./components/LiveScore.vue').default);
+Vue.component('judge-logout', require('./components/JudgeLogout.vue').default);
 Vue.component('judge-category', require('./components/JudgeCategory.vue').default);
 
 const app = new Vue({
-	el: '#app',
+  el: '#app',
 });
