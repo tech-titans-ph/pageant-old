@@ -68,17 +68,6 @@
       </form>
     </li>
 
-    @if ($contest->bestins->count())
-      <li class="p-4 border-t">
-        @buttonLink([
-            'href' => route('admin.contests.bestins.index', ['contest' => $contest->id]),
-            'attributes' => 'target=_blank'
-        ])
-          Print Scores
-        @endbuttonLink
-      </li>
-    @endif
-
     @forelse($contest->bestins as $bestin)
       @php
         $group = $bestin->group()->first();
@@ -94,19 +83,25 @@
             {{ $group->max_points_percentage }} {{ $parent->scoring_system == 'average' ? '%' : 'points' }}
           </div>
         </div>
-        <form action="{{ route('admin.contests.bestins.destroy', ['contest' => $contest->id, 'bestin' => $bestin->id]) }}"
-          method="post">
-          @csrf
-          @method('DELETE')
-
-          <input type="hidden"
-            name="activeTab"
-            value="{{ request()->get('activeTab') }}" />
-
-          @button(['type' => 'submit', 'color' => 'danger'])
-          Remove
-          @endbutton
-        </form>
+        <div class="flex space-x-2">
+          @buttonLink([
+              'href' => route('admin.contests.bestins.show', ['contest' => $contest->id, 'bestin' => $bestin->id]),
+              'attributes' => 'target=_blank'
+          ])
+            Print Scores
+          @endbuttonLink
+          <form action="{{ route('admin.contests.bestins.destroy', ['contest' => $contest->id, 'bestin' => $bestin->id]) }}"
+            method="post">
+            @csrf
+            @method('DELETE')
+            <input type="hidden"
+              name="activeTab"
+              value="{{ request()->get('activeTab') }}" />
+            @button(['type' => 'submit', 'color' => 'danger'])
+            Remove
+            @endbutton
+          </form>
+        </div>
       </li>
     @empty
       <li class="p-4 border-t">No available Best In.</li>

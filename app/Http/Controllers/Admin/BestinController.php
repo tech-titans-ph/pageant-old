@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Contest;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateBestinRequest;
 use App\Managers\ContestManager;
+use App\{Bestin, Contest};
 
 class BestinController extends Controller
 {
@@ -16,23 +16,19 @@ class BestinController extends Controller
         $this->contestManager = new ContestManager();
     }
 
-    public function index(Contest $contest)
+    public function show(Contest $contest, $bestin)
     {
-        $contest->load(['bestins']);
+        $bestin = $contest->bestins()->findOrFail($bestin);
 
-        $contest->bestins->transform(function ($bestin) {
-            if ($bestin->type == 'category') {
-                $bestin->category = $this->contestManager->getRankedCategoryContestants($bestin->group()->first());
-            }
+        if ($bestin->type == 'category') {
+            $bestin->category = $this->contestManager->getRankedCategoryContestants($bestin->group()->first());
+        }
 
-            if ($bestin->type == 'criteria') {
-                $bestin->criteria = $this->contestManager->getRankedCriteriaContestants($bestin->group()->first());
-            }
+        if ($bestin->type == 'criteria') {
+            $bestin->criteria = $this->contestManager->getRankedCriteriaContestants($bestin->group()->first());
+        }
 
-            return $bestin;
-        });
-
-        return view('admin.bestins.print', compact('contest'));
+        return view('admin.bestins.print', compact('contest', 'bestin'));
     }
 
     public function store(Contest $contest, CreateBestinRequest $request)
