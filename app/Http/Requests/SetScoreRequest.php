@@ -66,7 +66,8 @@ class SetScoreRequest extends FormRequest
                 }),
                 'numeric',
                 $regex,
-                'min:' . $min,
+                // 'min:' . $min,
+                'min:0',
                 'max:' . $maxPointsPercentage,
             ],
         ];
