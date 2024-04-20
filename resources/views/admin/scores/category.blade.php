@@ -56,7 +56,7 @@
             class="{{ $loop->parent->first ? 'bg-green-100' : '' }}">
             @if (!$judgeKey)
               @if (Str::endsWith(Route::currentRouteName(), '.print'))
-                <td class="px-2 py-1 text-center align-top border whitespace-nowrap {{ $loop->parent->first ? 'font-bold text-sm' : '' }}"
+                <td class="px-2 py-1 text-center align-top border whitespace-nowrap {{ $loop->parent->first ? 'font-bold text-xs' : '' }}"
                   colspan="2"
                   rowspan="{{ $category->judges->count() }}">
                   <div>Top {{ $contestant->ranking }}</div>
@@ -64,13 +64,13 @@
                   <div>{{ $contestant->alias }}</div>
                 </td>
               @else
-                <td class="w-40 px-2 py-1 text-center align-top border whitespace-nowrap {{ $loop->parent->first ? 'font-bold text-sm' : '' }}"
+                <td class="w-40 px-2 py-1 text-center align-top border whitespace-nowrap {{ $loop->parent->first ? 'font-bold text-xs' : '' }}"
                   rowspan="{{ $category->judges->count() }}">
                   <img src="{{ $contestant->avatar_url }}"
                     class="object-cover object-center w-24 h-24 mx-auto mb-1 border rounded-full" />
                   <div>Top {{ $contestant->ranking }}</div>
                 </td>
-                <td class="px-2 py-1 align-top border whitespace-nowrap {{ $loop->parent->first ? 'font-bold text-sm' : '' }}"
+                <td class="px-2 py-1 align-top border whitespace-nowrap {{ $loop->parent->first ? 'font-bold text-xs' : '' }}"
                   rowspan="{{ $category->judges->count() }}">
                   <div>#{{ $contestant->order }} - {{ $contestant->name }}</div>
                   <div>{{ $contestant->alias }}</div>
