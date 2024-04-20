@@ -41,7 +41,11 @@ class CategoryController extends Controller
                 ->sum('points');
 
             return $contestant;
-        })->sortByDesc('points');
+        })->when(request('sort-by') == 'ranking', function ($items) {
+            return $items->sortByDesc('points');
+        })->when(! request('sort-by'), function ($items) {
+            return $items->sortBy('order');
+        });
 
         return view('judge.categories.show', compact('category', 'judge', 'contestants'));
     }

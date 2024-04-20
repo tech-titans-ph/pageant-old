@@ -22,9 +22,14 @@
       <p class="text-sm italic font-thin">Judge: {{ $judge->name }}</p>
       <p class="text-2xl font-bold">Score Results</p>
     </div>
+    <div class="flex justify-end px-6 py-2">
+      @buttonLink(['href' => route('judge.categories.show', ['category' => $category->id, 'sort-by' => request('sort-by') == 'ranking' ? '' : 'ranking'])])
+        Sort Contestants by {{ request('sort-by') == 'ranking' ? 'Number' : 'Ranking' }}
+      @endbuttonLink
+    </div>
     <div class="md:rounded md:shadow-md mx-auto {{ !$judge->pivot->completed ? 'pb-12' : '' }}">
       @foreach ($contestants as $contestant)
-        <a class="flex p-6 border-t"
+        <a class="flex px-6 py-2 border-t"
           href="{{ route('judge.categories.contestants.index', ['category' => $category->id, 'page' => $contestant->order]) }}">
           <img src="{{ $contestant->avatar_url }}"
             class="flex-none object-cover object-center w-16 h-16 mr-4 border rounded-full">
