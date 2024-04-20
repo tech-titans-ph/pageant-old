@@ -1,5 +1,5 @@
 @if ($criteria->max_points_percentage)
-  <div class="font-bold">{{ $criteria->max_points_percentage }} {{ $contest->scoring_system == 'average' ? '%' : 'points' }}</div>
+  <div class="text-xs font-bold">{{ $criteria->max_points_percentage }} {{ $contest->scoring_system == 'average' ? '%' : 'points' }}</div>
 @endif
 
 <table class="w-full mt-4">
