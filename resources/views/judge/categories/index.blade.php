@@ -1,7 +1,7 @@
 @extends('layouts.mobile')
 
 @section('content')
-  <div class="flex items-stretch h-full divide-x">
+  <div class="flex h-full divide-x">
     <div class="w-1/2 ">
       <img src="{{ $judge->contest->logo_url }}"
         class="object-contain object-center w-full h-full"
