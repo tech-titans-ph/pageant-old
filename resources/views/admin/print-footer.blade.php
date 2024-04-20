@@ -52,21 +52,20 @@
         <td class="px-2 border-b border-black">{{ now()->format('h:i A') }}</td>
       </tr>
     </table>
-  </div>
-  <br />
-  <div class="font-bold text-center text-red-600"
-    style="page-break-inside: avoid;">
-    <p>NOTE: This is the official tabulation of the {{ $model->name }}. Erasures with the use of the any medium is prohibited.</p>
-    <p>This paper must not be tampered; therefore, any amendment is not
-      allowed. Strictly, this is the final result.</p>
-  </div>
-  <br />
-  <div style="page-break-inside: avoid;">
-    <div class="flex items-center justify-center">
-      <div class="text-xl">&copy;</div>
-      <img src="{{ asset('images/' . env('LOGO_TEXT_BELOW')) }}"
-        class="h-24">
+    <br />
+    <div class="font-bold text-center text-red-600">
+      <p>NOTE: This is the official tabulation of the {{ $model->name }}. Erasures with the use of the any medium is prohibited.</p>
+      <p>This paper must not be tampered; therefore, any amendment is not
+        allowed. Strictly, this is the final result.</p>
     </div>
-    <div class="mt-1 text-center">{{ now()->format('Y') }}</div>
+    <br />
+    <div style="page-break-inside: avoid;">
+      <div class="flex items-center justify-center">
+        <div class="text-xl">&copy;</div>
+        <img src="{{ asset('images/' . env('LOGO_TEXT_BELOW')) }}"
+          class="h-24">
+        <div class="mt-1 text-center">{{ now()->format('Y') }}</div>
+      </div>
+    </div>
   </div>
 </div>
