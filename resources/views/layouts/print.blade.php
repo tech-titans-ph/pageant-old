@@ -21,9 +21,24 @@
 
   <style>
     @page {
-      margin: 0.75in 0;
+      margin-top: 0.5in;
+      margin-bottom: 0.75in;
+      margin-left: 0.25in;
+      margin-right: 0.25in;
+    }
+
+    @print {
+      @page: header {
+        display: none;
+      }
+
+      @page: footer {
+        display: none;
+      }
     }
   </style>
+
+  @stack('styles')
 </head>
 
 <body class="px-6 py-4 text-gray-900 print:p-0 text-2xs">
@@ -43,8 +58,7 @@
 
   @include('admin.print-footer', ['model' => $contest])
 
-  <script src="{{ mix('js/app.js') }}"></script>
   <script>
-    // window.print();
+    window.print();
   </script>
 </body>
