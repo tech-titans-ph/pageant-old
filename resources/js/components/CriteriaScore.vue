@@ -1,27 +1,28 @@
 <template>
-    <div class="px-6 py-6 space-y-4 border-t">
-        <div class="flex space-x-4">
-            <h1 class="flex-1 mb-4 text-lg font-bold text-gray-700 whitespace-no-wrap">{{ name }}</h1>
-            <div class="flex-grow-0 flex-shrink-0 text-sm text-right text-gray-700">
-                <span class="text-xl font-bold">{{ scoreValue }}</span>
-                /{{ percentage }}
+    <div class="space-y-1 border-t" :class="[enabled ? 'px-4 py-2' : 'p-4']">
+        <div class="flex items-center space-x-4" :class="[enabled ? 'text-sm' : '']">
+            <div class="flex-1 font-bold text-gray-700">{{ name }}</div>
+            <div class="flex items-center flex-grow-0 flex-shrink-0 space-x-2 font-bold text-right text-gray-700"
+                :class="[enabled ? 'self-start' : '']">
+                <div v-if="enabled">
+                    <input type="number" class="block w-16 p-1 text-sm font-bold text-center form-input"
+                        v-model="scoreValue" @input="setScore" />
+                </div>
+                <span v-else>{{ score }}</span>
+                <span>/</span>
+                <span>{{ percentage }}</span>
             </div>
         </div>
-        <div class="flex flex-col items-center" v-if="enabled">
-            <input type="number" class="block mb-1 text-lg font-bold text-center w-28 form-input" v-model="scoreValue"
-                @input="setScore" />
-            <label>Input manual score</label>
-        </div>
-        <div class="flex items-center">
+        <div v-if="enabled" class="flex items-center">
             <button type="button" v-if="enabled" @click="decreaseScore"
-                class="flex-none p-2 text-white bg-green-600 rounded-full active:bg-green-400 focus:outline-none focus:shadow-outline">
+                class="flex-none p-1 text-white bg-green-600 rounded-full active:bg-green-400 focus:outline-none focus:shadow-outline">
                 <slot name="decrease-icon"></slot>
             </button>
             <input type="range" min="0" :max="percentage" :step="step" v-model="scoreValue" @change="setScore"
                 class="flex-grow w-full h-2 mx-3 bg-gray-400 appearance-none" v-if="enabled" />
 
             <button type="button" v-if="enabled" @click="increaseScore"
-                class="flex-none p-2 text-white bg-green-600 rounded-full active:bg-green-400 focus:outline-none focus:shadow-outline">
+                class="flex-none p-1 text-white bg-green-600 rounded-full active:bg-green-400 focus:outline-none focus:shadow-outline">
                 <slot name="increase-icon"></slot>
             </button>
         </div>

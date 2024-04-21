@@ -1,12 +1,5 @@
 @extends('layouts.mobile')
 
-@section('navbar-right')
-  <a href="{{ route('judge.categories.show', ['category' => $category->id]) }}"
-    class="flex items-center justify-center h-full px-4 no-underline hover:bg-gray-200">
-    Results
-  </a>
-@endsection
-
 @section('content')
   @foreach ($contestants as $contestant)
     @php
@@ -26,6 +19,7 @@
       previous-url="{{ $contestants->previousPageUrl() ?? 'javascript:void(0);' }}"
       next-url="{{ $contestants->currentPage() === $contestants->lastPage() ? 'javascript:void(0);' : $contestants->nextPageUrl() }}"
       submit-url="{{ $contestants->currentPage() === $contestants->lastPage() ? route('judge.categories.show', ['category' => $category->id]) : $contestants->nextPageUrl() }}"
+      result-url="{{ route('judge.categories.show', ['category' => $category->id]) }}"
       :enabled="{{ $judge->pivot->completed ? 'false' : 'true' }}"
       percentage="{{ $category->has_criterias ? $category->criterias->sum('max_points_percentage') : $category->max_points_percentage }}"
       score="{{ $totalScore }}">
