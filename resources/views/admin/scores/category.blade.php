@@ -114,7 +114,7 @@
           </tr>
         @endforeach
 
-        @if (($category->has_criterias && $category->scoring_system == 'average') || (!$category->has_criterias && $contest->scoring_system == 'average'))
+        @if (($category->has_criterias && $category->scoring_system == 'average' && $contest->scoring_sytem == 'average') || (!$category->has_criterias && $contest->scoring_system == 'average'))
           <tr style="page-break-before: avoid;"
             class="{{ !$loop->last ? 'border-b-2 border-black' : '' }}">
             <th class="px-2 py-1 text-right border border-black"
@@ -125,8 +125,11 @@
               {{ round($contestant->average, 4) }}
             </th>
           </tr>
-        @else
-          <tr style="page-break-before: avoid;">
+        @endif
+
+        @if ($category->scoring_system == 'ranking')
+          <tr style="page-break-before: avoid;"
+            class="{{ !$llop->last ? 'border-b-2 border-black' : '' }}">
             <th class="px-2 py-1 text-right border border-black"
               colspan="3">
               Ranking:
