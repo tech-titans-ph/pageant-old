@@ -36,6 +36,10 @@
                 <div>{{ $category->max_points_percentage }} %</div>
               </th>
             @endif
+
+            @if ($contest->scoring_system == 'ranking')
+              <th class="px-2 py-1 border border-black whitespace-nowrap">Ranking</th>
+            @endif
           @endif
         @else
           <th class="px-2 py-1 border border-black">
@@ -111,6 +115,17 @@
                 <div>{{ $categoryScore['points'] ?? 0 }} </div>
               </td>
             @endif
+
+            @if ($contest->scoring_system == 'ranking' && $category->scoring_system == 'average')
+              @php
+                $rankedScore = $category->ranked_scores
+                    ->where('contestant_id', '=', $contestant->id)
+                    ->where('judge_id', '=', $judge->id)
+                    ->first();
+              @endphp
+
+              <th class="px-2 py-1 border border-black">{{ $rankedScore['rank'] }}</th>
+            @endif
           </tr>
         @endforeach
 
@@ -125,9 +140,7 @@
               {{ round($contestant->average, 4) }}
             </th>
           </tr>
-        @endif
-
-        @if ($category->scoring_system == 'ranking')
+        @elseif ($contest->scoring_system == 'ranking' && $category->scoring_system == 'ranking')
           <tr style="page-break-before: avoid;"
             class="{{ !$llop->last ? 'border-b-2 border-black' : '' }}">
             <th class="px-2 py-1 text-right border border-black"
@@ -144,6 +157,12 @@
                 {{ $contestant->ranking }}
               </th>
             @endforelse
+          </tr>
+        @elseif($contest->scoring_system == 'ranking' && $category->scoring_system == 'average')
+          <tr>
+            <th class="px-2 py-1 text-right border border-black"
+              colspan="{{ $category->criterias->count() + 4 }}">Sum of Rank:</th>
+            <th class="px-2 py-1 border border-black">{{ $contestant->rank_sum }}</th>
           </tr>
         @endif
       @endforeach

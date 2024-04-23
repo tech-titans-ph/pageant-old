@@ -19,10 +19,8 @@
         </th>
       @endforeach
 
-      @if ($contest->scoring_system == 'average')
-        <th class="px-2 py-1 text-center border border-black"
-          rowspan="2">TOTAL</th>
-      @endif
+      <th class="px-2 py-1 text-center border border-black"
+        rowspan="2">{{ $contest->scoring_system == 'ranking' ? 'SUM OF RANK' : 'TOTAL' }}</th>
     </tr>
     <tr>
       @foreach ($contest->categories as $category)
@@ -108,27 +106,32 @@
             @php
               $categoryScore = $contestant->category_scores->firstWhere('id', '=', $category->id);
 
-              $rank = $contestant->ranks->firstWhere('category_id', $category->id);
+              $categoryContestant = $category->ranked_contestants->firstWhere('id', '=', $contestant->id);
             @endphp
 
             @foreach ($category->judges as $judge)
               @php
                 $judgeScore = $categoryScore->judge_scores->firstWhere('judge_id', '=', $judge->id);
+
+                $rankedScore = $category->ranked_scores
+                    ->where('judge_id', '=', $judge->id)
+                    ->where('contestant_id', '=', $contestant->id)
+                    ->first();
               @endphp
 
               <td class="px-2 py-1 text-center align-middle border border-black">
                 <div>{{ round($judgeScore['points'] ?? 0, 4) }}</div>
-                {{-- <div>Rank {{ $rank }}</div> --}}
-                {{-- <div>@json($rank)</div> --}}
+                <div>Rank {{ $rankedScore['rank'] ?? 0 }}</div>
               </td>
             @endforeach
 
             <th class="px-2 py-1 align-middle border border-black">
-              <div class="font-bold">{{ $contestant->ranking }}</div>
-              <div>{{ $contestant->ranks }}</div>
-              <div></div>
+              <div>{{ $categoryContestant->ranking }}</div>
+              <div>Sum of Rank: {{ $categoryContestant->rank_sum }}</div>
             </th>
           @endforeach
+
+          <th class="px-2 py-1 align-middle border border-black">{{ $contestant->rank_sum }}</th>
         </tr>
       @endif
 
