@@ -159,7 +159,7 @@
             @endforelse
           </tr>
         @elseif($contest->scoring_system == 'ranking' && $category->scoring_system == 'average')
-          <tr>
+          <tr class="{{ !$loop->last ? 'border-b-2 border-black' : '' }}">
             <th class="px-2 py-1 text-right border border-black"
               colspan="{{ $category->criterias->count() + 4 }}">Sum of Rank:</th>
             <th class="px-2 py-1 border border-black">{{ $contestant->rank_sum }}</th>
