@@ -1,10 +1,12 @@
 <tab-item title="Scores">
   <ul>
     <li class="flex justify-between p-4">
-      @buttonLink(['href' => route('admin.contests.print', ['contest' => $contest->id]), 'attributes' => 'target="_blank"'])
-        Print Scores
-      @endbuttonLink
-      <form action="{{ route('admin.contests.print.top', ['contest' => $contest->id, ]) }}"
+      <div>
+        @buttonLink(['href' => route('admin.contests.print', ['contest' => $contest->id]), 'attributes' => 'target="_blank"'])
+          Print Scores
+        @endbuttonLink
+      </div>
+      <form action="{{ route('admin.contests.print.top', ['contest' => $contest->id]) }}"
         method="get"
         target="_blank">
         @button(['type' => 'submit']) Print Top Contestants @endbutton
