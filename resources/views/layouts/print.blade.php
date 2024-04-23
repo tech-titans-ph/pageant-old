@@ -55,6 +55,6 @@
   @yield('content')
 
   <script>
-    window.print();
+    // window.print();
   </script>
 </body>

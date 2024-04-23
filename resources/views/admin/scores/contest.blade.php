@@ -6,12 +6,13 @@
   <thead>
     <tr>
       <th class="px-2 py-1 border border-black"
-        colspan="{{ $contest->scoring_system == 'average' ? 1 : 3 }}"
+        {{-- colspan="{{ $contest->scoring_system == 'average' ? 1 : 1 }}" --}}
         rowspan="2">Contestants</th>
       @foreach ($contest->categories as $category)
         <th class="px-2 py-1 border border-black"
-          colspan="{{ $category->judges->count() }}">
+          colspan="{{ $category->judges->count() + ($contest->scoring_system == 'ranking' ? 1 : 0) }}">
           <div>{{ $category->name }}</div>
+
           @if ($category->max_points_percentage)
             <div>{{ $category->max_points_percentage }} {{ $contest->scoring_system == 'average' ? '%' : 'points' }}</div>
           @endif
@@ -30,6 +31,12 @@
             {!! str_replace(' ', '<br />', $judge->name) !!}
           </th>
         @endforeach
+
+        @if ($contest->scoring_system == 'ranking')
+          <th class="px-2 py-1 border border-black">
+            RANKING
+          </th>
+        @endif
       @endforeach
     </tr>
   </thead>
@@ -57,11 +64,13 @@
           @endif
 
           @foreach ($contest->categories as $category)
+            @php
+              $categoryScore = $contestant->category_scores->firstWhere('id', '=', $category->id);
+            @endphp
+
             @foreach ($category->judges as $judge)
               <td class="px-2 py-1 text-center align-middle border border-black">
                 @php
-                  $categoryScore = $contestant->category_scores->firstWhere('id', '=', $category->id);
-
                   $judgeScore = $categoryScore->judge_scores->firstWhere('judge_id', '=', $judge->id);
                 @endphp
 
@@ -70,18 +79,15 @@
             @endforeach
           @endforeach
 
-          @if ($contest->scoring_system == 'average')
-            <th class="px-2 py-1 align-bottom border border-black"
-              rowspan="2">{{ round($contestant->average_sum, 4) }}</th>
-          @endif
+          <th class="px-2 py-1 align-bottom border border-black"
+            rowspan="2">{{ round($contestant->average_sum, 4) }}</th>
         </tr>
       @endif
 
       @if ($contest->scoring_system == 'ranking')
         <tr class="{{ $loop->first ? 'bg-green-100' : '' }}">
           @if (Str::endsWith(Route::currentRouteName(), '.print'))
-            <td class="px-2 py-1 text-center align-top border border-black whitespace-nowrap {{ $loop->first ? 'font-bold text-xs' : '' }}"
-              colspan="2">
+            <td class="px-2 py-1 text-center align-top border border-black whitespace-nowrap {{ $loop->first ? 'font-bold text-xs' : '' }}">
               <div>Top {{ $contestant->ranking }}</div>
               <div># {{ $contestant->order }} - {{ $contestant->name }}</div>
               <div>{{ $contestant->alias }}</div>
@@ -97,12 +103,31 @@
               <div>{{ $contestant->alias }}</div>
             </td>
           @endif
-          <td class="px-2 py-1 text-right align-middle border border-black">Ranking:</td>
 
           @foreach ($contest->categories as $category)
-            <td class="px-2 py-1 text-center align-middle border border-black">
-              {{ $contestant->ranks->firstWhere('category_id', '=', $category->id)['rank'] }}
-            </td>
+            @php
+              $categoryScore = $contestant->category_scores->firstWhere('id', '=', $category->id);
+
+              $rank = $contestant->ranks->firstWhere('category_id', $category->id);
+            @endphp
+
+            @foreach ($category->judges as $judge)
+              @php
+                $judgeScore = $categoryScore->judge_scores->firstWhere('judge_id', '=', $judge->id);
+              @endphp
+
+              <td class="px-2 py-1 text-center align-middle border border-black">
+                <div>{{ round($judgeScore['points'] ?? 0, 4) }}</div>
+                {{-- <div>Rank {{ $rank }}</div> --}}
+                {{-- <div>@json($rank)</div> --}}
+              </td>
+            @endforeach
+
+            <th class="px-2 py-1 align-middle border border-black">
+              <div class="font-bold">{{ $contestant->ranking }}</div>
+              <div>{{ $contestant->ranks }}</div>
+              <div></div>
+            </th>
           @endforeach
         </tr>
       @endif

@@ -150,6 +150,8 @@ class ContestController extends Controller
 
         $contest = $this->contestManager->getRankedContestants($contest);
 
+        // dd($contest->ranked_contestants->first()->toArray());
+
         return view('admin.contests.print', compact('contest'));
     }
 

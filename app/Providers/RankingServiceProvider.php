@@ -248,16 +248,79 @@ class RankingServiceProvider extends ServiceProvider
 
                 $contest->categories->each(function ($category) use ($collection) {
                     if ($category->scoring_system == 'average') {
-                        $category->ranked_contestants->each(function ($rankedContestant) use ($collection, $category) {
+                        $rankedScores = collect([]);
+
+                        $category->judges->each(function ($judge) use ($category, $rankedScores) {
+                            $rank = 1;
+
+                            $points = 0;
+
+                            $rankedScore = $category->scores
+                                ->where('category_id', '=', $category->id)
+                                ->where('category_judge_id', '=', $judge->pivot->id)
+                                ->groupBy('category_contestant_id')->transform(function ($contestant, $index) use ($category, $judge) {
+                                    return [
+                                        'category_judge_id' => $judge->pivot->id,
+                                        'judge_id' => $judge->id,
+                                        'category_contestant_id' => $index,
+                                        'contestant_id' => $category->contestants->firstWhere('pivot.id', '=', $index)->id,
+                                        'points_sum' => $contestant->sum('points'),
+                                        'rank' => 0,
+                                    ];
+                                })->sortByDesc('points_sum')->values()->transform(function ($contestant, $index) use (&$rank, &$points) {
+                                    if ($index) {
+                                        if ($contestant['points_sum'] != $points) {
+                                            ++$rank;
+
+                                            $points = $contestant['points_sum'];
+                                        }
+                                    } else {
+                                        $points = $contestant['points_sum'];
+                                    }
+
+                                    $contestant['rank'] = $rank;
+
+                                    return $contestant;
+                                });
+
+                            $rankedScores->push($rankedScore);
+                        });
+
+                        $category->ranked_scores = $rankedScores->flatten(1);
+
+                        $rank = 1;
+
+                        $points = 0;
+
+                        $category->ranked_contestants->transform(function ($rankedContestant) use ($category) {
+                            $rankedContestant->rank_sum = $category->ranked_scores
+                                ->where('contestant_id', '=', $rankedContestant->pivot->id)
+                                ->sum('rank');
+
+                            return $rankedContestant;
+                        })->sortBy('rank_sum')->values()->transform(function ($rankedContestant, $index) use (&$rank, &$points, $collection, $category) {
                             $contestant = $collection->filter(function ($contestant) use ($rankedContestant) {
                                 return $contestant->id == $rankedContestant->id;
                             })->first();
 
+                            if ($index) {
+                                if ($rankedContestant->rank_sum != $points) {
+                                    ++$rank;
+
+                                    $points = $rankedContestant['rank_sum'];
+                                }
+                            } else {
+                                $points = $rankedContestant['rank_sum'];
+                            }
+
+                            $rankedContestant['ranking'] = $rank;
+
                             $contestant->ranks->push([
                                 'category_id' => $category->id,
-                                'group_id' => $category->id,
-                                'rank' => $contestant->ranking,
+                                'rank' => $rank,
                             ]);
+
+                            return $rankedContestant;
                         });
                     } else {
                         $category->scores->groupBy([
@@ -337,10 +400,6 @@ class RankingServiceProvider extends ServiceProvider
                         });
                     }
                 });
-
-                $rank = 1;
-
-                $points = 0;
 
                 $rank = 1;
 
