@@ -124,7 +124,7 @@
                     ->first();
               @endphp
 
-              <th class="px-2 py-1 border border-black">{{ $rankedScore['rank'] }}</th>
+              <th class="px-2 py-1 border border-black">{{ $rankedScore['rank'] ?? 0 }}</th>
             @endif
           </tr>
         @endforeach
